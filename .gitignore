@@ -1,0 +1,7 @@
+# Arquivos gerados pelo sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Configurações pessoais do Claude Code
+.claude/settings.local.json
