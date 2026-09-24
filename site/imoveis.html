@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imóveis - SGLK</title>
+<meta name="description" content="Busque kitnets por bairro, preço e comodidades. Veja fotos, preço, localização e disponibilidade de cada anúncio.">
+<meta name="theme-color" content="#0B2841">
+<link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="img/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
+<meta property="og:title" content="Imóveis - SGLK">
+<meta property="og:description" content="Busque kitnets por bairro, preço e comodidades no SGLK.">
+<meta property="og:image" content="img/17-compartilhamento-og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/paginas.css">
+</head>
+<body>
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="icon-busca" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/></symbol>
+<symbol id="icon-filtro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-local" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11.5A7 7 0 0 1 19 9.5C19 14.7 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></symbol>
+<symbol id="icon-cama" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18v2M21 18v2"/><path d="M3 13v-4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4"/><path d="M13 13V9a1 1 0 0 1 1-1h5a2 2 0 0 1 2 2v3"/></symbol>
+<symbol id="icon-banheiro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5a2 2 0 0 1 3.2-1.6"/><path d="M4 8h16"/><path d="M5 8l1 9a2 2 0 0 0 2 1.8h8a2 2 0 0 0 2-1.8l1-9"/><line x1="9" y1="21" x2="9" y2="18.8"/><line x1="15" y1="21" x2="15" y2="18.8"/></symbol>
+<symbol id="icon-area" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 4 20 4 20 9"/><polyline points="9 20 4 20 4 15"/><line x1="20" y1="4" x2="14" y2="10"/><line x1="4" y1="20" x2="10" y2="14"/></symbol>
+<symbol id="icon-escudo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3Z"/><polyline points="9 12 11 14 15.5 9.5"/></symbol>
+<symbol id="icon-raio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></symbol>
+<symbol id="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="icon-fechar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+<symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+<symbol id="icon-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+<symbol id="icon-casa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="icon-porta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V5a1 1 0 0 1 1-1h6l5 3v14"/><line x1="4" y1="21" x2="20" y2="21"/><circle cx="13.2" cy="13" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-atualizar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/></symbol>
+<symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a1 1 0 0 1 1-1h2l1.5-2h7L17 7h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"/><circle cx="12" cy="13" r="3.2"/></symbol>
+<symbol id="icon-lista" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></symbol>
+<symbol id="icon-mensagem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></symbol>
+<symbol id="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></symbol>
+<symbol id="icon-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19L12 3.5Z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-whatsapp" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.4c.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5s-.6-1.5-.8-2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.6-.4Z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></symbol>
+</svg>
+
+<header class="cabecalho">
+  <div class="contentor cabecalho-conteudo">
+    <a class="marca" href="index.html">
+      <img src="img/sglk-logo-horizontal.png" alt="SGLK - Sistema de Gerenciamento e Locação de Kitnets" width="180" height="62" style="height:32px;width:auto">
+    </a>
+    <nav class="nav-principal" aria-label="Navegação principal">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="imoveis.html" aria-current="page">Imóveis</a></li>
+        <li><a href="como-funciona.html">Como funciona</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="cabecalho-acoes">
+      <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
+      <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
+        <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-movel" id="menu-movel" data-menu-movel hidden>
+  <div class="menu-movel-topo">
+    <span class="marca"><img src="img/sglk-logo-horizontal.png" alt="SGLK" width="140" height="48" style="height:28px;width:auto"></span>
+    <button type="button" class="botao--icone" data-fechar-menu aria-label="Fechar menu">
+      <svg width="22" height="22" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <nav class="menu-movel-lista" aria-label="Navegação principal">
+    <a href="index.html">Home</a>
+    <a href="imoveis.html" aria-current="page">Imóveis</a>
+    <a href="como-funciona.html">Como funciona</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+  <div class="menu-movel-acao">
+    <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+  </div>
+</div>
+
+<main id="conteudo">
+  <div class="secao secao--off-white" style="padding-block: var(--esp-6) 0">
+    <div class="contentor">
+      <div class="cabecalho-secao" style="margin-bottom: var(--esp-5)">
+        <h1 class="titulo-1">Imóveis</h1>
+        <p class="texto-abertura">Busque por bairro, preço e comodidades. Anúncios com o selo "Imagem por IA" são exemplos ilustrativos.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="secao secao--off-white" style="padding-top: var(--esp-5)">
+    <div class="contentor">
+
+      <div class="busca-imoveis">
+        <div class="painel">
+          <div class="campo campo-com-icone" style="margin-bottom: var(--esp-4)">
+            <label for="busca-imoveis" class="apenas-leitor">Buscar por bairro</label>
+            <svg width="20" height="20" aria-hidden="true"><use href="#icon-busca"></use></svg>
+            <input type="search" id="busca-imoveis" data-campo-busca placeholder="Busque por bairro...">
+          </div>
+
+          <!-- Filtros: barra horizontal no desktop -->
+          <div class="filtros-desktop">
+            <div class="campo">
+              <label for="bairro-desktop">Bairro</label>
+              <select id="bairro-desktop" data-campo-bairro>
+                <option value="todos">Todos os bairros</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="preco-desktop">Preço máximo (R$/mês)</label>
+              <input type="number" id="preco-desktop" data-campo-preco min="0" step="50" placeholder="Ex.: 1500">
+            </div>
+            <fieldset class="campo" style="border:none;padding:0;flex:1.4" data-grupo-comodidades>
+              <legend style="font-size:var(--tam-pequeno);font-weight:600;margin-bottom:var(--esp-1)">Comodidades</legend>
+              <div class="lista-chips">
+                <label class="chip"><input type="checkbox" value="Mobiliada" class="apenas-leitor">Mobiliada</label>
+                <label class="chip"><input type="checkbox" value="Wi-Fi" class="apenas-leitor">Wi-Fi</label>
+                <label class="chip"><input type="checkbox" value="Ar-condicionado" class="apenas-leitor">Ar-condicionado</label>
+                <label class="chip"><input type="checkbox" value="Cozinha equipada" class="apenas-leitor">Cozinha equipada</label>
+                <label class="chip"><input type="checkbox" value="Área de estudo" class="apenas-leitor">Área de estudo</label>
+              </div>
+            </fieldset>
+            <button type="button" class="botao botao--link" data-limpar-filtros>Limpar</button>
+          </div>
+
+          <button type="button" class="botao botao--secundario botao-filtros-mobile" data-abrir-filtros>
+            <svg width="20" height="20" aria-hidden="true"><use href="#icon-filtro"></use></svg>
+            Filtros
+          </button>
+        </div>
+
+        <div class="lista-chips" data-chips-ativos style="margin-top: var(--esp-4)"></div>
+      </div>
+
+      <div class="resultados-cabecalho">
+        <p class="resultados-contagem" data-contagem-resultados>3 kitnets encontradas</p>
+      </div>
+
+      <div class="grade-kitnets" data-grade-resultados></div>
+
+      <div class="estado-vazio" data-estado-vazio hidden>
+        <svg aria-hidden="true"><use href="#icon-busca"></use></svg>
+        <h2 class="titulo-3">Nenhuma kitnet encontrada</h2>
+        <p>Tente ampliar o preço máximo, escolher outro bairro ou remover alguma comodidade dos filtros.</p>
+        <button type="button" class="botao botao--secundario" data-limpar-filtros>Limpar filtros</button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- FOLHA DE FILTROS (CELULAR) -->
+<div class="fundo-sobreposicao" data-fundo-sobreposicao></div>
+<div class="folha-filtros" data-folha-filtros>
+  <div class="folha-filtros-topo">
+    <h2 class="titulo-3">Filtros</h2>
+    <button type="button" class="botao--icone" data-fechar-filtros aria-label="Fechar filtros">
+      <svg width="20" height="20" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <div class="folha-filtros-campos">
+    <div class="campo">
+      <label for="bairro-mobile">Bairro</label>
+      <select id="bairro-mobile" data-campo-bairro>
+        <option value="todos">Todos os bairros</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="preco-mobile">Preço máximo (R$/mês)</label>
+      <input type="number" id="preco-mobile" data-campo-preco min="0" step="50" placeholder="Ex.: 1500">
+    </div>
+    <fieldset class="campo" style="border:none;padding:0" data-grupo-comodidades>
+      <legend style="font-size:var(--tam-pequeno);font-weight:600;margin-bottom:var(--esp-2)">Comodidades</legend>
+      <div class="lista-chips">
+        <label class="chip"><input type="checkbox" value="Mobiliada" class="apenas-leitor">Mobiliada</label>
+        <label class="chip"><input type="checkbox" value="Wi-Fi" class="apenas-leitor">Wi-Fi</label>
+        <label class="chip"><input type="checkbox" value="Ar-condicionado" class="apenas-leitor">Ar-condicionado</label>
+        <label class="chip"><input type="checkbox" value="Cozinha equipada" class="apenas-leitor">Cozinha equipada</label>
+        <label class="chip"><input type="checkbox" value="Área de estudo" class="apenas-leitor">Área de estudo</label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="folha-filtros-acoes">
+    <button type="button" class="botao botao--link" data-limpar-filtros data-fechar-filtros>Limpar</button>
+    <button type="button" class="botao botao--primario" data-fechar-filtros>Aplicar filtros</button>
+  </div>
+</div>
+
+<footer class="rodape">
+  <div class="contentor">
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span style="font-family:var(--fonte);font-weight:800;font-size:1.5rem;color:var(--branco)">SGLK</span>
+        <p>Sistema de Gerenciamento e Locação de Kitnets — Tucuruí, PA.</p>
+      </div>
+      <nav class="rodape-coluna" aria-label="Páginas do site">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="imoveis.html">Imóveis</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="rodape-base">
+      <p>© 2026 SGLK — Sistema de Gerenciamento e Locação de Kitnets.</p>
+      <p class="aviso-ilustrativo"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As 3 kitnets de exemplo (Centro, Vila Nova e Jardim Paulista) usam fotos geradas por IA, só para demonstração.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/dados-demo.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

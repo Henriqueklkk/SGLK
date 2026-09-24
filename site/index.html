@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGLK - Encontre sua próxima kitnet em Tucuruí</title>
+<meta name="description" content="O SGLK conecta locadores e locatários de kitnets em Tucuruí-PA: busque com filtros, veja anúncios com informações claras e fale direto com o locador pelo WhatsApp.">
+<meta name="theme-color" content="#0B2841">
+<link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="img/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
+<meta property="og:title" content="SGLK - Kitnets mais perto de você">
+<meta property="og:description" content="Busque, compare e fale direto com o locador de kitnets em Tucuruí.">
+<meta property="og:image" content="img/17-compartilhamento-og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/paginas.css">
+</head>
+<body>
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="icon-busca" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/></symbol>
+<symbol id="icon-filtro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-local" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11.5A7 7 0 0 1 19 9.5C19 14.7 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></symbol>
+<symbol id="icon-cama" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18v2M21 18v2"/><path d="M3 13v-4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4"/><path d="M13 13V9a1 1 0 0 1 1-1h5a2 2 0 0 1 2 2v3"/></symbol>
+<symbol id="icon-banheiro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V5a2 2 0 0 1 3.2-1.6"/><path d="M4 8h16"/><path d="M5 8l1 9a2 2 0 0 0 2 1.8h8a2 2 0 0 0 2-1.8l1-9"/><line x1="9" y1="21" x2="9" y2="18.8"/><line x1="15" y1="21" x2="15" y2="18.8"/></symbol>
+<symbol id="icon-area" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 4 20 4 20 9"/><polyline points="9 20 4 20 4 15"/><line x1="20" y1="4" x2="14" y2="10"/><line x1="4" y1="20" x2="10" y2="14"/></symbol>
+<symbol id="icon-escudo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3Z"/><polyline points="9 12 11 14 15.5 9.5"/></symbol>
+<symbol id="icon-raio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9 13 2"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></symbol>
+<symbol id="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+<symbol id="icon-fechar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+<symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+<symbol id="icon-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+<symbol id="icon-casa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="icon-porta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V5a1 1 0 0 1 1-1h6l5 3v14"/><line x1="4" y1="21" x2="20" y2="21"/><circle cx="13.2" cy="13" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-atualizar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><polyline points="21 3 21 8 16 8"/><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><polyline points="3 21 3 16 8 16"/></symbol>
+<symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a1 1 0 0 1 1-1h2l1.5-2h7L17 7h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"/><circle cx="12" cy="13" r="3.2"/></symbol>
+<symbol id="icon-lista" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></symbol>
+<symbol id="icon-mensagem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></symbol>
+<symbol id="icon-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></symbol>
+<symbol id="icon-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19L12 3.5Z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-whatsapp" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.4c.1-.1.2-.3.3-.4.1-.2 0-.4 0-.5s-.6-1.5-.8-2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.6-.4Z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18.2c-1.6 0-3.2-.4-4.5-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></symbol>
+</svg>
+
+<header class="cabecalho">
+  <div class="contentor cabecalho-conteudo">
+    <a class="marca" href="index.html">
+      <img src="img/sglk-logo-horizontal.png" alt="SGLK - Sistema de Gerenciamento e Locação de Kitnets" width="180" height="62" style="height:32px;width:auto">
+    </a>
+    <nav class="nav-principal" aria-label="Navegação principal">
+      <ul>
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="imoveis.html">Imóveis</a></li>
+        <li><a href="como-funciona.html">Como funciona</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="cabecalho-acoes">
+      <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
+      <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
+        <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-movel" id="menu-movel" data-menu-movel hidden>
+  <div class="menu-movel-topo">
+    <span class="marca"><img src="img/sglk-logo-horizontal.png" alt="SGLK" width="140" height="48" style="height:28px;width:auto"></span>
+    <button type="button" class="botao--icone" data-fechar-menu aria-label="Fechar menu">
+      <svg width="22" height="22" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <nav class="menu-movel-lista" aria-label="Navegação principal">
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="imoveis.html">Imóveis</a>
+    <a href="como-funciona.html">Como funciona</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+  <div class="menu-movel-acao">
+    <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+  </div>
+</div>
+
+<main id="conteudo">
+
+  <!-- 1. TOPO -->
+  <section class="topo secao--off-white">
+    <div class="contentor topo-conteudo">
+      <div class="topo-texto">
+        <h1 class="titulo-display">Kitnets mais perto de você</h1>
+        <p class="texto-abertura">Busque, compare e fale direto com o locador. Uma forma prática e transparente de encontrar moradia em Tucuruí.</p>
+
+        <form class="painel painel--busca" action="imoveis.html" method="get">
+          <div class="campo campo-com-icone" style="margin-bottom: var(--esp-4)">
+            <label for="busca-topo" class="apenas-leitor">Buscar por bairro</label>
+            <svg width="20" height="20" aria-hidden="true"><use href="#icon-busca"></use></svg>
+            <input type="search" id="busca-topo" name="busca" placeholder="Busque por bairro...">
+          </div>
+          <div class="linha-campos" style="margin-bottom: var(--esp-5)">
+            <div class="campo">
+              <label for="bairro-topo">Bairro</label>
+              <select id="bairro-topo" name="bairro" data-campo-bairro>
+                <option value="todos">Todos os bairros</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="preco-topo">Preço máximo (R$/mês)</label>
+              <input type="number" id="preco-topo" name="precoMax" min="0" step="50" placeholder="Ex.: 1500">
+            </div>
+            <div class="campo">
+              <label for="comodidade-topo">Comodidades</label>
+              <select id="comodidade-topo" name="comodidade">
+                <option value="">Qualquer uma</option>
+                <option value="Mobiliada">Mobiliada</option>
+                <option value="Wi-Fi">Wi-Fi</option>
+                <option value="Ar-condicionado">Ar-condicionado</option>
+                <option value="Cozinha equipada">Cozinha equipada</option>
+                <option value="Área de estudo">Área de estudo</option>
+              </select>
+            </div>
+          </div>
+          <div class="grupo-botoes">
+            <button type="submit" class="botao botao--primario botao--largura-total">
+              <svg width="20" height="20" aria-hidden="true"><use href="#icon-busca"></use></svg>
+              Encontrar minha kitnet
+            </button>
+          </div>
+        </form>
+        <a class="botao botao--link" href="como-funciona.html">Saiba como funciona</a>
+      </div>
+
+      <div class="topo-imagem-mobile">
+        <img src="img/01-hero-sglk-mobile.jpg" alt="Anúncio de kitnet do SGLK, com foto, preço e botão de contato, diante da fachada de um prédio residencial." width="760" height="950" loading="eager">
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. DIFERENCIAIS -->
+  <section class="secao secao--off-white">
+    <div class="contentor">
+      <div class="cabecalho-secao cabecalho-secao--centro">
+        <h2 class="titulo-2">Por que usar o SGLK</h2>
+      </div>
+      <div class="grade-diferenciais">
+        <article class="cartao-diferencial">
+          <span class="cartao-diferencial-icone"><svg width="24" height="24" aria-hidden="true"><use href="#icon-filtro"></use></svg></span>
+          <h3 class="titulo-3">Busca com filtros</h3>
+          <p>Filtre por bairro, preço e comodidades e encontre kitnets que combinam com o que você procura.</p>
+        </article>
+        <article class="cartao-diferencial">
+          <span class="cartao-diferencial-icone"><svg width="24" height="24" aria-hidden="true"><use href="#icon-escudo"></use></svg></span>
+          <h3 class="titulo-3">Segurança contra golpes</h3>
+          <p>Cada anúncio traz fotos, preço, localização e disponibilidade claros, para reduzir o risco de golpes.</p>
+        </article>
+        <article class="cartao-diferencial">
+          <span class="cartao-diferencial-icone"><svg width="24" height="24" aria-hidden="true"><use href="#icon-whatsapp"></use></svg></span>
+          <h3 class="titulo-3">Contato direto pelo WhatsApp</h3>
+          <p>Fale direto com o locador, sem intermediários e sem chat interno dentro do site.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. KITNETS EM DESTAQUE -->
+  <section class="secao secao--painel">
+    <div class="contentor">
+      <div class="destaque-cabecalho">
+        <h2 class="titulo-2">Kitnets em destaque</h2>
+        <p class="texto-suave">Confira as kitnets disponíveis agora. Anúncios com o selo "Imagem por IA" são exemplos ilustrativos, feitos por inteligência artificial.</p>
+      </div>
+      <div class="grade-kitnets" data-grade-destaque></div>
+    </div>
+  </section>
+
+  <!-- 4. BUSCA RAPIDA -->
+  <section class="secao secao--off-white">
+    <div class="contentor secao-dividida">
+      <div class="secao-dividida-texto">
+        <h2 class="titulo-2">Filtre e encontre mais rápido</h2>
+        <p class="texto-suave paragrafo">Na página Imóveis, você filtra por bairro, preço máximo e comodidades, e vê na hora quantas kitnets combinam com a sua busca — sem esperar resposta de ninguém.</p>
+        <a class="botao botao--secundario" href="imoveis.html">Ver imóveis disponíveis</a>
+      </div>
+      <img class="secao-dividida-imagem secao-dividida-imagem--mobile" src="img/02-busca-kitnets-mobile.jpg" alt="Tela do SGLK no celular com filtros de preço e comodidades e anúncios de kitnet." width="700" height="875" loading="lazy">
+      <img class="secao-dividida-imagem secao-dividida-imagem--desktop" src="img/02-busca-kitnets-desktop.jpg" alt="Tela de busca do SGLK com filtros de bairro, preço e comodidades e três kitnets encontradas." width="1000" height="667" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 5. NO CELULAR -->
+  <section class="secao secao--painel">
+    <div class="contentor secao-dividida secao-dividida--inversa">
+      <div class="secao-dividida-texto">
+        <h2 class="titulo-2">Funciona bem no seu celular</h2>
+        <p class="texto-suave paragrafo">O SGLK é um site responsivo: você busca, compara e fala com o locador direto pelo navegador do celular, sem precisar instalar aplicativo nenhum.</p>
+      </div>
+      <img class="secao-dividida-imagem secao-dividida-imagem--mobile" src="img/14-mobile-detalhes.jpg" alt="Detalhes de uma kitnet no celular, com foto, preço, comodidades e botão do WhatsApp." width="640" height="800" loading="lazy">
+      <img class="secao-dividida-imagem secao-dividida-imagem--desktop" src="img/14-mobile-telas-desktop.jpg" alt="Três telas do SGLK no celular: busca com resultados, detalhes da kitnet e filtros." width="1100" height="619" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 6. NOVOS COMECOS -->
+  <section class="secao secao--off-white">
+    <div class="contentor secao-dividida">
+      <div class="secao-dividida-texto">
+        <h2 class="titulo-2">Mais que kitnets, novos começos</h2>
+        <p class="texto-suave paragrafo">Uma kitnet costuma ser o primeiro passo: sair de casa para estudar, começar um trabalho novo ou simplesmente ter um espaço só seu em Tucuruí. O SGLK existe para tornar essa busca mais simples.</p>
+      </div>
+      <img class="secao-dividida-imagem secao-dividida-imagem--mobile" src="img/11-lifestyle-novo-comeco-mobile.jpg" alt="Canto de uma kitnet iluminada, com manta verde na cama, plantas e caixas de mudança." width="700" height="875" loading="lazy">
+      <img class="secao-dividida-imagem secao-dividida-imagem--desktop" src="img/11-lifestyle-novo-comeco-desktop.jpg" alt="Kitnet iluminada pela manhã, com cama arrumada, plantas e caixas de mudança organizadas." width="1000" height="667" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 7. COMO FUNCIONA (RESUMO) -->
+  <section class="secao secao--painel">
+    <div class="contentor">
+      <div class="cabecalho-secao cabecalho-secao--centro">
+        <h2 class="titulo-2">Como funciona</h2>
+        <p class="texto-suave">Três passos simples para encontrar sua próxima kitnet.</p>
+      </div>
+      <div style="max-width:480px;margin-inline:auto">
+        <img src="img/12-como-funciona.jpg" alt="Três etapas no SGLK: buscar por bairro, comparar kitnets e falar com o locador pelo WhatsApp." width="760" height="760" loading="lazy" style="border-radius:var(--raio-xg);box-shadow:var(--sombra-2)">
+      </div>
+      <div class="grupo-botoes" style="justify-content:center;margin-top:var(--esp-6)">
+        <a class="botao botao--secundario" href="como-funciona.html">Ver passo a passo completo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. SEGURANCA E CONFIANCA -->
+  <section class="secao secao--off-white">
+    <div class="contentor secao-dividida secao-dividida--inversa">
+      <div class="secao-dividida-texto">
+        <h2 class="titulo-2">Segurança e confiança</h2>
+        <ul class="lista-checagem">
+          <li><svg aria-hidden="true"><use href="#icon-check"></use></svg><span>Cada anúncio mostra fotos reais, preço, bairro e disponibilidade.</span></li>
+          <li><svg aria-hidden="true"><use href="#icon-check"></use></svg><span>O contato acontece direto com o locador, pelo WhatsApp.</span></li>
+          <li><svg aria-hidden="true"><use href="#icon-check"></use></svg><span>Sem chat interno, sem pagamento pelo site e sem intermediários.</span></li>
+        </ul>
+      </div>
+      <img class="secao-dividida-imagem secao-dividida-imagem--mobile" src="img/10-seguranca-confianca.jpg" alt="Anúncio de kitnet com foto, preço, bairro, status e botão de contato em destaque, diante do prédio." width="900" height="675" loading="lazy">
+      <img class="secao-dividida-imagem secao-dividida-imagem--desktop" src="img/10-seguranca-confianca.jpg" alt="Anúncio de kitnet com foto, preço, bairro, status e botão de contato em destaque, diante do prédio." width="900" height="675" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 9. PARA QUEM ANUNCIA -->
+  <section class="secao secao--escura fundo-escuro secao-anuncie">
+    <div class="contentor secao-dividida">
+      <div class="secao-dividida-texto">
+        <h2 class="titulo-2">Tem uma kitnet para alugar?</h2>
+        <p class="paragrafo">Cadastre fotos, preço e comodidades, e atualize a disponibilidade sempre que quiser. Você recebe os contatos direto no seu WhatsApp.</p>
+        <a class="botao botao--claro" href="anunciar.html">Anunciar minha kitnet</a>
+      </div>
+      <img class="secao-dividida-imagem secao-dividida-imagem--mobile" src="img/06-painel-locador-mobile.jpg" alt="Painel do locador no celular, com a lista de imóveis e o status de cada um." width="700" height="875" loading="lazy">
+      <img class="secao-dividida-imagem secao-dividida-imagem--desktop" src="img/06-painel-locador-desktop.jpg" alt="Painel do locador no SGLK com três imóveis cadastrados, dois disponíveis e um alugado." width="1000" height="667" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 10. CHAMADA FINAL -->
+  <section class="secao secao--off-white">
+    <div class="contentor">
+      <div class="cta-final">
+        <img src="img/13-cta-final-desktop.jpg" alt="Pessoa jovem com mochila e caixa entrando numa kitnet iluminada pela porta aberta." width="1600" height="686" loading="lazy">
+        <div class="cta-final-conteudo">
+          <h2 class="titulo-2">Sua próxima kitnet está a poucos cliques</h2>
+          <a class="botao botao--primario" href="imoveis.html">Encontrar minha kitnet</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <div class="contentor">
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span style="font-family:var(--fonte);font-weight:800;font-size:1.5rem;color:var(--branco)">SGLK</span>
+        <p>Sistema de Gerenciamento e Locação de Kitnets — Tucuruí, PA.</p>
+      </div>
+      <nav class="rodape-coluna" aria-label="Páginas do site">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="imoveis.html">Imóveis</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="rodape-base">
+      <p>© 2026 SGLK — Sistema de Gerenciamento e Locação de Kitnets.</p>
+      <p class="aviso-ilustrativo"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As 3 kitnets de exemplo (Centro, Vila Nova e Jardim Paulista) usam fotos geradas por IA, só para demonstração.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/dados-demo.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

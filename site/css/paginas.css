@@ -1,0 +1,380 @@
+/*
+  paginas.css - Layout especifico de cada secao/pagina do SGLK
+  Usa os tokens de tokens.css e os componentes de estilo.css.
+*/
+
+/* ============================= HOME: TOPO ============================= */
+
+.topo {
+  padding-block: var(--esp-8);
+}
+.topo-conteudo { display: flex; flex-direction: column; gap: var(--esp-6); }
+.topo-texto { display: flex; flex-direction: column; gap: var(--esp-4); max-width: 560px; }
+.topo-imagem-mobile { border-radius: var(--raio-xg); overflow: hidden; }
+.topo-imagem-mobile img { width: 100%; height: auto; }
+
+@media (min-width: 1024px) {
+  .topo {
+    position: relative;
+    padding-block: var(--esp-10) var(--esp-9);
+    background-image: linear-gradient(to right, var(--off-white) 0%, var(--off-white) 38%, rgba(251,250,248,0.55) 50%, rgba(251,250,248,0) 62%), url("../img/01-hero-sglk-desktop.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+  .topo-imagem-mobile { display: none; }
+  .topo-conteudo { display: block; }
+  .topo-texto { max-width: 460px; }
+}
+
+/* ============================= HOME: KITNETS EM DESTAQUE ============================= */
+
+.destaque-cabecalho { display: flex; flex-direction: column; gap: var(--esp-2); margin-bottom: var(--esp-5); }
+
+/* ============================= HOME: SECOES COM IMAGEM + TEXTO ============================= */
+
+.secao-dividida {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-6);
+  align-items: center;
+}
+.secao-dividida-texto { display: flex; flex-direction: column; gap: var(--esp-4); }
+.secao-dividida-imagem { width: 100%; border-radius: var(--raio-xg); overflow: hidden; box-shadow: var(--sombra-2); }
+.secao-dividida-imagem img { width: 100%; height: auto; }
+.secao-dividida-imagem--mobile { display: block; }
+.secao-dividida-imagem--desktop { display: none; }
+
+@media (min-width: 1024px) {
+  .secao-dividida { flex-direction: row; gap: var(--esp-9); }
+  .secao-dividida-texto { flex: 1; max-width: 460px; }
+  .secao-dividida-imagem { flex: 1; }
+  .secao-dividida--inversa { flex-direction: row-reverse; }
+  .secao-dividida-imagem--mobile { display: none; }
+  .secao-dividida-imagem--desktop { display: block; }
+}
+
+.lista-checagem { display: flex; flex-direction: column; gap: var(--esp-3); }
+.lista-checagem li { display: flex; align-items: flex-start; gap: var(--esp-3); }
+.lista-checagem svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--salvia-700); margin-top: 2px; }
+
+/* ============================= HOME: PARA QUEM ANUNCIA ============================= */
+
+.secao-anuncie { position: relative; }
+.secao-anuncie .secao-dividida-texto { color: var(--branco); }
+.secao-anuncie .secao-dividida-texto p { color: var(--salvia-300); }
+
+/* ============================= HOME: CHAMADA FINAL ============================= */
+
+.cta-final {
+  position: relative;
+  border-radius: var(--raio-xg);
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+}
+.cta-final img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.cta-final::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, var(--off-white) 0%, var(--off-white) 40%, rgba(251,250,248,0.5) 62%, rgba(251,250,248,0) 78%);
+  z-index: 1;
+}
+.cta-final-conteudo {
+  position: relative;
+  z-index: 2;
+  padding: var(--esp-6) var(--margem-lateral);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  max-width: 420px;
+}
+@media (min-width: 1024px) {
+  .cta-final { min-height: 420px; }
+  .cta-final::before {
+    background: linear-gradient(to right, var(--off-white) 0%, var(--off-white) 38%, rgba(251,250,248,0.55) 50%, rgba(251,250,248,0) 62%);
+  }
+  .cta-final-conteudo { padding: var(--esp-9) var(--esp-7); }
+}
+
+/* ============================= PAGINA: IMOVEIS ============================= */
+
+.busca-imoveis { margin-bottom: var(--esp-6); }
+.busca-imoveis-linha { display: flex; flex-direction: column; gap: var(--esp-4); }
+@media (min-width: 640px) {
+  .busca-imoveis-campos { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--esp-4); }
+}
+
+.resultados-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-4);
+}
+.resultados-contagem { font-weight: 800; }
+
+.botao-filtros-mobile { display: inline-flex; }
+@media (min-width: 1024px) {
+  .botao-filtros-mobile { display: none; }
+}
+
+.filtros-desktop { display: none; }
+@media (min-width: 1024px) {
+  .filtros-desktop {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--esp-4);
+    padding: var(--esp-4) var(--esp-5);
+    background: var(--branco);
+    border: 1px solid var(--cinza-claro);
+    border-radius: var(--raio-xg);
+    margin-bottom: var(--esp-5);
+  }
+  .filtros-desktop .campo { flex: 1; }
+}
+
+.folha-filtros {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 70;
+  background: var(--branco);
+  border-radius: var(--raio-xg) var(--raio-xg) 0 0;
+  box-shadow: var(--sombra-3);
+  padding: var(--esp-5) var(--margem-lateral) calc(var(--esp-5) + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform var(--tempo-lento) var(--curva-entrada);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.folha-filtros[data-aberto="true"] { transform: translateY(0); }
+.folha-filtros-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--esp-5); }
+.folha-filtros-campos { display: flex; flex-direction: column; gap: var(--esp-5); margin-bottom: var(--esp-5); }
+.folha-filtros-acoes { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-4); }
+
+.fundo-sobreposicao {
+  position: fixed; inset: 0; z-index: 65;
+  background: rgba(11,40,65,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--tempo-lento) var(--curva-entrada);
+}
+.fundo-sobreposicao[data-aberto="true"] { opacity: 1; pointer-events: auto; }
+
+@media (min-width: 1024px) {
+  .folha-filtros, .fundo-sobreposicao { display: none; }
+}
+
+.detalhes-imovel { margin-top: var(--esp-8); padding-top: var(--esp-8); border-top: 1px solid var(--cinza-claro); }
+.detalhes-galeria {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-6);
+}
+@media (min-width: 768px) {
+  .detalhes-galeria { grid-template-columns: repeat(4, 1fr); }
+}
+.detalhes-galeria img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--raio-m); }
+.detalhes-grade { display: flex; flex-direction: column; gap: var(--esp-6); }
+@media (min-width: 1024px) {
+  .detalhes-grade { flex-direction: row; gap: var(--esp-9); }
+  .detalhes-info { flex: 1; }
+  .detalhes-contato { width: 340px; flex-shrink: 0; }
+}
+.detalhes-atributos { display: flex; gap: var(--esp-6); margin-block: var(--esp-4); }
+.detalhes-atributos li { display: flex; align-items: center; gap: var(--esp-2); color: var(--texto-suave); }
+.detalhes-atributos svg { width: 20px; height: 20px; color: var(--marinho-700); }
+.detalhes-contato-cartao { position: sticky; top: 88px; }
+
+/* ============================= PAGINA: COMO FUNCIONA ============================= */
+
+.como-funciona-intro { display: flex; flex-direction: column; gap: var(--esp-6); margin-bottom: var(--esp-8); align-items: center; }
+@media (min-width: 1024px) {
+  .como-funciona-intro { flex-direction: row; text-align: left; }
+  .como-funciona-intro img { flex: 1; border-radius: var(--raio-xg); }
+  .como-funciona-intro-texto { flex: 1; }
+}
+.como-funciona-intro img { width: 100%; border-radius: var(--raio-xg); box-shadow: var(--sombra-2); }
+.como-funciona-intro-texto { display: flex; flex-direction: column; gap: var(--esp-3); text-align: center; }
+@media (min-width: 1024px) {
+  .como-funciona-intro-texto { text-align: left; }
+}
+
+.bloco-como-funciona { margin-top: var(--esp-8); }
+.bloco-como-funciona-imagem { margin-top: var(--esp-7); border-radius: var(--raio-xg); overflow: hidden; box-shadow: var(--sombra-2); }
+.bloco-como-funciona-imagem img { width: 100%; height: auto; display: block; }
+
+/* Imagem em retrato (ex.: 09-contato-whatsapp.jpg): a moldura acompanha a
+   largura maxima da propria imagem, em vez de ficar esticada na largura
+   total com a imagem menor flutuando dentro - o que sobrava como uma faixa
+   vazia ao redor dela em telas largas. */
+.bloco-como-funciona-imagem--retrato { max-width: 420px; margin-inline: auto; }
+
+/* ============================= PAGINA: ANUNCIAR ============================= */
+
+.layout-anunciar { display: flex; flex-direction: column; gap: var(--esp-9); max-width: 720px; }
+
+.campo-fotos-lista { display: flex; flex-wrap: wrap; gap: var(--esp-3); margin-top: var(--esp-2); }
+.preview-foto { position: relative; width: 96px; height: 96px; border-radius: var(--raio-m); overflow: hidden; border: 1px solid var(--cinza-claro); }
+.preview-foto img { width: 100%; height: 100%; object-fit: cover; }
+.preview-foto-remover {
+  position: absolute; top: 4px; right: 4px;
+  width: 24px; height: 24px; padding: 0;
+  border: none; border-radius: var(--raio-total);
+  background: rgba(11,40,65,0.75); color: var(--branco);
+  display: flex; align-items: center; justify-content: center;
+}
+.preview-foto-remover svg { width: 14px; height: 14px; }
+.preview-foto-remover:hover, .preview-foto-remover:focus-visible { background: var(--marinho-900); }
+
+.entrada-fotos {
+  display: flex; align-items: center; justify-content: center; gap: var(--esp-2);
+  width: 96px; height: 96px;
+  border: 2px dashed var(--borda-campo); border-radius: var(--raio-m);
+  color: var(--texto-suave); font-size: var(--tam-pequeno); text-align: center;
+  cursor: pointer;
+}
+.entrada-fotos:hover { border-color: var(--marinho-700); color: var(--marinho-700); }
+.entrada-fotos input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.entrada-fotos:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+.segmentado-status { display: flex; gap: var(--esp-2); }
+.segmentado-status label {
+  display: flex; align-items: center; gap: var(--esp-2);
+  height: 44px; padding-inline: var(--esp-4);
+  border: 1px solid var(--borda-campo); border-radius: var(--raio-m);
+  font-weight: 600; font-size: var(--tam-pequeno); cursor: pointer;
+}
+.segmentado-status input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.segmentado-status label:has(input:checked) { background: var(--marinho-700); color: var(--branco); border-color: var(--marinho-700); }
+.segmentado-status label:has(input:focus-visible) { outline: 3px solid var(--marinho-900); outline-offset: 2px; }
+
+.aviso-armazenamento-local {
+  display: flex; gap: var(--esp-3); align-items: flex-start;
+  padding: var(--esp-4); border-radius: var(--raio-m);
+  background: var(--info-fundo); color: var(--marinho-900);
+}
+.aviso-armazenamento-local svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--marinho-700); margin-top: 2px; }
+
+.lista-meus-imoveis:not([hidden]) { display: flex; flex-direction: column; gap: 0; }
+.linha-imovel-usuario {
+  display: flex; align-items: center; gap: var(--esp-4);
+  padding-block: var(--esp-4);
+  border-bottom: 1px solid var(--cinza-claro);
+  flex-wrap: wrap;
+}
+.linha-imovel-usuario img { width: 64px; height: 64px; border-radius: var(--raio-m); object-fit: cover; flex-shrink: 0; }
+.linha-imovel-usuario-info { flex: 1 1 160px; min-width: 0; }
+.linha-imovel-usuario-acoes { display: flex; align-items: center; gap: var(--esp-3); flex-wrap: wrap; }
+
+/* ============================= PAGINA: ENTRAR / CADASTRAR ============================= */
+
+.secao-auth {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--esp-8);
+}
+@media (min-width: 1024px) {
+  .secao-auth { padding-block: var(--esp-9); }
+}
+
+.cartao-auth {
+  width: 100%;
+  max-width: 440px;
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: var(--raio-xg);
+  box-shadow: var(--sombra-2);
+  padding: var(--esp-6);
+}
+.cartao-auth:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+  animation: entrada-cartao-auth var(--tempo-lento) var(--curva-entrada) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cartao-auth { animation: none; }
+}
+@keyframes entrada-cartao-auth {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cartao-auth-topo { display: flex; flex-direction: column; align-items: center; gap: var(--esp-3); text-align: center; }
+.cartao-auth-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--raio-total);
+  background: var(--salvia-100);
+  color: var(--marinho-700);
+  flex-shrink: 0;
+}
+.cartao-auth-icone svg { width: 26px; height: 26px; }
+
+.abas-auth { display: flex; justify-content: center; }
+.abas-auth .abas-cabecalho { margin-bottom: 0; }
+
+.form-auth:not([hidden]) { display: flex; flex-direction: column; gap: var(--esp-4); }
+
+.rodape-auth { text-align: center; }
+.rodape-auth button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--marinho-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.rodape-auth button:hover, .rodape-auth button:focus-visible { color: var(--marinho-900); }
+
+.aviso-caixa {
+  display: flex;
+  gap: var(--esp-2);
+  align-items: flex-start;
+  padding: var(--esp-3);
+  border-radius: var(--raio-m);
+  background: var(--aviso-fundo);
+  color: var(--aviso);
+}
+.aviso-caixa svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+/* ============================= PAGINA: FAQ ============================= */
+
+.coluna-faq { max-width: 760px; margin-inline: auto; }
+
+/* ============================= PAGINA: CONTATO ============================= */
+
+/* DOM na ordem formulario -> informacoes, para o celular mostrar o formulario primeiro (design.md). */
+.grade-contato { display: flex; flex-direction: column; gap: var(--esp-8); }
+@media (min-width: 1024px) {
+  .grade-contato { flex-direction: row; gap: var(--esp-9); }
+  .grade-contato-form { flex: 0 0 60%; }
+  .grade-contato-info { flex: 1; }
+}
+.form-contato:not([hidden]) { display: flex; flex-direction: column; gap: var(--esp-4); }
+.contato-info-lista { display: flex; flex-direction: column; gap: var(--esp-5); margin-top: var(--esp-5); }
+.contato-info-item { display: flex; gap: var(--esp-3); align-items: flex-start; }
+.contato-info-item svg { width: 22px; height: 22px; color: var(--salvia-700); flex-shrink: 0; margin-top: 2px; }
+.contato-info-imagem { display: none; }
+@media (min-width: 1024px) {
+  .contato-info-imagem { display: block; margin-top: var(--esp-6); border-radius: var(--raio-xg); overflow: hidden; box-shadow: var(--sombra-2); }
+  .contato-info-imagem img { width: 100%; height: auto; }
+}
+
+/* ============================= ESTATISTICAS DO PAINEL (SOMENTE ILUSTRATIVO) ============================= */
+
+.aviso-topo {
+  background: var(--aviso-fundo);
+  color: var(--aviso);
+  text-align: center;
+  padding: var(--esp-2) var(--margem-lateral);
+  font-size: var(--tam-pequeno);
+}

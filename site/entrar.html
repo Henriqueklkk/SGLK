@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar ou cadastrar - SGLK</title>
+<meta name="description" content="Crie sua conta de locatário ou de locador no SGLK, ou entre numa conta já existente.">
+<meta name="theme-color" content="#0B2841">
+<link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="img/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
+<meta property="og:title" content="Entrar ou cadastrar - SGLK">
+<meta property="og:description" content="Crie sua conta no SGLK ou entre numa conta já existente.">
+<meta property="og:image" content="img/17-compartilhamento-og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/paginas.css">
+</head>
+<body>
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+<symbol id="icon-fechar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+<symbol id="icon-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19L12 3.5Z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></symbol>
+<symbol id="icon-porta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V5a1 1 0 0 1 1-1h6l5 3v14"/><line x1="4" y1="21" x2="20" y2="21"/><circle cx="13.2" cy="13" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<header class="cabecalho">
+  <div class="contentor cabecalho-conteudo">
+    <a class="marca" href="index.html">
+      <img src="img/sglk-logo-horizontal.png" alt="SGLK - Sistema de Gerenciamento e Locação de Kitnets" width="180" height="62" style="height:32px;width:auto">
+    </a>
+    <nav class="nav-principal" aria-label="Navegação principal">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="imoveis.html">Imóveis</a></li>
+        <li><a href="como-funciona.html">Como funciona</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="cabecalho-acoes">
+      <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
+      <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
+        <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-movel" id="menu-movel" data-menu-movel hidden>
+  <div class="menu-movel-topo">
+    <span class="marca"><img src="img/sglk-logo-horizontal.png" alt="SGLK" width="140" height="48" style="height:28px;width:auto"></span>
+    <button type="button" class="botao--icone" data-fechar-menu aria-label="Fechar menu">
+      <svg width="22" height="22" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <nav class="menu-movel-lista" aria-label="Navegação principal">
+    <a href="index.html">Home</a>
+    <a href="imoveis.html">Imóveis</a>
+    <a href="como-funciona.html">Como funciona</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+  <div class="menu-movel-acao">
+    <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+  </div>
+</div>
+
+<main id="conteudo" data-pagina-entrar>
+  <section class="secao secao--off-white secao-auth">
+    <div class="contentor" style="display:flex;flex-direction:column;align-items:center;gap:var(--esp-4)">
+
+      <div class="aviso-caixa" data-aviso-redirecionamento hidden style="max-width:440px;width:100%">
+        <svg aria-hidden="true"><use href="#icon-info"></use></svg>
+        <p class="texto-pequeno" data-aviso-redirecionamento-texto></p>
+      </div>
+
+      <!-- BLOCO: CADASTRO -->
+      <div class="cartao-auth" data-bloco-cadastro>
+        <div class="cartao-auth-topo">
+          <span class="cartao-auth-icone" aria-hidden="true">
+            <svg><use href="#icon-porta"></use></svg>
+          </span>
+          <div>
+            <h1 class="titulo-2" data-titulo-cadastro>Cadastro de locatário</h1>
+            <p class="texto-suave texto-pequeno" data-subtitulo-cadastro style="margin-top:var(--esp-1)">Crie sua conta para entrar em contato com locadores no SGLK.</p>
+          </div>
+        </div>
+
+        <div class="abas-auth">
+          <div class="abas-cabecalho" role="tablist" aria-label="Tipo de conta">
+            <button type="button" role="tab" class="aba-botao" data-aba-conta="locatario" aria-selected="true">Quero alugar</button>
+            <button type="button" role="tab" class="aba-botao" data-aba-conta="locador" aria-selected="false" tabindex="-1">Quero anunciar</button>
+          </div>
+        </div>
+
+        <form class="form-auth" data-form-cadastro-conta novalidate>
+          <div class="campo">
+            <label for="conta-nome">Nome completo</label>
+            <input type="text" id="conta-nome" required autocomplete="name">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe seu nome completo.</p>
+          </div>
+
+          <div class="campo">
+            <label for="conta-email-cadastro">E-mail</label>
+            <input type="email" id="conta-email-cadastro" required autocomplete="email">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um e-mail válido.</p>
+          </div>
+
+          <div class="campo">
+            <label for="conta-cpf">CPF</label>
+            <input type="text" id="conta-cpf" inputmode="numeric" placeholder="000.000.000-00" required maxlength="14" autocomplete="off">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um CPF válido.</p>
+          </div>
+
+          <div class="campo" data-campo-ocupacao>
+            <label for="conta-ocupacao">Ocupação</label>
+            <input type="text" id="conta-ocupacao" placeholder="Ex.: Autônomo, funcionário público, aposentado">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe sua ocupação.</p>
+          </div>
+
+          <div class="campo">
+            <label for="conta-senha">Senha</label>
+            <input type="password" id="conta-senha" required minlength="8" autocomplete="new-password">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>A senha precisa de pelo menos 8 caracteres.</p>
+          </div>
+
+          <div class="aviso-caixa">
+            <svg aria-hidden="true"><use href="#icon-info"></use></svg>
+            <p class="texto-pequeno">O CPF ajuda a identificar quem usa o SGLK e a reduzir anúncios falsos. Conferimos só o formato do número — isso ainda não é uma verificação de identidade completa.</p>
+          </div>
+
+          <button type="submit" class="botao botao--primario botao--largura-total" data-botao-cadastro>Criar conta de locatário</button>
+        </form>
+
+        <div class="mensagem-sucesso" data-sucesso-cadastro-conta hidden tabindex="-1">
+          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+          <div>
+            <p class="texto-pequeno">Cadastro validado! Este site ainda não tem um backend seguro para criar contas de verdade — por isso, nome, CPF e senha não foram guardados em nenhum lugar. Essa etapa é um passo futuro do projeto.</p>
+            <div data-sucesso-cadastro-acao style="margin-top:var(--esp-3)"></div>
+          </div>
+        </div>
+
+        <p class="rodape-auth texto-pequeno">Já tem conta? <button type="button" data-mostrar-entrar>Entrar</button></p>
+      </div>
+
+      <!-- BLOCO: ENTRAR -->
+      <div class="cartao-auth" data-bloco-entrar hidden>
+        <div class="cartao-auth-topo">
+          <span class="cartao-auth-icone" aria-hidden="true">
+            <svg><use href="#icon-porta"></use></svg>
+          </span>
+          <div>
+            <h1 class="titulo-2">Entrar</h1>
+            <p class="texto-suave texto-pequeno" style="margin-top:var(--esp-1)">Acesse sua conta do SGLK.</p>
+          </div>
+        </div>
+
+        <form class="form-auth" data-form-entrar novalidate>
+          <div class="campo">
+            <label for="conta-email-entrar">E-mail</label>
+            <input type="email" id="conta-email-entrar" required autocomplete="email">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um e-mail válido.</p>
+          </div>
+          <div class="campo">
+            <label for="conta-senha-entrar">Senha</label>
+            <input type="password" id="conta-senha-entrar" required autocomplete="current-password">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe sua senha.</p>
+          </div>
+          <button type="submit" class="botao botao--primario botao--largura-total">Entrar</button>
+        </form>
+
+        <div class="mensagem-sucesso" data-sucesso-entrar hidden tabindex="-1">
+          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+          <div>
+            <p class="texto-pequeno">Formulário validado! O SGLK ainda não tem um sistema real de contas — por isso ninguém entra de verdade ainda. Nada do que você digitou foi guardado.</p>
+            <div data-sucesso-entrar-acao style="margin-top:var(--esp-3)"></div>
+          </div>
+        </div>
+
+        <p class="rodape-auth texto-pequeno">Ainda não tem conta? <button type="button" data-mostrar-cadastro>Cadastre-se</button></p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="contentor">
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span style="font-family:var(--fonte);font-weight:800;font-size:1.5rem;color:var(--branco)">SGLK</span>
+        <p>Sistema de Gerenciamento e Locação de Kitnets — Tucuruí, PA.</p>
+      </div>
+      <nav class="rodape-coluna" aria-label="Páginas do site">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="imoveis.html">Imóveis</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="rodape-base">
+      <p>© 2026 SGLK — Sistema de Gerenciamento e Locação de Kitnets.</p>
+      <p class="aviso-ilustrativo"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As 3 kitnets de exemplo (Centro, Vila Nova e Jardim Paulista) usam fotos geradas por IA, só para demonstração.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/dados-demo.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

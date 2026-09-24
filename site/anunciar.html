@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anunciar minha kitnet - SGLK</title>
+<meta name="description" content="Cadastre sua kitnet no SGLK: fotos, descrição, preço, comodidades e o WhatsApp para contato.">
+<meta name="theme-color" content="#0B2841">
+<link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="img/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
+<meta property="og:title" content="Anunciar minha kitnet - SGLK">
+<meta property="og:description" content="Cadastre sua kitnet no SGLK.">
+<meta property="og:image" content="img/17-compartilhamento-og.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/paginas.css">
+</head>
+<body>
+<script>
+// Trava de acesso (specs/site.md): anunciar exige entrar como locador. Isto
+// roda antes do resto da pagina para nao piscar o formulario por um
+// instante antes de redirecionar. E so uma simulacao (sem backend real, ver
+// memoria.md) - guarda so o tipo de conta escolhido, nunca dados sensiveis.
+(function () {
+  try {
+    var bruto = localStorage.getItem("sglk_sessao_v1");
+    var sessao = bruto ? JSON.parse(bruto) : null;
+    if (!sessao || sessao.tipo !== "locador") {
+      location.replace("entrar.html?papel=locador&redirecionar=anunciar.html");
+    }
+  } catch (e) {}
+})();
+</script>
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+<symbol id="icon-fechar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+<symbol id="icon-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19L12 3.5Z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17.5 19 7"/></symbol>
+<symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a1 1 0 0 1 1-1h2l1.5-2h7L17 7h2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8Z"/><circle cx="12" cy="13" r="3.2"/></symbol>
+<symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<header class="cabecalho">
+  <div class="contentor cabecalho-conteudo">
+    <a class="marca" href="index.html">
+      <img src="img/sglk-logo-horizontal.png" alt="SGLK - Sistema de Gerenciamento e Locação de Kitnets" width="180" height="62" style="height:32px;width:auto">
+    </a>
+    <nav class="nav-principal" aria-label="Navegação principal">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="imoveis.html">Imóveis</a></li>
+        <li><a href="como-funciona.html">Como funciona</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="cabecalho-acoes">
+      <a class="botao botao--secundario" href="anunciar.html" aria-current="page">Anunciar minha kitnet</a>
+      <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
+        <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-movel" id="menu-movel" data-menu-movel hidden>
+  <div class="menu-movel-topo">
+    <span class="marca"><img src="img/sglk-logo-horizontal.png" alt="SGLK" width="140" height="48" style="height:28px;width:auto"></span>
+    <button type="button" class="botao--icone" data-fechar-menu aria-label="Fechar menu">
+      <svg width="22" height="22" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <nav class="menu-movel-lista" aria-label="Navegação principal">
+    <a href="index.html">Home</a>
+    <a href="imoveis.html">Imóveis</a>
+    <a href="como-funciona.html">Como funciona</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+  <div class="menu-movel-acao">
+    <a class="botao botao--primario botao--largura-total" href="anunciar.html" aria-current="page">Anunciar minha kitnet</a>
+  </div>
+</div>
+
+<main id="conteudo">
+  <section class="secao secao--off-white">
+    <div class="contentor layout-anunciar">
+      <div class="cabecalho-secao">
+        <h1 class="titulo-1">Anunciar minha kitnet</h1>
+        <p class="texto-abertura">Cadastre fotos, preço e comodidades do seu imóvel. Ele aparece no catálogo do SGLK e o botão de contato já abre uma conversa de verdade no seu WhatsApp.</p>
+      </div>
+
+      <div class="aviso-armazenamento-local">
+        <svg aria-hidden="true"><use href="#icon-info"></use></svg>
+        <p class="texto-pequeno">O SGLK ainda não tem um banco de dados compartilhado — isso é um passo futuro do projeto. Por enquanto, os imóveis que você cadastrar aqui ficam salvos <strong>somente neste navegador</strong>: você consegue ver, gerenciar e testar o anúncio normalmente, mas outras pessoas em outros aparelhos ainda não vão vê-lo.</p>
+      </div>
+
+      <div>
+        <h2 class="titulo-2" style="margin-bottom:var(--esp-5)">Dados do imóvel</h2>
+
+        <div class="mensagem-sucesso" data-sucesso-cadastro hidden tabindex="-1" style="margin-bottom:var(--esp-5)">
+          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+          <p>Imóvel cadastrado! Ele já aparece na lista <strong>Meus imóveis cadastrados</strong>, abaixo, e no catálogo de <a href="imoveis.html" style="color:var(--sucesso)">Imóveis</a>.</p>
+        </div>
+
+        <p class="mensagem-erro" data-erro-cadastro hidden style="margin-bottom:var(--esp-5)">
+          <svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>
+          <span></span>
+        </p>
+
+        <form class="form-contato" data-form-cadastro novalidate>
+          <div class="campo">
+            <label id="rotulo-fotos">Fotos do imóvel (até 4)</label>
+            <div class="campo-fotos-lista" data-preview-fotos aria-labelledby="rotulo-fotos"></div>
+            <label class="entrada-fotos">
+              <svg width="22" height="22" aria-hidden="true"><use href="#icon-camera"></use></svg>
+              <input type="file" accept="image/*" multiple data-campo-fotos aria-labelledby="rotulo-fotos">
+              <span class="apenas-leitor">Adicionar fotos</span>
+            </label>
+            <p class="mensagem-erro" data-erro-fotos hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
+          </div>
+
+          <div class="campo">
+            <label for="anuncio-titulo">Título do anúncio</label>
+            <input type="text" id="anuncio-titulo" required placeholder="Ex.: Kitnet mobiliada perto do Centro">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um título.</p>
+          </div>
+
+          <div class="campo">
+            <label for="anuncio-descricao">Descrição</label>
+            <textarea id="anuncio-descricao" required placeholder="Conte como é o imóvel, o entorno e o que está incluso."></textarea>
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Escreva uma descrição.</p>
+          </div>
+
+          <div class="campo">
+            <label for="anuncio-bairro">Bairro</label>
+            <input type="text" id="anuncio-bairro" required placeholder="Ex.: Centro">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe o bairro.</p>
+          </div>
+
+          <div class="linha-campos" style="grid-template-columns:1fr 1fr 1fr;display:grid;gap:var(--esp-4)">
+            <div class="campo">
+              <label for="anuncio-preco">Preço mensal (R$)</label>
+              <input type="number" id="anuncio-preco" required min="1" step="1" placeholder="Ex.: 900">
+              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe o preço.</p>
+            </div>
+            <div class="campo">
+              <label for="anuncio-area">Área (m²)</label>
+              <input type="number" id="anuncio-area" required min="1" step="1" placeholder="Ex.: 22">
+              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a área.</p>
+            </div>
+          </div>
+
+          <div class="linha-campos" style="grid-template-columns:1fr 1fr;display:grid;gap:var(--esp-4)">
+            <div class="campo">
+              <label for="anuncio-quartos">Quartos</label>
+              <input type="number" id="anuncio-quartos" required min="1" step="1" value="1">
+              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a quantidade.</p>
+            </div>
+            <div class="campo">
+              <label for="anuncio-banheiros">Banheiros</label>
+              <input type="number" id="anuncio-banheiros" required min="1" step="1" value="1">
+              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a quantidade.</p>
+            </div>
+          </div>
+
+          <fieldset class="campo" style="border:none;padding:0" data-grupo-comodidades>
+            <legend style="font-size:var(--tam-pequeno);font-weight:600;margin-bottom:var(--esp-2)">Comodidades</legend>
+            <div class="lista-chips">
+              <label class="chip"><input type="checkbox" value="Mobiliada" class="apenas-leitor">Mobiliada</label>
+              <label class="chip"><input type="checkbox" value="Wi-Fi" class="apenas-leitor">Wi-Fi</label>
+              <label class="chip"><input type="checkbox" value="Ar-condicionado" class="apenas-leitor">Ar-condicionado</label>
+              <label class="chip"><input type="checkbox" value="Cozinha equipada" class="apenas-leitor">Cozinha equipada</label>
+              <label class="chip"><input type="checkbox" value="Área de estudo" class="apenas-leitor">Área de estudo</label>
+            </div>
+          </fieldset>
+
+          <div class="campo">
+            <label id="rotulo-status">Status</label>
+            <div class="segmentado-status" role="radiogroup" aria-labelledby="rotulo-status">
+              <label><input type="radio" name="anuncio-status" value="disponivel" checked>Disponível</label>
+              <label><input type="radio" name="anuncio-status" value="alugado">Alugado</label>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="anuncio-whatsapp">WhatsApp para contato</label>
+            <input type="tel" id="anuncio-whatsapp" required placeholder="Ex.: 5594999999999 (código do país + DDD + número)">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um número de WhatsApp.</p>
+          </div>
+
+          <div class="grupo-botoes">
+            <button type="submit" class="botao botao--primario">Cadastrar imóvel</button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h2 class="titulo-2" style="margin-bottom:var(--esp-2)">Meus imóveis cadastrados</h2>
+        <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Salvos neste navegador. Você pode alterar o status ou excluir a qualquer momento.</p>
+        <p data-sem-imoveis class="texto-suave">Você ainda não cadastrou nenhum imóvel.</p>
+        <ul class="lista-meus-imoveis" data-lista-meus-imoveis hidden></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="contentor">
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span style="font-family:var(--fonte);font-weight:800;font-size:1.5rem;color:var(--branco)">SGLK</span>
+        <p>Sistema de Gerenciamento e Locação de Kitnets — Tucuruí, PA.</p>
+      </div>
+      <nav class="rodape-coluna" aria-label="Páginas do site">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="imoveis.html">Imóveis</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="rodape-base">
+      <p>© 2026 SGLK — Sistema de Gerenciamento e Locação de Kitnets.</p>
+      <p class="aviso-ilustrativo"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As 3 kitnets de exemplo (Centro, Vila Nova e Jardim Paulista) usam fotos geradas por IA, só para demonstração.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/dados-demo.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>
