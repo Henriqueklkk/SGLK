@@ -1,0 +1,7 @@
+# Só a pasta site/ vai ao ar (ver vercel.json). Estas são materiais de trabalho
+# e pesam ~100 MB, o que estouraria o limite de upload num deploy pela CLI.
+.claude
+imagens - site
+meus - produtos
+referencias - site
+specs

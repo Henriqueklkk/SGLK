@@ -5,3 +5,6 @@ desktop.ini
 
 # Configurações pessoais do Claude Code
 .claude/settings.local.json
+
+# Vínculo local da CLI da Vercel com o projeto
+.vercel

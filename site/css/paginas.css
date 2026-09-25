@@ -40,15 +40,17 @@
   align-items: center;
 }
 .secao-dividida-texto { display: flex; flex-direction: column; gap: var(--esp-4); }
-.secao-dividida-imagem { width: 100%; border-radius: var(--raio-xg); overflow: hidden; box-shadow: var(--sombra-2); }
-.secao-dividida-imagem img { width: 100%; height: auto; }
+/* A classe fica direto na <img>. O height:auto mantém a proporção original
+   quando a largura encolhe: sem ele, o atributo height do HTML fixava a
+   altura e a imagem saía esmagada. */
+.secao-dividida-imagem { width: 100%; height: auto; border-radius: var(--raio-xg); box-shadow: var(--sombra-2); }
 .secao-dividida-imagem--mobile { display: block; }
 .secao-dividida-imagem--desktop { display: none; }
 
 @media (min-width: 1024px) {
   .secao-dividida { flex-direction: row; gap: var(--esp-9); }
   .secao-dividida-texto { flex: 1; max-width: 460px; }
-  .secao-dividida-imagem { flex: 1; }
+  .secao-dividida-imagem { flex: 1; min-width: 0; }
   .secao-dividida--inversa { flex-direction: row-reverse; }
   .secao-dividida-imagem--mobile { display: none; }
   .secao-dividida-imagem--desktop { display: block; }
@@ -193,10 +195,10 @@
 .como-funciona-intro { display: flex; flex-direction: column; gap: var(--esp-6); margin-bottom: var(--esp-8); align-items: center; }
 @media (min-width: 1024px) {
   .como-funciona-intro { flex-direction: row; text-align: left; }
-  .como-funciona-intro img { flex: 1; border-radius: var(--raio-xg); }
+  .como-funciona-intro img { flex: 1; min-width: 0; border-radius: var(--raio-xg); }
   .como-funciona-intro-texto { flex: 1; }
 }
-.como-funciona-intro img { width: 100%; border-radius: var(--raio-xg); box-shadow: var(--sombra-2); }
+.como-funciona-intro img { width: 100%; height: auto; border-radius: var(--raio-xg); box-shadow: var(--sombra-2); }
 .como-funciona-intro-texto { display: flex; flex-direction: column; gap: var(--esp-3); text-align: center; }
 @media (min-width: 1024px) {
   .como-funciona-intro-texto { text-align: left; }
@@ -211,6 +213,11 @@
    total com a imagem menor flutuando dentro - o que sobrava como uma faixa
    vazia ao redor dela em telas largas. */
 .bloco-como-funciona-imagem--retrato { max-width: 420px; margin-inline: auto; }
+
+/* Imagem quadrada 1:1 (12-como-funciona, resumo na Home): mesma moldura,
+   com largura maxima de 480px. O margin-top zerado mantem o espaco que a
+   secao ja tinha abaixo do titulo. */
+.bloco-como-funciona-imagem--quadrada { max-width: 480px; margin-inline: auto; margin-top: 0; }
 
 /* ============================= PAGINA: ANUNCIAR ============================= */
 
