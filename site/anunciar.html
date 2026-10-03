@@ -22,15 +22,15 @@
 <body>
 <script>
 // Trava de acesso (specs/site.md): anunciar exige entrar como locador. Isto
-// roda antes do resto da pagina para nao piscar o formulario por um
-// instante antes de redirecionar. E so uma simulacao (sem backend real, ver
-// memoria.md) - guarda so o tipo de conta escolhido, nunca dados sensiveis.
+// roda antes do resto da pagina: sem sessao do Supabase guardada neste
+// navegador, vai direto para entrar.html. O tipo de conta (locador) e
+// conferido depois por js/site.js, e o banco confere de novo (RLS).
+// A chave e a mesma de CHAVE_SESSAO_SUPABASE em js/supabase-config.js.
 (function () {
   try {
-    var bruto = localStorage.getItem("sglk_sessao_v1");
-    var sessao = bruto ? JSON.parse(bruto) : null;
-    if (!sessao || sessao.tipo !== "locador") {
-      location.replace("entrar.html?papel=locador&redirecionar=anunciar.html");
+    if (!localStorage.getItem("sb-vqqgbbnxomqkqytgcbsb-auth-token")) {
+      var destino = "anunciar.html" + location.search;
+      location.replace("entrar.html?papel=locador&redirecionar=" + encodeURIComponent(destino));
     }
   } catch (e) {}
 })();
@@ -61,6 +61,7 @@
       </ul>
     </nav>
     <div class="cabecalho-acoes">
+      <a class="botao botao--link link-entrar" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
       <a class="botao botao--secundario" href="anunciar.html" aria-current="page">Anunciar minha kitnet</a>
       <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
         <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
@@ -86,6 +87,7 @@
   </nav>
   <div class="menu-movel-acao">
     <a class="botao botao--primario botao--largura-total" href="anunciar.html" aria-current="page">Anunciar minha kitnet</a>
+    <a class="botao botao--secundario botao--largura-total link-entrar-menu" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
   </div>
 </div>
 
@@ -93,21 +95,23 @@
   <section class="secao secao--off-white">
     <div class="contentor layout-anunciar">
       <div class="cabecalho-secao">
-        <h1 class="titulo-1">Anunciar minha kitnet</h1>
-        <p class="texto-abertura">Cadastre fotos, preço e comodidades do seu imóvel. Ele aparece no catálogo do SGLK e o botão de contato já abre uma conversa de verdade no seu WhatsApp.</p>
+        <h1 class="titulo-1" data-titulo-anunciar>Anunciar minha kitnet</h1>
+        <p class="texto-abertura">Cadastre fotos, preço e comodidades do seu imóvel. Ele aparece no catálogo do SGLK, e quem tem conta entra em contato com você direto pelo WhatsApp.</p>
       </div>
 
-      <div class="aviso-armazenamento-local">
+      <p class="texto-suave" data-carregando-conta role="status">Carregando sua conta…</p>
+
+      <div class="aviso-armazenamento-local" data-aviso-conta hidden role="status">
         <svg aria-hidden="true"><use href="#icon-info"></use></svg>
-        <p class="texto-pequeno">O SGLK ainda não tem um banco de dados compartilhado — isso é um passo futuro do projeto. Por enquanto, os imóveis que você cadastrar aqui ficam salvos <strong>somente neste navegador</strong>: você consegue ver, gerenciar e testar o anúncio normalmente, mas outras pessoas em outros aparelhos ainda não vão vê-lo.</p>
+        <p class="texto-pequeno"></p>
       </div>
 
-      <div>
-        <h2 class="titulo-2" style="margin-bottom:var(--esp-5)">Dados do imóvel</h2>
+      <div data-area-formulario hidden>
+        <h2 class="titulo-2" style="margin-bottom:var(--esp-5)" data-titulo-formulario>Dados do imóvel</h2>
 
         <div class="mensagem-sucesso" data-sucesso-cadastro hidden tabindex="-1" style="margin-bottom:var(--esp-5)">
           <svg aria-hidden="true"><use href="#icon-check"></use></svg>
-          <p>Imóvel cadastrado! Ele já aparece na lista <strong>Meus imóveis cadastrados</strong>, abaixo, e no catálogo de <a href="imoveis.html" style="color:var(--sucesso)">Imóveis</a>.</p>
+          <p></p>
         </div>
 
         <p class="mensagem-erro" data-erro-cadastro hidden style="margin-bottom:var(--esp-5)">
@@ -119,9 +123,9 @@
           <div class="campo">
             <label id="rotulo-fotos">Fotos do imóvel (até 4)</label>
             <div class="campo-fotos-lista" data-preview-fotos aria-labelledby="rotulo-fotos"></div>
-            <label class="entrada-fotos">
+            <label class="entrada-fotos" data-entrada-fotos>
               <svg width="22" height="22" aria-hidden="true"><use href="#icon-camera"></use></svg>
-              <input type="file" accept="image/*" multiple data-campo-fotos aria-labelledby="rotulo-fotos">
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple data-campo-fotos aria-labelledby="rotulo-fotos">
               <span class="apenas-leitor">Adicionar fotos</span>
             </label>
             <p class="mensagem-erro" data-erro-fotos hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
@@ -129,31 +133,31 @@
 
           <div class="campo">
             <label for="anuncio-titulo">Título do anúncio</label>
-            <input type="text" id="anuncio-titulo" required placeholder="Ex.: Kitnet mobiliada perto do Centro">
+            <input type="text" id="anuncio-titulo" required maxlength="100" placeholder="Ex.: Kitnet mobiliada perto do Centro">
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um título.</p>
           </div>
 
           <div class="campo">
             <label for="anuncio-descricao">Descrição</label>
-            <textarea id="anuncio-descricao" required placeholder="Conte como é o imóvel, o entorno e o que está incluso."></textarea>
+            <textarea id="anuncio-descricao" required maxlength="2000" placeholder="Conte como é o imóvel, o entorno e o que está incluso."></textarea>
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Escreva uma descrição.</p>
           </div>
 
           <div class="campo">
             <label for="anuncio-bairro">Bairro</label>
-            <input type="text" id="anuncio-bairro" required placeholder="Ex.: Centro">
+            <input type="text" id="anuncio-bairro" required maxlength="80" placeholder="Ex.: Centro">
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe o bairro.</p>
           </div>
 
           <div class="linha-campos" style="grid-template-columns:1fr 1fr 1fr;display:grid;gap:var(--esp-4)">
             <div class="campo">
               <label for="anuncio-preco">Preço mensal (R$)</label>
-              <input type="number" id="anuncio-preco" required min="1" step="1" placeholder="Ex.: 900">
+              <input type="number" id="anuncio-preco" required min="1" max="100000" step="1" placeholder="Ex.: 900">
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe o preço.</p>
             </div>
             <div class="campo">
               <label for="anuncio-area">Área (m²)</label>
-              <input type="number" id="anuncio-area" required min="1" step="1" placeholder="Ex.: 22">
+              <input type="number" id="anuncio-area" required min="1" max="1000" step="1" placeholder="Ex.: 22">
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a área.</p>
             </div>
           </div>
@@ -161,12 +165,12 @@
           <div class="linha-campos" style="grid-template-columns:1fr 1fr;display:grid;gap:var(--esp-4)">
             <div class="campo">
               <label for="anuncio-quartos">Quartos</label>
-              <input type="number" id="anuncio-quartos" required min="1" step="1" value="1">
+              <input type="number" id="anuncio-quartos" required min="1" max="20" step="1" value="1">
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a quantidade.</p>
             </div>
             <div class="campo">
               <label for="anuncio-banheiros">Banheiros</label>
-              <input type="number" id="anuncio-banheiros" required min="1" step="1" value="1">
+              <input type="number" id="anuncio-banheiros" required min="1" max="20" step="1" value="1">
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe a quantidade.</p>
             </div>
           </div>
@@ -191,20 +195,22 @@
           </div>
 
           <div class="campo">
-            <label for="anuncio-whatsapp">WhatsApp para contato</label>
-            <input type="tel" id="anuncio-whatsapp" required placeholder="Ex.: 5594999999999 (código do país + DDD + número)">
-            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um número de WhatsApp.</p>
+            <label for="anuncio-whatsapp">WhatsApp para contato, com DDD</label>
+            <input type="tel" id="anuncio-whatsapp" required inputmode="numeric" maxlength="15" placeholder="(00) 00000-0000" autocomplete="tel-national" aria-describedby="ajuda-whatsapp">
+            <p class="texto-suave texto-pequeno" id="ajuda-whatsapp">O número só aparece para quem tem conta no SGLK.</p>
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um WhatsApp válido com DDD.</p>
           </div>
 
           <div class="grupo-botoes">
-            <button type="submit" class="botao botao--primario">Cadastrar imóvel</button>
+            <button type="submit" class="botao botao--primario" data-botao-salvar>Cadastrar imóvel</button>
+            <a class="botao botao--link" href="anunciar.html" data-cancelar-edicao hidden>Cancelar edição</a>
           </div>
         </form>
       </div>
 
-      <div>
+      <div data-secao-meus-imoveis hidden>
         <h2 class="titulo-2" style="margin-bottom:var(--esp-2)">Meus imóveis cadastrados</h2>
-        <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Salvos neste navegador. Você pode alterar o status ou excluir a qualquer momento.</p>
+        <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Você pode editar, mudar o status ou excluir a qualquer momento.</p>
         <p data-sem-imoveis class="texto-suave">Você ainda não cadastrou nenhum imóvel.</p>
         <ul class="lista-meus-imoveis" data-lista-meus-imoveis hidden></ul>
       </div>

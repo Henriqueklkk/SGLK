@@ -2,7 +2,7 @@
 
 Fonte de verdade visual do projeto. Qualquer mudança aqui precisa de aprovação e deve ser registrada no `memoria.md`.
 
-- **Versão:** 1.1, de 2026-09-21. A versão 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar, substituída pela identidade de `meus - produtos/`.
+- **Versão:** 1.4, de 2026-10-03: link "Entrar" no cabeçalho e no menu do celular (§1.1, §13). A 1.3, de 2026-09-29, trouxe login real, conta no cabeçalho, moderação, denúncia e janela de confirmação (§8, §9.6, §13). A 1.2, do mesmo dia, trouxe o botão "Entrar em contato" (§8) e as kitnets alugadas depois das disponíveis (§11). A versão 1.1, de 2026-09-21, trouxe a identidade de `meus - produtos/`; a 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar.
 - **Base:** identidade visual em `meus - produtos/`, `specs/site.md` e análise das referências em `referencias - site/`.
 - **Situação:** identidade (logo e paleta de `meus - produtos/`) e tipografia aprovadas. O restante é proposta à espera de revisão (ver Pendências no `memoria.md`).
 - **Imagens do site:** plano completo de produção em `imagens.md`.
@@ -27,7 +27,7 @@ Esses arquivos são composições de apresentação, com textos embutidos. Serve
 
 **Elementos dos mockups que não entram no site**
 - Coração de favoritos e mapa: funções que não estão no `site.md`.
-- Item "Sobre" e botões "Entrar" e "Cadastrar" no menu: o menu segue as 5 páginas do `site.md`, e o login ainda está pendente.
+- Item "Sobre" e botão "Cadastrar" no menu: o menu segue as 5 páginas do `site.md`. Desde 2026-10-03 há o link "Entrar", que leva à mesma página do cadastro (§13).
 - Texto branco sobre os verdes e cinzas claros dos selos e do botão do WhatsApp: reprova no contraste (seção 3.6).
 - Frases em maiúsculas espaçadas e fonte manuscrita: contrariam a tipografia aprovada (seção 4).
 
@@ -126,7 +126,7 @@ Tons medidos em 2026-09-21 nos arquivos de `meus - produtos/`: azul-marinho `#0B
 | `--erro` / `--erro-fundo` | `#B3261E` / `#FDECEA` | Erros de formulário e falhas |
 | `--aviso` / `--aviso-fundo` | `#8A5300` / `#FDF0DA` | Avisos |
 | `--info` / `--info-fundo` | `#0C3E66` / `#EEF2F6` | Informações neutras |
-| `--whatsapp` / `--whatsapp-hover` | `#15803D` / `#157A45` | Botão "Falar no WhatsApp", com texto e ícone `--branco` |
+| `--whatsapp` / `--whatsapp-hover` | `#15803D` / `#157A45` | Botão "Entrar em contato" (WhatsApp), com texto e ícone `--branco` |
 
 Status, erro e seleção nunca dependem só da cor: sempre há texto ou ícone junto.
 
@@ -304,7 +304,7 @@ Sombras suaves e tingidas de azul-marinho, nunca pretas.
 | Claro | Fundo `--branco` e texto `--marinho-900`. Hover com fundo `--salvia-100` | Só sobre faixa escura `--marinho-900`, no máximo um por página. Ex.: faixa para proprietários |
 | Ver detalhes | Fundo `--marinho-50` e texto `--marinho-700` | Cards com status "Alugado" |
 | Link | Texto `--marinho-700` sublinhado, peso 600. Hover em `--marinho-900` | "Saiba como funciona" e ações de menor peso |
-| WhatsApp | Fundo `--whatsapp`, texto e ícone em `--branco`. Hover em `--whatsapp-hover`. Texto: "Falar no WhatsApp" | Contato nos anúncios disponíveis, com o ícone oficial do WhatsApp à esquerda |
+| WhatsApp | Fundo `--whatsapp`, texto e ícone em `--branco`. Hover em `--whatsapp-hover`. Texto: "Entrar em contato" (desde 2026-09-29, como no documento da disciplina), com "pelo WhatsApp" só para leitores de tela | Contato nos anúncios disponíveis, com o ícone oficial do WhatsApp à esquerda |
 | Só ícone | 44 × 44px, circular, ícone em `--marinho-700`. Hover com fundo `--marinho-50` | Fechar, menu e navegação. Sempre com nome acessível (`aria-label`) |
 
 **Hierarquia dos CTAs.** O `site.md` lista "Encontrar minha kitnet" e "Anunciar minha kitnet" como CTAs primários. Na Home, pela decisão de 2026-09-15, "Encontrar minha kitnet" usa o estilo primário e "Anunciar minha kitnet" o secundário. Nas áreas voltadas a proprietários (trilha de locadores no Como Funciona e faixa para proprietários), "Anunciar minha kitnet" pode ser a ação principal daquela área.
@@ -314,9 +314,12 @@ Sombras suaves e tingidas de azul-marinho, nunca pretas.
 - **Desabilitado:** fundo `--desabilitado-fundo`, texto `--desabilitado-texto` e nenhum efeito de hover.
 - **Carregando:** mantém a largura e troca o texto por uma mensagem de carregamento, anunciada para leitores de tela.
 
-**Botão de WhatsApp e login (pendente).** O `site.md` exige login para o contato, mas a forma de fazer isso ainda não foi decidida. O design prevê dois estados:
-- **Livre:** o botão abre a conversa no WhatsApp, com mensagem pronta.
-- **Com login:** o botão mostra um ícone de cadeado à direita do texto e leva à tela de entrada. Uma frase curta abaixo explica por que é preciso entrar.
+**Botão de contato e login (decidido em 2026-09-29).** O `site.md` exige login para o contato, e desde 2026-09-29 o site tem contas de verdade (Supabase). Estados do botão na página do imóvel:
+- **Sem conta:** ícone de cadeado à direita do texto; leva à tela de entrada, e uma frase curta abaixo explica por que é preciso entrar.
+- **Com conta ativa (locatário ou locador):** abre a conversa no WhatsApp, com mensagem pronta.
+- **Conta suspensa:** sem botão; uma frase explica que o contato está bloqueado.
+- **Anúncio da própria pessoa:** "Este anúncio é seu." e o botão secundário "Editar anúncio".
+- **Kitnets de demonstração:** botão desabilitado, com aviso ao clicar.
 
 ---
 
@@ -335,7 +338,7 @@ Sombras suaves e tingidas de azul-marinho, nunca pretas.
   2. Bairro com ícone de marcador, em `--texto-suave`.
   3. Preço mensal na escala "Preço", com "/mês".
   4. Atributos com ícones de 20px e texto pequeno: quartos, banheiros e área em m².
-  5. Ação: "Falar no WhatsApp" quando o anúncio está disponível; "Ver detalhes" quando está alugado.
+  5. Ação: "Entrar em contato" quando o anúncio está disponível; "Ver detalhes" quando está alugado.
 - **Comodidades:** aparecem como chips nos detalhes do imóvel, não no card.
 - **Sem foto:** bloco em `--painel` com ícone em `--salvia-500` e o texto "Foto em breve". Nunca um retângulo cinza vazio.
 - **Carregando:** blocos na cor `--desabilitado-fundo`, sem brilho animado.
@@ -370,6 +373,14 @@ Os status foram definidos em 2026-09-21: "Disponível" e "Alugado". O preço é 
 - Perguntas numa lista que abre e fecha, separadas por linhas de 1px em `--cinza-claro`.
 - Pergunta na escala "Título de card", com ícone de seta à direita e área clicável de pelo menos 48px de altura.
 - Resposta em `--texto-suave`, com no máximo 65 caracteres por linha.
+
+### 9.6 Moderação, denúncia e janela de confirmação
+
+- **Página Moderação (`moderacao.html`):** só para a moderação, fora do menu e dos buscadores. Abas "Cadastros", "Denúncias", "Anúncios" e "Contas", com o contador de pendências no rótulo. Cada item é um cartão branco (borda `--cinza-claro`, raio de 16px, `--sombra-1`) com título, selos, dados em lista de rótulo e valor e as ações no rodapé.
+- **Selos extras:** `--marinho-50` com texto `--marinho-700` (neutro, 9,84:1), `--erro-fundo` com `--erro` (5,72:1), `--sucesso-fundo` com `--salvia-700` (5,11:1) e `--aviso-fundo` com `--aviso` (5,62:1).
+- **Ações que tiram algo do ar** (inativar anúncio, suspender conta): botão link na cor `--erro`. As demais usam o botão secundário compacto.
+- **Janela de confirmação:** `<dialog>` com fundo `--marinho-900` a 60%, painel branco com raio de 24px e `--sombra-3`; entra com fade e zoom de 95% para 100% em `--tempo-lento` (só fade com movimento reduzido). Pede motivo quando a ação tira algo do ar; o dono vê esse motivo.
+- **Denúncia:** link "Denunciar anúncio" com ícone de alerta abaixo dos detalhes do imóvel (nunca dentro do cartão de contato, que fica fixo no desktop). Abre um formulário no próprio lugar, com motivo e texto.
 
 ---
 
@@ -425,6 +436,7 @@ O produto é a própria plataforma: anúncios, busca com filtros, status e conta
 
 **Status dos anúncios**
 - Dois status, definidos em 2026-09-21: "Disponível" e "Alugado".
+- Ordem, definida em 2026-09-29: as kitnets alugadas continuam na busca e nos destaques da Home, mas sempre depois das disponíveis.
 - Pílulas preenchidas, sempre com texto (seção 9.1).
 - O locador troca o status no painel do locador.
 
@@ -493,9 +505,11 @@ Mobile-first: o layout base é o do celular, e as faixas maiores só acrescentam
 | 1200px ou mais | 32px, conteúdo com até 1200px | 3 colunas | 3 lado a lado | Links visíveis |
 
 **Cabeçalho**
-- **Até 1023px:** 64px de altura, logo horizontal oficial à esquerda e botão "Menu" com ícone e texto à direita. O menu abre em tela cheia, com as 5 páginas (itens de pelo menos 48px) e o botão "Anunciar minha kitnet".
-- **A partir de 1024px:** 72px de altura, logo horizontal oficial à esquerda, links para Imóveis, Como Funciona, FAQ e Contato e o botão secundário "Anunciar minha kitnet" à direita. O logo leva à Home.
+- **Até 1023px:** 64px de altura, logo horizontal oficial à esquerda e botão "Menu" com ícone e texto à direita. O menu abre em tela cheia, com as 5 páginas (itens de pelo menos 48px), o botão "Anunciar minha kitnet" e, abaixo dele, o botão secundário "Entrar".
+- **A partir de 1024px:** 72px de altura, logo horizontal oficial à esquerda, links para Imóveis, Como Funciona, FAQ e Contato e, à direita, o link "Entrar" e o botão secundário "Anunciar minha kitnet". O logo leva à Home.
+- **"Entrar" (desde 2026-10-03):** abre `entrar.html` já no formulário de login e, depois de entrar, volta para a página onde a pessoa estava. Some para quem já entrou.
 - Fixo no topo ao rolar, com fundo `--branco`, borda inferior em `--cinza-claro` e `--sombra-1`.
+- **Conta:** quem entrou vê "Olá, primeiro nome", "Moderação" (só a moderação) e "Sair", em texto pequeno, ao lado de "Anunciar minha kitnet" a partir de 1024px e abaixo dele no menu do celular. Entre 1024px e 1199px a saudação fica só no menu do celular, para não espremer a navegação.
 
 **Topo da Home**
 - **Celular:** título, texto de abertura, painel de busca com campos empilhados, botão primário com a largura toda e link "Saiba como funciona". A imagem `01-hero-sglk-mobile` vem depois.

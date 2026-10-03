@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moderação - SGLK</title>
+<meta name="description" content="Área da moderação do SGLK.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B2841">
+<link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="img/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
+<link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/paginas.css">
+</head>
+<body>
+<a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+<symbol id="icon-fechar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+<symbol id="icon-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 21.5 20h-19L12 3.5Z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.7" r="0.9" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<header class="cabecalho">
+  <div class="contentor cabecalho-conteudo">
+    <a class="marca" href="index.html">
+      <img src="img/sglk-logo-horizontal.png" alt="SGLK - Sistema de Gerenciamento e Locação de Kitnets" width="180" height="62" style="height:32px;width:auto">
+    </a>
+    <nav class="nav-principal" aria-label="Navegação principal">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="imoveis.html">Imóveis</a></li>
+        <li><a href="como-funciona.html">Como funciona</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="cabecalho-acoes">
+      <a class="botao botao--link link-entrar" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
+      <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
+      <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
+        <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-movel" id="menu-movel" data-menu-movel hidden>
+  <div class="menu-movel-topo">
+    <span class="marca"><img src="img/sglk-logo-horizontal.png" alt="SGLK" width="140" height="48" style="height:28px;width:auto"></span>
+    <button type="button" class="botao--icone" data-fechar-menu aria-label="Fechar menu">
+      <svg width="22" height="22" aria-hidden="true"><use href="#icon-fechar"></use></svg>
+    </button>
+  </div>
+  <nav class="menu-movel-lista" aria-label="Navegação principal">
+    <a href="index.html">Home</a>
+    <a href="imoveis.html">Imóveis</a>
+    <a href="como-funciona.html">Como funciona</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+  <div class="menu-movel-acao">
+    <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+    <a class="botao botao--secundario botao--largura-total link-entrar-menu" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
+  </div>
+</div>
+
+<main id="conteudo" data-pagina-moderacao>
+  <section class="secao secao--off-white">
+    <div class="contentor layout-moderacao">
+      <div class="cabecalho-secao">
+        <h1 class="titulo-1">Moderação</h1>
+        <p class="texto-abertura">Aprove cadastros de locador, analise denúncias e cuide dos anúncios e das contas do SGLK.</p>
+      </div>
+
+      <p class="texto-suave" data-moderacao-carregando role="status">Carregando…</p>
+
+      <div class="estado-vazio" data-moderacao-restrito hidden>
+        <svg aria-hidden="true"><use href="#icon-alerta"></use></svg>
+        <h2 class="titulo-3">Acesso restrito</h2>
+        <p>Esta página é só para a moderação do SGLK.</p>
+        <a class="botao botao--secundario" href="index.html">Voltar para a Home</a>
+      </div>
+
+      <div class="aviso-caixa" data-moderacao-erro hidden role="alert">
+        <svg aria-hidden="true"><use href="#icon-alerta"></use></svg>
+        <p class="texto-pequeno"></p>
+      </div>
+
+      <div class="abas-moderacao" data-moderacao-area hidden>
+        <div class="abas-cabecalho" role="tablist" aria-label="Áreas da moderação">
+          <button type="button" role="tab" class="aba-botao" id="aba-cadastros" aria-controls="painel-cadastros" aria-selected="true" data-aba-moderacao="cadastros">Cadastros <span class="contador-aba" data-contador="cadastros"></span></button>
+          <button type="button" role="tab" class="aba-botao" id="aba-denuncias" aria-controls="painel-denuncias" aria-selected="false" tabindex="-1" data-aba-moderacao="denuncias">Denúncias <span class="contador-aba" data-contador="denuncias"></span></button>
+          <button type="button" role="tab" class="aba-botao" id="aba-anuncios" aria-controls="painel-anuncios" aria-selected="false" tabindex="-1" data-aba-moderacao="anuncios">Anúncios</button>
+          <button type="button" role="tab" class="aba-botao" id="aba-contas" aria-controls="painel-contas" aria-selected="false" tabindex="-1" data-aba-moderacao="contas">Contas</button>
+        </div>
+
+        <div class="aba-painel" id="painel-cadastros" role="tabpanel" aria-labelledby="aba-cadastros" tabindex="0">
+          <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Locadores novos esperando aprovação. Os anúncios deles só aparecem no catálogo depois que o cadastro for aprovado.</p>
+          <p class="texto-suave" data-vazio="cadastros" hidden>Nenhum cadastro esperando aprovação.</p>
+          <ul class="lista-moderacao" data-lista="cadastros"></ul>
+        </div>
+
+        <div class="aba-painel" id="painel-denuncias" role="tabpanel" aria-labelledby="aba-denuncias" tabindex="0" hidden>
+          <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Denúncias feitas por quem tem conta. As abertas aparecem primeiro.</p>
+          <p class="texto-suave" data-vazio="denuncias" hidden>Nenhuma denúncia até agora.</p>
+          <ul class="lista-moderacao" data-lista="denuncias"></ul>
+        </div>
+
+        <div class="aba-painel" id="painel-anuncios" role="tabpanel" aria-labelledby="aba-anuncios" tabindex="0" hidden>
+          <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Todos os anúncios cadastrados, inclusive os que não aparecem no catálogo. Anúncio inativado some do público, e o dono vê o motivo em "Meus imóveis".</p>
+          <p class="texto-suave" data-vazio="anuncios" hidden>Nenhum anúncio cadastrado ainda.</p>
+          <ul class="lista-moderacao" data-lista="anuncios"></ul>
+        </div>
+
+        <div class="aba-painel" id="painel-contas" role="tabpanel" aria-labelledby="aba-contas" tabindex="0" hidden>
+          <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Conta suspensa continua entrando e vê o motivo, mas não vê contatos, não publica, não edita e não denuncia. Os anúncios dela saem do ar.</p>
+          <p class="texto-suave" data-vazio="contas" hidden>Nenhuma conta criada ainda.</p>
+          <ul class="lista-moderacao" data-lista="contas"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog class="dialogo" data-dialogo aria-labelledby="dialogo-titulo">
+  <form class="dialogo-conteudo" data-dialogo-form novalidate>
+    <h2 class="titulo-3" id="dialogo-titulo" data-dialogo-titulo></h2>
+    <p class="texto-suave texto-pequeno" data-dialogo-texto></p>
+    <div class="campo" data-dialogo-campo>
+      <label for="dialogo-motivo">Motivo</label>
+      <textarea id="dialogo-motivo" maxlength="500"></textarea>
+      <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Escreva o motivo, com pelo menos 3 caracteres.</p>
+    </div>
+    <p class="mensagem-erro" data-dialogo-erro hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
+    <div class="linha-acoes">
+      <button type="submit" class="botao botao--primario" data-dialogo-confirmar>Confirmar</button>
+      <button type="button" class="botao botao--link" data-dialogo-cancelar>Cancelar</button>
+    </div>
+  </form>
+</dialog>
+
+<footer class="rodape">
+  <div class="contentor">
+    <div class="rodape-grade">
+      <div class="rodape-marca">
+        <span style="font-family:var(--fonte);font-weight:800;font-size:1.5rem;color:var(--branco)">SGLK</span>
+        <p>Sistema de Gerenciamento e Locação de Kitnets — Tucuruí, PA.</p>
+      </div>
+      <nav class="rodape-coluna" aria-label="Páginas do site">
+        <h3>Navegação</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="imoveis.html">Imóveis</a></li>
+          <li><a href="como-funciona.html">Como funciona</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="rodape-base">
+      <p>© 2026 SGLK — Sistema de Gerenciamento e Locação de Kitnets.</p>
+      <p class="aviso-ilustrativo"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As 3 kitnets de exemplo (Centro, Vila Nova e Jardim Paulista) usam fotos geradas por IA, só para demonstração.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
+<script src="js/dados-demo.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/site.js" defer></script>
+<script src="js/moderacao.js" defer></script>
+</body>
+</html>

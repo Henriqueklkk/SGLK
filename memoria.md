@@ -227,11 +227,186 @@ Histórico vivo das decisões e aprendizados do projeto. Registrar só o que aju
 - Os 2 defeitos de texto nas imagens ficam públicos com o site: "Kitnet mobierna" no cartão de trás da imagem do topo da Home no desktop (aparece já na primeira tela) e "Disponivel" sem acento na imagem de compartilhamento.
 - **O que a publicação não muda:** os imóveis cadastrados em `anunciar.html` ficam só no navegador de quem cadastrou (`localStorage`), então os visitantes veem apenas as 3 kitnets de demonstração; o login é simulado e não protege nada de verdade; o formulário de contato não envia a lugar nenhum. Já estão nas pendências anteriores e nos avisos do próprio site.
 
+## Decisão aprovada (25/09 — Supabase)
+
+- **2026-09-25 · Backend com Supabase:** o usuário autorizou adotar o Supabase como banco de dados e autenticação, para guardar os dados de forma correta (contas, CPF, imóveis) no lugar do `localStorage`. Isso substitui, quando implementado, a decisão de não persistir dados de conta e a sessão simulada `sglk_sessao_v1`. A autenticação **só começa quando o usuário mandar**.
+- **Projeto Supabase:** `vqqgbbnxomqkqytgcbsb` (`https://vqqgbbnxomqkqytgcbsb.supabase.co`). Chave publicável conferida pelo conector do Supabase em 2026-09-25: é a chave `default`, ativa. O banco estava vazio (nenhuma tabela em `public`).
+
+## Alterações realizadas (25/09 — preparação do Supabase)
+
+- **Pacotes npm, a pedido do usuário:** `npm install @supabase/supabase-js @supabase/ssr` (versões 2.117.2 e 0.12.7) criou `package.json` e `package-lock.json` na raiz. `node_modules/` ficou fora do Git.
+- **Skills do Supabase para o Claude Code:** `npx skills add supabase/agent-skills` instalou `supabase` e `supabase-postgres-best-practices` em `.claude/skills/` (cópia, só para este projeto), com o registro em `skills-lock.json`. Ficam no repositório, mas não entram no site publicado (a Vercel só publica `site/`).
+- **`.env` na raiz:** `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, com os valores fornecidos pelo usuário. `.env` e `.env.*` ficaram fora do Git.
+
+## Problemas encontrados (25/09 — Supabase)
+
+- **Pacotes e `.env` pensados para Next.js, mas o site é estático:** o prefixo `NEXT_PUBLIC_` só é lido pelo Next.js na hora do build, e `@supabase/ssr` serve para frameworks com servidor (cookies no servidor). O SGLK não tem framework nem build (`vercel.json` com `buildCommand: null`), então o navegador não lê o `.env` nem importa nada de `node_modules/`. Tudo foi instalado como pedido, mas ainda falta decidir como o site vai carregar o Supabase (ver Pendências).
+- **A Vercel vai rodar `npm install`:** com `installCommand: null` e um `package.json` na raiz, a Vercel instala as dependências no deploy. Não quebra nada (não há script de build), só deixa o deploy um pouco mais lento.
+
+## Pendências (25/09 — Supabase)
+
+- **Decidir como o site carrega o Supabase**, antes de começar a autenticação:
+  - (A) manter o site estático: copiar o arquivo pronto para navegador de `@supabase/supabase-js` (`dist/umd/`) para `site/js/`, servido pelo próprio site, e pôr a URL e a chave publicável num arquivo de configuração em `site/js/`. A chave publicável é feita para ficar exposta no navegador; quem protege os dados são as políticas de RLS. Nesse caminho, `@supabase/ssr` e o `.env` não são usados pelo site.
+  - (B) migrar o site para Next.js, que usa o `.env` com `NEXT_PUBLIC_` e o `@supabase/ssr` como estão. Isso reescreve as 8 páginas e muda a stack aprovada.
+- Ao criar as tabelas: RLS ligado em todas, CPF protegido (nunca exposto a outros usuários) e política de privacidade antes de coletar CPF de pessoas reais.
+
+## Decisões aprovadas (25/09 — banco no Supabase)
+
+- **2026-09-25 · Endereços:** produção em `https://www.sglk.site` (Vercel, já integrada ao Supabase pelo usuário); testes locais em `http://localhost:8000`.
+- **2026-09-25 · Plano de tabelas aprovado**, com liberdade para deixar "um pouco mais complexo caso precise".
+- **2026-09-25 · Papéis:** conta de **locador** cadastra kitnets **e também pode alugar** (ver o WhatsApp e contatar outros locadores); conta de **locatário** só aluga e entra em contato. O tipo é escolhido no cadastro e não muda depois. Substitui a limitação da sessão simulada (um papel por vez).
+- **2026-09-25 · Objetivo do site com login (resposta à escolha A/B):** site responsivo em que locatários logados contatam locadores e locadores logados publicam suas kitnets. O usuário não escolheu entre (A) manter o site estático e (B) migrar para Next.js; tratado como (A), que atende a tudo isso sem mudar a stack. Confirmar ao começar a integração no site.
+- **2026-09-25 · E-mails:** o usuário ainda está decidindo (SMTP próprio × desligar a confirmação).
+
+## Alterações realizadas (25/09 — banco no Supabase)
+
+- **Migração `20260925231838 estrutura_inicial_sglk` aplicada** no projeto `vqqgbbnxomqkqytgcbsb`, com cópia versionada em `supabase/esquema-inicial.sql`:
+  - `public.perfis` (tipo, nome, ocupação; criado sozinho no cadastro por um gatilho em `auth.users`, com `tipo` e `nome` obrigatórios e ocupação obrigatória só para locatário);
+  - `privado.documentos` (CPF único e validado pelo dígito verificador no próprio banco). **Mudança em relação ao plano apresentado:** o plano dizia "só o dono lê"; o CPF foi para um esquema que a Data API não expõe, então ninguém lê pela internet, nem o dono. O site nunca precisa mostrar o CPF;
+  - `public.kitnets` (colunas com os mesmos nomes do objeto usado em `site/js`), `public.kitnets_contato` (WhatsApp separado, só para quem tem conta) e `public.kitnet_fotos` (caminho no Storage, ordem e texto alternativo);
+  - bucket `fotos-kitnets` no Storage: público para leitura pelo link, até 2 MB por arquivo, só JPEG/PNG/WebP, cada locador envia e apaga só na própria pasta (`<id do usuário>/...`);
+  - RLS ligado em todas as tabelas, permissões mínimas por coluna (ninguém troca o próprio `tipo` nem o dono de uma kitnet), gatilho que atualiza `atualizado_em`.
+- **O CPF não fica nos metadados da conta:** o site vai enviá-lo no cadastro, mas o gatilho o grava em `privado.documentos` e o apaga dos metadados antes de salvar (os metadados vão dentro do token de acesso e o próprio usuário pode editá-los). Um segundo gatilho apaga o CPF se ele voltar aos metadados por outro caminho.
+- **Testes (com usuários simulados, tudo desfeito ao final):** as 27 verificações passaram. Entre elas: CPF válido aceito, repetido e inválido barrados; tipo "admin" barrado; locatário sem ocupação barrado; CPF fora dos metadados; locador cadastra kitnet, WhatsApp e foto e envia arquivo na própria pasta; foto e arquivo em pasta alheia barrados; locatário não cadastra kitnet, não altera nem apaga anúncio alheio, vê o WhatsApp, vê só o próprio perfil e não troca o próprio tipo; visitante vê anúncios e fotos, mas não o WhatsApp nem perfis; CPF inacessível para qualquer usuário do site. Depois dos testes: histórico só com a migração real e banco vazio (0 usuários, 0 kitnets, 0 arquivos).
+- **Painéis do Supabase:** segurança só com 1 aviso informativo esperado (`privado.documentos` sem política, de propósito); desempenho só com "índices não usados", porque o banco está vazio.
+
+## Problemas encontrados (25/09 — banco no Supabase)
+
+- A ferramenta `execute_sql` do conector do Supabase roda com um usuário só de leitura (`supabase_read_only_user`); por isso os testes de permissão foram feitos com `apply_migration` terminando num erro proposital (nada gravado, conferido no histórico de migrações).
+- No primeiro teste, a checagem da ocupação usou um CPF inválido e a data de atualização não podia mudar dentro de uma única transação; os dois pontos foram refeitos e passaram.
+
+## Pendências (25/09 — banco no Supabase)
+
+- **Painel do Supabase (só o usuário pode fazer):** em Authentication → URL Configuration, Site URL `https://www.sglk.site` e Redirect URLs `https://www.sglk.site/**`, `https://sglk.site/**`, `http://localhost:8000/**` e `http://127.0.0.1:8000/**`.
+- **E-mails:** o serviço padrão do Supabase só envia para membros da equipe do projeto e com limite por hora; para o público, configurar SMTP próprio ou desligar a confirmação de e-mail.
+- **Criar usuário pelo painel do Supabase ("Add user") vai falhar:** o gatilho exige tipo, nome e CPF válido em toda conta nova. Contas devem ser criadas pelo site.
+- **Ao apagar uma conta,** perfil, CPF, kitnets, WhatsApp e registros de fotos são apagados juntos, mas os arquivos no Storage ficam; o site precisa apagá-los antes (ou fazer limpeza depois).
+- **Política de privacidade** antes de coletar CPF de pessoas reais (LGPD).
+- **Integração no site** (supabase-js no navegador, cadastro/login reais, anúncios e fotos no banco, trava real do WhatsApp): aguardando o usuário mandar começar.
+
+## Problemas encontrados (29/09 — documento da disciplina × site)
+
+- **Documento analisado:** "Documentação do Sistema de Gerenciamento e Locação de Kitnets" (Engenharia de Software I, IFPA Tucuruí, Prof. Douglas Bechara), versão 0.8, 40 páginas; seções 14 a 18 ainda em branco. Arquivo fora do projeto (`Downloads`).
+- **O site atende:** escopo e itens fora do escopo, público, busca por bairro/preço máximo/comodidades sem login (UC-03), status "Disponível"/"Alugado" (RF-04), WhatsApp por `wa.me` com mensagem pronta em nova aba (RF-05), aviso contra golpes (ELI-03), responsividade (RNF-01).
+- **Divergências que contradizem decisões registradas (aguardando o usuário):**
+  1. Documento: kitnet "Alugado" **some** da busca pública (RF-04, HU-03, HU-04, UC-02, UC-04). Site e `specs/design.md` §9.1/§11: alugadas continuam no catálogo com selo e "Ver detalhes" (e a kitnet de demonstração 03 é "Alugado").
+  2. Documento: ator **Administrador** (UC-06, HU-06, RN-02, validar locadores, inativar anúncios). Não existe no `specs/site.md`, no site nem no banco.
+  3. Documento: UC-05 e o diagrama só ligam o **locatário** ao contato; decisão de 25/09: locador também pode contatar.
+  4. Documento: botão "Entrar em Contato"; `specs/design.md` §8: "Falar no WhatsApp".
+  5. Documento: **telefone** no cadastro (UC-01) e `telefone_whats` em locador e locatário; site e banco: WhatsApp por anúncio, sem telefone no cadastro.
+- **Faltas no site (sem conflito, só não implementadas):** editar anúncio (RF-02); confirmação antes de marcar como alugado (UC-04); 1 a 5 fotos (site aceita até 4); campo de regras de convivência (1.3); endereço citado em UC-02 FA-01; cadastro/login/anúncios reais (dependem da integração com o Supabase); redirecionar para a Home logado após o cadastro (UC-01).
+- **Documento × arquitetura atual (seções 11 a 14):** o documento prevê servidor próprio com API REST (Java/Python), `KitnetController`/`KitnetRepository`, MySQL com `tb_locador`/`tb_locatario`/`tb_kitnet`, IDs inteiros e valor `DECIMAL(10,2)`. O projeto real é site estático (HTML/CSS/JS) na Vercel + Supabase (PostgreSQL, API REST pronta, regras em RLS), com `perfis`, `privado.documentos`, `kitnets`, `kitnets_contato` e `kitnet_fotos`, IDs UUID e preço inteiro. O documento não modela fotos, e-mail/senha nem área/quartos/banheiros.
+- **Inconsistências internas do documento:** status com quatro nomes ("Indisponível", "desalugado", "Alugada", "Alugado"); versão 0.8 no cabeçalho com histórico até 1.0; cronograma com números de seção que não batem com o sumário; relação "Locador busca e visualiza Kitnet" no diagrama de classes (seria "cadastra"); `tb_locatario` sem nome e CPF no DER, embora a classe tenha; front-end listado como "Java/Python/Html/Css".
+
+## Decisões aprovadas (29/09 — respostas à análise do documento)
+
+- **2026-09-29 · Kitnets alugadas:** continuam na busca e nos destaques da Home, mas **sempre depois das disponíveis**. Mantém o `specs/design.md` (alugadas visíveis com "Ver detalhes") e diverge do documento da disciplina, que as esconde.
+- **2026-09-29 · Administração:** o usuário quer uma área de administração (UC-06, HU-06, RN-02 do documento). Plano apresentado, aguardando respostas (ver Pendências).
+- **2026-09-29 · Contato pelo locador:** fica como está no site (decisão de 25/09: locador também pode contatar); o usuário vai ajustar o UC-05 no documento.
+- **2026-09-29 · Botão de contato:** passa a ser "Entrar em contato", como no documento, em vez de "Falar no WhatsApp". Substitui o texto fixado no `specs/design.md` §8.
+- **2026-09-29 · Telefone:** cadastro de telefone com DDD no site e no banco, para locatário e locador. Isso atende o UC-01 e as classes do documento; o alerta sobre coletar só o necessário (LGPD) foi dado, e a decisão é do usuário.
+- **2026-09-29 · Seções 11 a 14 do documento:** o usuário pediu para não atualizar nada sobre elas.
+
+## Alterações realizadas (29/09)
+
+- **Ordem do catálogo:** `obterTodasKitnets()` (`js/armazenamento.js`) passou a ordenar as disponíveis primeiro, mantendo a ordem original dentro de cada grupo; vale para Imóveis, filtros e destaques da Home.
+- **Botão "Entrar em contato":** nos três estados do botão em `imovel.html` (com login, travado com cadeado e desabilitado nas kitnets de demonstração), com "pelo WhatsApp" escondido na tela e lido pelos leitores de tela, já que o ícone não tem texto. Texto também trocado em `contato.html` e no `specs/design.md` (§3.4, §8, §9.1).
+- **`specs/design.md` v1.2:** o botão novo e a ordem das kitnets alugadas (§11).
+- **Telefone no site:** campo "Telefone com DDD" em `entrar.html`, obrigatório nas duas abas, com máscara `(00) 00000-0000` e validação (DDD + celular com 9 e mais 8 dígitos, ou fixo de 8 dígitos começando de 2 a 8). Como o resto do cadastro simulado, não é guardado em lugar nenhum.
+- **Telefone no banco:** migração `20260929140423 telefone_no_perfil` (cópia em `supabase/telefone-no-perfil.sql`): coluna `perfis.telefone` obrigatória, com a mesma regra de formato; o gatilho de cadastro lê o telefone (aceita máscara e o 55 na frente, grava só DDD + número) e o tira dos metadados da conta, junto com o CPF. Cada pessoa vê e edita só o próprio telefone.
+- **Testes do banco (usuários simulados, tudo desfeito):** 9 de 9 passaram: celular com máscara e fixo com 55 gravados certos, cadastro sem telefone e celular sem o 9 barrados, telefone fora dos metadados, dono edita o próprio telefone, telefone inválido barrado na edição, locatário não vê o telefone do locador, visitante não vê telefones. Histórico com só as 2 migrações reais; banco vazio.
+- **Testes do site (servidor local):** catálogo e Home na ordem 01, 02, disponível de teste, 03 (alugada) e alugada de teste; botão travado com o texto novo e o nome acessível completo; máscara do telefone (celular, fixo, parcial e excesso de dígitos); telefone inválido barrado com foco no campo; telefone válido aceito e sessão com só o tipo de conta; sem rolagem lateral em 375px; console sem erros. Dados de teste removidos do navegador.
+
+## Problemas encontrados (29/09)
+
+- **O texto "Falar no WhatsApp" está desenhado dentro das imagens ilustrativas geradas por IA** (16 menções no `imagens.md`, por exemplo `09-contato-whatsapp`, `02-busca`, `04-kitnet-destaque-01`). O site agora diz "Entrar em contato", mas as imagens continuam com o texto antigo até serem geradas de novo.
+- O painel de segurança do Supabase respondeu 503 duas vezes depois da migração do telefone; na terceira tentativa voltou e mostrou só o aviso informativo esperado (`privado.documentos` sem política, de propósito).
+- O painel do navegador de testes estava com 280px de largura (abaixo do mínimo de 360px do `design.md`), o que mostra rolagem lateral em `entrar.html`; em 375px não há rolagem. Não é defeito do site.
+
+## Pendências (29/09 — área de administração)
+
+- **Depende da integração do site com o Supabase:** sem login real, uma área de administração não protege nada. A integração continua esperando a ordem do usuário.
+- **Perguntas em aberto:** o que "validar locador" significa na prática (aprovar antes de os anúncios aparecerem ou só moderar depois); se entra o botão "Denunciar anúncio" (UC-06 e HU-06 falam em anúncio "denunciado" ou "reportado"); o que uma conta suspensa perde.
+- Regerar ou editar as imagens que mostram "Falar no WhatsApp", junto com os 2 defeitos de texto já conhecidos.
+
+## Decisões aprovadas (29/09 — integração com o Supabase e moderação)
+
+- **2026-09-29 · Começar a integração:** o usuário mandou ligar o site ao Supabase. Feito pelo caminho (A): site continua estático (HTML/CSS/JS puro), com a biblioteca `supabase-js` servida pelo próprio site. `@supabase/ssr` e o `.env` continuam sem uso pelo site.
+- **2026-09-29 · Validação de locador = (a):** os anúncios de um locador novo só aparecem no catálogo depois que a moderação aprova o cadastro. O locador já pode cadastrar imóveis enquanto espera.
+- **2026-09-29 · Denúncia:** botão para denunciar anúncio "caso haja fraude", para quem tem conta.
+- **2026-09-29 · Conta suspensa (o usuário deixou a critério):** continua entrando e vê os próprios dados e o motivo; não vê contatos, não publica, não edita e não denuncia; os anúncios dela saem do ar; pode apagar os próprios anúncios. Só a moderação reativa.
+- **2026-09-29 · Moderador:** conta com `app_metadata.papel = "admin"`, que só o banco altera. A conta do usuário vira moderadora depois que ele criar a conta pelo site e avisar.
+
+## Alterações realizadas (29/09 — integração e moderação)
+
+- **Banco (Supabase):** migração `20260929144034 moderacao` (`supabase/moderacao.sql`): situação da conta e aprovação do locador em `perfis`; inativação com motivo em `kitnets`; tabela `denuncias` (uma denúncia aberta por pessoa e anúncio); função `public.eh_admin()`; função `public.moderacao_listar_contas()` (e-mail e CPF, só para a moderação); gatilhos que impedem qualquer pessoa, exceto a moderação, de mudar aprovação, suspensão ou moderação; todas as regras de acesso refeitas para esconder anúncios de locador pendente ou suspenso e bloquear conta suspensa. Migração `20260929144339 catalogo_publico` (`supabase/catalogo-publico.sql`): vista `kitnets_publicas`, o catálogo igual para todo mundo (sem ela, o dono veria os próprios anúncios pendentes na busca e a moderação veria tudo).
+- **Site:** `js/vendor/supabase.js` (supabase-js 2.117.2, licença MIT em `js/vendor/supabase-js-LICENSE.txt`) e `js/supabase-config.js` em todas as páginas; `js/armazenamento.js` reescrito (catálogo, conta, anúncios, fotos no Storage, WhatsApp, denúncias, moderação) e as chaves antigas do `localStorage` (`sglk_kitnets_usuario_v1`, `sglk_sessao_v1`) são apagadas na primeira visita; `js/site.js` reescrito nas partes de conta, catálogo, imóvel, anunciar e entrar.
+- **`entrar.html`:** cadastro e login reais. Com a confirmação de e-mail ligada, mostra "enviamos um link"; e-mail repetido mostra "E-mail já cadastrado. Deseja fazer login?" (UC-01 FA-01) com o botão "Entrar com este e-mail"; depois de entrar, volta para a Home ou para onde a trava mandou (HU-01); quem já está conectado vê "Você já entrou" com "Continuar" e "Sair". Texto do CPF atualizado (fica numa área protegida; só a moderação vê).
+- **Cabeçalho:** quem entrou vê "Olá, primeiro nome", "Moderação" (só a moderação) e "Sair".
+- **`anunciar.html`:** trava pela sessão real; avisos de cadastro em análise, conta suspensa e edição pela moderação; modo edição (`anunciar.html?editar=<id>`) para o dono e a moderação (que só remove fotos, não envia); WhatsApp com máscara, preenchido com o telefone da conta; fotos comprimidas no navegador e enviadas ao Storage; "Meus imóveis" do banco, com Editar, confirmação antes de mudar o status (UC-04) e Excluir.
+- **`imovel.html`:** anúncio do banco; contato real para qualquer conta ativa; "Este anúncio é seu" para o dono; aviso de anúncio fora do ar para dono e moderação; link "Denunciar anúncio" com formulário (motivo e texto), abaixo dos detalhes.
+- **Nova página `moderacao.html` + `js/moderacao.js`:** abas Cadastros (aprovar ou suspender locadores pendentes, com e-mail, telefone e CPF), Denúncias (inativar o anúncio já resolvendo a denúncia, marcar como resolvida ou descartar), Anúncios (ver, editar, inativar e reativar) e Contas (suspender e reativar). Janela de confirmação com `<dialog>` e motivo obrigatório para o que tira algo do ar, recriando o componente de Dialog de referência. Fora do menu, com `noindex`.
+- **FAQ:** respostas de contato (precisa de conta), anunciar (aprovação da moderação) e segurança (denúncia) atualizadas.
+- **`specs/design.md` v1.3:** estados do botão de contato, conta no cabeçalho, moderação, denúncia e janela de confirmação.
+
+## Problemas encontrados (29/09 — integração e moderação)
+
+- **Bug do `hidden`, 11º a 13º casos, e correção definitiva:** `.aviso-caixa`, `.aviso-armazenamento-local` e `.entrada-fotos` fixavam `display`; o aviso de redirecionamento de `entrar.html` já aparecia como uma caixa amarela vazia quando a página era aberta sem `?papel=` (no ar desde 22/09). E `.botao` também fixa `display`, então nenhum botão com `hidden` sumia. Correção: regra global `[hidden] { display: none !important; }` em `css/estilo.css`, que resolve o defeito para qualquer classe.
+- **Contraste reprovado no ar desde 22/09:** a correção antiga `.selo:not([hidden])` ficou mais específica que as variantes e forçava texto branco em todas; o selo "Imagem por IA" e o aviso "Este imóvel já foi alugado" tinham texto branco sobre `--aviso-fundo` (cerca de 1,1:1). Com a regra global, `.selo` voltou a ser classe simples; medido depois: todos os selos entre 5,19:1 e 9,84:1, iguais ao `design.md`.
+- **Regra `.cartao-kitnet-sem-foto` sem uso e com texto em `--salvia-500`** (proibido): trocada por `.sem-foto` (ícone sálvia, texto `--texto-suave`), agora usada nos cards, na galeria e em "Meus imóveis" quando um anúncio fica sem foto.
+- **Cartão de contato fixo cobrindo a denúncia:** o cartão usa `position: sticky`; com a denúncia dentro da mesma coluna, ele ficava por cima do formulário ao rolar. A denúncia foi para baixo da grade de detalhes; medido sem sobreposição em 375px e 1280px.
+- **Não é possível testar cadastro e login reais sem digitar senhas**, que iriam para o servidor do Supabase: essa parte fica para o usuário. As telas de quem está logado foram testadas com páginas temporárias que trocavam só as funções de dados por respostas simuladas (apagadas depois).
+- O navegador de testes guardava versões antigas de CSS/JS/HTML (o `python -m http.server` não manda `Cache-Control`); resolvido com `fetch(arquivo, {cache: "reload"})` antes de cada teste.
+
+## Verificação (29/09 — integração e moderação)
+
+- **Banco:** 32 verificações da moderação (usuários simulados, tudo desfeito), mais o teste da vista do catálogo (visitante, locador pendente e moderação veem só o anúncio público). Histórico só com as 4 migrações reais; banco vazio. Painel de segurança: só o aviso esperado de `privado.documentos` e o de `moderacao_listar_contas` executável por quem tem conta (intencional: a função recusa quem não é moderação, confirmado no teste 13).
+- **Site, pela API real, sem conta:** catálogo carrega do banco (vista com fotos), visitante barrado em WhatsApp, perfis, denúncias e lista de contas; travas de Anunciar e Moderação levam para entrar; nenhum elemento com `hidden` visível em 10 páginas; console sem erros numa aba limpa.
+- **Telas de quem está logado (dados simulados):** 8 cenários da página do imóvel (visitante, locatário, já denunciou, dono, conta suspensa, moderação, locador pendente, anúncio inativado); formulário de denúncia (vazio, texto curto, envio); 8 cenários de Anunciar; cadastro completo (sem foto, arquivo que não é imagem, WhatsApp inválido e válido); status, exclusão e edição com troca de foto; moderação (painéis, aprovar, suspender com motivo obrigatório, inativar a partir de denúncia, Esc devolvendo o foco, bloqueio para quem não é moderação). Sem rolagem lateral em 375px.
+
+## Pendências (29/09 — depois da integração)
+
+- **Painel do Supabase:** conferir Authentication → URL Configuration (Site URL `https://www.sglk.site`; Redirect URLs `https://www.sglk.site/**`, `https://sglk.site/**`, `http://localhost:8000/**`, `http://127.0.0.1:8000/**`). Sem isso, o link de confirmação do e-mail aponta para o endereço errado.
+- **Tornar a conta do usuário moderadora:** ele cria a conta pelo site, confirma o e-mail e avisa; aí uma migração define `app_metadata.papel = "admin"`. Depois disso, sair e entrar de novo.
+- **E-mails:** com o SMTP padrão, só os membros do projeto recebem a confirmação. Para o público: SMTP próprio ou desligar a confirmação.
+- **Sem "Esqueci minha senha"** (depende de e-mail funcionando).
+- **Sem link "Entrar" no menu:** o `design.md` §1.1 tira "Entrar" do menu; hoje só se chega a `entrar.html` pelas travas (Anunciar, contato, denúncia, moderação) ou digitando o endereço. Decidir se entra no cabeçalho.
+- **Locatário que quer anunciar:** o tipo de conta não muda e o CPF só abre uma conta, então hoje não há caminho. Decidir (por exemplo, a moderação trocar o tipo).
+- **Apagar conta:** perfil, CPF, anúncios e denúncias somem juntos, mas as fotos ficam no Storage.
+- **Política de privacidade** antes de receber CPF e telefone de pessoas reais (LGPD).
+- **Commit e push** de tudo desde `d35a9a6` (nada desta integração foi enviado).
+
+## Decisões aprovadas (03/10)
+
+- **2026-10-03 · Commit:** o usuário pediu o commit de tudo o que estava só no computador desde `d35a9a6` (integração com o Supabase, moderação, telefone, ordem do catálogo, botão "Entrar em contato", link "Entrar"). Pediu só o commit, não o envio ao GitHub.
+- **2026-10-03 · Link "Entrar":** entra no cabeçalho e no menu do celular. Substitui a regra do `specs/design.md` §1.1, que deixava "Entrar" fora do menu.
+- **2026-10-03 · Conta de locatário:** continua limitada (busca e contato, sem anunciar); "talvez haja atualização depois". Fica registrado como decisão, não como pendência.
+- **2026-10-03 · Conta de administrador para o usuário:** pedida. Criar a conta exige definir uma senha, o que fica com o usuário; o banco a transforma em moderadora assim que ela existir (ver Pendências de 03/10).
+
+## Alterações realizadas (03/10)
+
+- **Link "Entrar"** (`data-link-entrar`) nas 9 páginas: no cabeçalho a partir de 1024px, como link à esquerda de "Anunciar minha kitnet"; no menu do celular, botão secundário abaixo de "Anunciar". Leva a `entrar.html?modo=entrar`, que abre direto no formulário de login, com `redirecionar` para a página atual (Home, Imóveis, uma kitnet, Como funciona, FAQ, Contato e Moderação entraram na lista de destinos aceitos de `destinoAutenticadoSeguro`). Some para quem já entrou: na hora, se há sessão guardada no navegador, e de novo quando a conta termina de carregar.
+- **Cabeçalho de quem entrou entre 1024px e 1199px:** com "Moderação" e "Sair", a navegação ficava espremida (o último link encostava em "Anunciar" e o texto quebrava de linha), um aperto que já existia desde 29/09. A saudação "Olá, nome" agora só aparece no cabeçalho a partir de 1200px (no menu do celular, sempre).
+- **`specs/design.md` v1.4:** link "Entrar" (§1.1 e §13) e a regra da saudação.
+- **Comentário antigo** do CSS da sessão ("sessão simulada") atualizado.
+
+## Verificação (03/10)
+
+- Link "Entrar" medido em 7 páginas: visível no cabeçalho em 1280px e 1024px e escondido nele em 375px (só no menu); destino de volta certo (inclusive `imovel.html?id=...`; em `imoveis.html?bairro=...` volta para `imoveis.html`); `entrar.html?modo=entrar` abre o login e `entrar.html` sem `modo` continua no cadastro; com uma sessão inválida guardada, o link volta a aparecer depois que a conta carrega.
+- Cabeçalho com conta de moderação simulada: em 1024px, 30px entre a navegação e "Anunciar", sem quebra de linha; em 1200px, saudação visível e 64px de folga; sem rolagem lateral nas duas larguras.
+- Dados de teste (sessão falsa no navegador) removidos.
+
+## Pendências (03/10)
+
+- **Envio ao GitHub (`git push`):** só com autorização; até lá, www.sglk.site continua com a versão de `d35a9a6` (sem Supabase).
+- **Conta de administrador:** o usuário cria a conta pelo site (com o e-mail da conta dele no Supabase, que é o único que recebe a confirmação enquanto não houver SMTP próprio), confirma o e-mail e avisa; uma migração define `app_metadata.papel = "admin"`. O e-mail dele não deve ir para nenhum arquivo do repositório, que é público.
+- As pendências de 29/09 continuam, menos "link Entrar" (feito), "locatário que quer anunciar" (decidido: fica limitado) e "commit" (feito).
+
 ## Próximos passos
 
-1. Fazer o commit e o push da configuração da Vercel e das correções de 24/09; depois importar o repositório na Vercel (Framework Preset "Other", Root Directory `./`, sem mexer no resto).
+1. Commit feito em 03/10 (tudo desde `d35a9a6`). Falta o `git push`, com autorização do usuário, para a Vercel publicar a versão com Supabase em www.sglk.site.
 2. Com o endereço final em mãos, ajustar `og:image`, `og:url` e `canonical` nas 8 páginas.
 3. Corrigir os 2 defeitos de texto nas imagens e revisar as demais 29 com a lista de aprovação do `imagens.md`.
 4. Decidir o canal real do formulário de Contato.
-5. Planejar backend/banco de dados real, para ter contas e travas de verdade, guardar CPF/senha com segurança e migrar os imóveis do `localStorage`.
+5. Integração com o Supabase e moderação: feitas em 29/09. Falta o usuário testar cadastro e login reais com a própria conta, avisar para ela virar moderadora e conferir a URL Configuration do Supabase (ver Pendências de 29/09).
 6. Produzir a versão do logo para fundo escuro, quando aprovada.

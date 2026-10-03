@@ -64,6 +64,13 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
   top: var(--esp-4);
 }
 
+/* O atributo hidden sempre esconde. Sem isto, qualquer classe que fixa
+   "display" (.botao, .aviso-caixa...) vence o [hidden] do navegador, e o
+   elemento continua na tela: o site teve 13 casos desse defeito ate
+   2026-09-29 (ver memoria.md). As regras .classe:not([hidden]) antigas
+   continuam funcionando. */
+[hidden] { display: none !important; }
+
 .apenas-leitor {
   position: absolute;
   width: 1px; height: 1px;
@@ -221,7 +228,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 
 /* ============================= SELOS DE STATUS ============================= */
 
-.selo:not([hidden]) {
+.selo {
   display: inline-flex;
   align-items: center;
   gap: var(--esp-1);
@@ -292,18 +299,24 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 /* Vem depois da regra acima de propósito, para vencer o empate de especificidade e ficar no canto oposto ao selo de status. */
 .cartao-kitnet-midia .selo--ia { left: auto; right: var(--esp-2); }
 
-.cartao-kitnet-sem-foto {
+/* Anuncio sem foto (design.md, secao 9.1): bloco em --painel com icone em
+   --salvia-500 e o texto "Foto em breve" (texto nunca em --salvia-500). */
+.sem-foto {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--esp-2);
+  width: 100%;
   height: 100%;
-  color: var(--salvia-500);
+  aspect-ratio: 4 / 3;
+  background: var(--painel);
+  border-radius: var(--raio-m);
+  color: var(--texto-suave);
   font-size: var(--tam-pequeno);
   font-weight: 600;
 }
-.cartao-kitnet-sem-foto svg { width: 32px; height: 32px; }
+.sem-foto svg { width: 32px; height: 32px; color: var(--salvia-500); }
 
 .cartao-kitnet-corpo {
   display: flex;
@@ -598,12 +611,28 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
   .cabecalho-acoes .botao--secundario { display: inline-flex; }
 }
 
-/* Sessao simulada (login): mostra o papel ativo e um jeito de sair. No
-   cabecalho fixo so aparece a partir de 1024px (mesma faixa da largura
-   maior); no menu do celular aparece sempre, junto do botao "Anunciar". */
+/* Link "Entrar" (decisao de 2026-10-03): no cabecalho a partir de 1024px,
+   como "Anunciar minha kitnet"; no menu do celular, logo abaixo dele. Some
+   quando a pessoa ja entrou (js/site.js). */
+.cabecalho-acoes .link-entrar { display: none; min-height: 44px; }
+@media (min-width: 1024px) {
+  .cabecalho-acoes .link-entrar { display: inline-flex; }
+}
+.menu-movel-acao .link-entrar-menu { margin-top: var(--esp-3); }
+
+/* Conta de quem entrou ("Ola, nome", "Moderacao" e "Sair"). No cabecalho
+   fixo so aparece a partir de 1024px (mesma faixa da largura maior); no
+   menu do celular aparece sempre, junto do botao "Anunciar". */
 .sessao-info { display: none; align-items: center; gap: var(--esp-2); }
 @media (min-width: 1024px) {
   .sessao-info { display: inline-flex; }
+}
+/* Entre 1024px e 1199px o cabecalho nao tem espaco para a saudacao junto
+   de "Moderacao" e "Sair" (o menu principal ficava espremido): ela so
+   aparece no cabecalho a partir de 1200px. No menu do celular, sempre. */
+.cabecalho-acoes .sessao-saudacao { display: none; }
+@media (min-width: 1200px) {
+  .cabecalho-acoes .sessao-saudacao { display: inline; }
 }
 .sessao-info--menu-movel {
   display: flex;

@@ -46,6 +46,7 @@
       </ul>
     </nav>
     <div class="cabecalho-acoes">
+      <a class="botao botao--link link-entrar" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
       <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
       <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
         <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
@@ -71,6 +72,7 @@
   </nav>
   <div class="menu-movel-acao">
     <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+    <a class="botao botao--secundario botao--largura-total link-entrar-menu" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
   </div>
 </div>
 
@@ -123,7 +125,7 @@
             </div>
             <div class="contato-info-item">
               <svg aria-hidden="true"><use href="#icon-mensagem"></use></svg>
-              <p>Para falar sobre uma kitnet específica, use o botão <strong>Falar no WhatsApp</strong> no anúncio dela, na página <a href="imoveis.html" style="color:var(--marinho-700)">Imóveis</a>.</p>
+              <p>Para falar sobre uma kitnet específica, use o botão <strong>Entrar em contato</strong> no anúncio dela, na página <a href="imoveis.html" style="color:var(--marinho-700)">Imóveis</a>.</p>
             </div>
           </div>
           <div class="contato-info-imagem">
@@ -160,6 +162,8 @@
   </div>
 </footer>
 
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
 <script src="js/dados-demo.js" defer></script>
 <script src="js/armazenamento.js" defer></script>
 <script src="js/site.js" defer></script>

@@ -1,7 +1,8 @@
 /*
-  site.js - Comportamento do site do SGLK (menu, filtros, cards, FAQ, abas, contato).
-  JavaScript puro, sem framework e sem dependencia externa (specs/site.md).
-  Carregado com "defer" em todas as paginas.
+  site.js - Comportamento do site do SGLK (menu, conta, filtros, cards, FAQ,
+  abas, anuncios, cadastro e login). JavaScript puro, sem framework; os
+  dados vem de armazenamento.js (Supabase). Carregado com "defer" em todas
+  as paginas.
 */
 (function () {
   "use strict";
@@ -35,6 +36,67 @@
     return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
   }
 
+  function formatarData(iso) {
+    return iso ? new Date(iso).toLocaleDateString("pt-BR") : "";
+  }
+
+  function primeiroNome(nome) {
+    return String(nome || "").trim().split(/\s+/)[0] || "";
+  }
+
+  // Estado "Carregando" dos botoes (design.md, secao 8): mantem a largura e
+  // troca o texto por uma mensagem, anunciada para leitores de tela.
+  function botaoCarregando(botao, carregando, textoCarregando) {
+    if (!botao) return;
+    if (carregando) {
+      botao.dataset.textoOriginal = botao.textContent;
+      botao.style.minWidth = botao.offsetWidth + "px";
+      botao.textContent = textoCarregando;
+      botao.disabled = true;
+      botao.setAttribute("aria-busy", "true");
+    } else {
+      if (botao.dataset.textoOriginal) botao.textContent = botao.dataset.textoOriginal;
+      botao.disabled = false;
+      botao.removeAttribute("aria-busy");
+      botao.style.minWidth = "";
+    }
+  }
+
+  // Mostra (ou esconde, com texto vazio) uma mensagem .mensagem-erro que
+  // tem um <span> para o texto ao lado do icone.
+  function mostrarErro(alvo, texto) {
+    if (!alvo) return;
+    const span = alvo.querySelector("span");
+    if (span) span.textContent = texto || "";
+    else alvo.textContent = texto || "";
+    alvo.hidden = !texto;
+  }
+
+  let avisoFlutuanteTimer;
+  function mostrarAvisoFlutuante(texto) {
+    let aviso = document.querySelector("[data-aviso-flutuante]");
+    if (!aviso) {
+      aviso = el("div", {
+        "data-aviso-flutuante": "",
+        role: "status",
+        class: "texto-pequeno",
+        style: "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--marinho-900);color:var(--branco);padding:10px 18px;border-radius:12px;box-shadow:var(--sombra-2);z-index:80;max-width:90vw;text-align:center"
+      });
+      document.body.appendChild(aviso);
+    }
+    aviso.textContent = texto;
+    aviso.hidden = false;
+    window.clearTimeout(avisoFlutuanteTimer);
+    avisoFlutuanteTimer = window.setTimeout(() => { aviso.hidden = true; }, 4000);
+  }
+
+  function blocoSemFoto(classeExtra) {
+    return el("div", { class: "sem-foto" + (classeExtra ? " " + classeExtra : "") }, [
+      icone("icon-camera"),
+      el("span", { texto: "Foto em breve" })
+    ]);
+  }
+
   /* ============================= CPF (mascara e digito verificador) ============================= */
 
   // Formata "12345678900" como "123.456.789-00" enquanto a pessoa digita.
@@ -49,7 +111,7 @@
   // Confere os digitos verificadores do CPF (algoritmo publico, o mesmo
   // usado em qualquer formulario brasileiro). So confirma que o NUMERO
   // esta bem formado - nao confirma que pertence a uma pessoa real, nem
-  // substitui verificacao de identidade de verdade.
+  // substitui verificacao de identidade de verdade. O banco confere de novo.
   function cpfValido(valorComOuSemMascara) {
     const cpf = String(valorComOuSemMascara).replace(/\D/g, "");
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -64,6 +126,40 @@
     return true;
   }
 
+  /* ============================= TELEFONE E WHATSAPP (mascara e formato) ============================= */
+
+  // Formata "94999999999" como "(94) 99999-9999" enquanto a pessoa digita.
+  function mascararTelefone(valor) {
+    const digitos = String(valor).replace(/\D/g, "").slice(0, 11);
+    if (digitos.length > 10) return digitos.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    if (digitos.length > 6) return digitos.replace(/(\d{2})(\d{4})(\d{1,4})/, "($1) $2-$3");
+    if (digitos.length > 2) return digitos.replace(/(\d{2})(\d{1,5})/, "($1) $2");
+    if (digitos.length > 0) return "(" + digitos;
+    return digitos;
+  }
+
+  // DDD + celular (9 e mais 8 digitos) ou fixo (8 digitos comecando de 2 a 8).
+  // A mesma regra vale no banco (supabase/telefone-no-perfil.sql).
+  function telefoneValido(valorComOuSemMascara) {
+    return /^[1-9]{2}(9\d{8}|[2-8]\d{7})$/.test(String(valorComOuSemMascara).replace(/\D/g, ""));
+  }
+
+  // WhatsApp do anuncio: a pessoa digita com DDD; o banco guarda com o 55
+  // na frente, que o link wa.me precisa.
+  function normalizarWhatsapp(valor) {
+    const digitos = String(valor || "").replace(/\D/g, "");
+    return digitos.length === 10 || digitos.length === 11 ? "55" + digitos : digitos;
+  }
+
+  function whatsappValido(valor) {
+    return /^55[1-9]{2}(9\d{8}|[2-8]\d{7})$/.test(normalizarWhatsapp(valor));
+  }
+
+  function whatsappParaCampo(digitosCom55) {
+    const digitos = String(digitosCom55 || "").replace(/\D/g, "");
+    return mascararTelefone(digitos.length > 11 && digitos.indexOf("55") === 0 ? digitos.slice(2) : digitos);
+  }
+
   /* ============================= MENU DO CELULAR ============================= */
 
   function iniciarMenuMovel() {
@@ -71,7 +167,6 @@
     const menu = document.querySelector("[data-menu-movel]");
     if (!botaoAbrir || !menu) return;
     const botaoFechar = menu.querySelector("[data-fechar-menu]");
-    const linksMenu = menu.querySelectorAll("a, button");
 
     function abrir() {
       menu.dataset.aberto = "true";
@@ -91,53 +186,80 @@
       menu.dataset.aberto === "true" ? fechar() : abrir();
     });
     botaoFechar && botaoFechar.addEventListener("click", fechar);
+    // A lista de focaveis e lida na hora: os links da conta (Sair,
+    // Moderacao) entram no menu depois que a pagina carrega.
     menu.addEventListener("keydown", (evento) => {
       if (evento.key === "Escape") fechar();
       if (evento.key === "Tab") {
-        const focaveis = Array.from(linksMenu);
+        const focaveis = Array.from(menu.querySelectorAll("a, button"));
         const primeiro = focaveis[0];
         const ultimo = focaveis[focaveis.length - 1];
         if (evento.shiftKey && document.activeElement === primeiro) { evento.preventDefault(); ultimo.focus(); }
         else if (!evento.shiftKey && document.activeElement === ultimo) { evento.preventDefault(); primeiro.focus(); }
       }
     });
-    linksMenu.forEach((link) => {
-      if (link.tagName === "A") link.addEventListener("click", fechar);
+    menu.addEventListener("click", (evento) => {
+      if (evento.target.closest("a")) fechar();
     });
   }
 
-  /* ============================= SESSAO SIMULADA (LOGIN) =============================
-     O SGLK ainda nao tem backend nem contas de verdade (ver armazenamento.js
-     e a pagina entrar.html) - isso so mostra, no cabecalho, qual papel esta
-     "logado" neste navegador e da um jeito de sair, para poder testar as
-     duas travas (anunciar exige locador, falar no WhatsApp exige locatario).
-  */
+  /* ============================= CONTA NO CABECALHO ============================= */
 
-  function iniciarControleSessao() {
-    if (typeof obterSessao !== "function") return;
-    const sessao = obterSessao();
+  // Pagina atual como destino depois de entrar (so as paginas conhecidas
+  // de destinoAutenticadoSeguro); null nas outras, como a propria entrar.html.
+  function paginaAtualComoDestino() {
+    const arquivo = window.location.pathname.split("/").pop() || "index.html";
+    return destinoAutenticadoSeguro(arquivo + window.location.search) || destinoAutenticadoSeguro(arquivo);
+  }
 
-    document.querySelectorAll(".cabecalho-acoes, .menu-movel-acao").forEach((area) => {
+  // Quem entrou ve o primeiro nome, "Sair" e, se for da moderacao, o link
+  // para a pagina de moderacao; quem nao entrou ve o link "Entrar". No
+  // cabecalho aparecem a partir de 1024px; no menu do celular, sempre.
+  async function iniciarControleConta() {
+    const areas = document.querySelectorAll(".cabecalho-acoes, .menu-movel-acao");
+    if (!areas.length || typeof obterContaAtual !== "function") return;
+
+    // "Entrar" volta para a pagina atual depois do login. Se ja existe uma
+    // sessao guardada neste navegador, o link some na hora, sem piscar
+    // enquanto a conta carrega.
+    const linksEntrar = document.querySelectorAll("[data-link-entrar]");
+    const destino = paginaAtualComoDestino();
+    let temSessaoGuardada = false;
+    try {
+      temSessaoGuardada = typeof CHAVE_SESSAO_SUPABASE !== "undefined" && !!localStorage.getItem(CHAVE_SESSAO_SUPABASE);
+    } catch (e) {}
+    linksEntrar.forEach((link) => {
+      if (destino) link.href = "entrar.html?modo=entrar&redirecionar=" + encodeURIComponent(destino);
+      link.hidden = temSessaoGuardada;
+    });
+
+    const conta = await obterContaAtual();
+    linksEntrar.forEach((link) => { link.hidden = !!conta; });
+
+    areas.forEach((area) => {
       const existente = area.querySelector("[data-sessao-info]");
       if (existente) existente.remove();
-      if (!sessao) return;
+      if (!conta) return;
 
-      const rotulo = sessao.tipo === "locador" ? "locador" : "locatário";
       const ehMenuMovel = area.classList.contains("menu-movel-acao");
-      const botaoSair = el("button", { type: "button", class: "botao botao--link texto-pequeno", "data-botao-sair": "" }, [document.createTextNode("Sair")]);
+      const nome = conta.perfil ? primeiroNome(conta.perfil.nome) : "";
+      const filhos = [el("span", { class: "texto-suave texto-pequeno sessao-saudacao", texto: nome ? "Olá, " + nome : "Conectado" })];
+      if (conta.ehAdmin) {
+        filhos.push(el("a", { class: "botao botao--link texto-pequeno", href: "moderacao.html", texto: "Moderação" }));
+      }
+      const botaoSair = el("button", { type: "button", class: "botao botao--link texto-pequeno" }, [document.createTextNode("Sair")]);
+      filhos.push(botaoSair);
+
       const bloco = el("div", {
         class: ehMenuMovel ? "sessao-info sessao-info--menu-movel" : "sessao-info",
         "data-sessao-info": ""
-      }, [
-        el("span", { class: "texto-suave texto-pequeno", texto: "Conta de " + rotulo }),
-        botaoSair
-      ]);
-
+      }, filhos);
       if (ehMenuMovel) area.appendChild(bloco);
       else area.insertBefore(bloco, area.querySelector(".botao-menu"));
 
-      botaoSair.addEventListener("click", () => {
-        encerrarSessao();
+      botaoSair.addEventListener("click", async () => {
+        botaoCarregando(botaoSair, true, "Saindo…");
+        await sairDaConta();
         window.location.href = "index.html";
       });
     });
@@ -195,18 +317,13 @@
 
   function montarCartaoKitnet(kitnet) {
     const midiaFilhos = [
-      el("img", {
-        src: kitnet.capa,
-        alt: kitnet.capaAlt,
-        loading: "lazy",
-        width: "400",
-        height: "300"
-      }),
+      kitnet.capa
+        ? el("img", { src: kitnet.capa, alt: kitnet.capaAlt, loading: "lazy", width: "400", height: "300" })
+        : blocoSemFoto(),
       el("span", { class: "selo selo--" + kitnet.status, texto: kitnet.statusTexto })
     ];
     // O aviso de imagem ilustrativa (gerada por IA) fica só nas kitnets que
-    // realmente usam fotos de IA - nunca como um aviso geral da página, que
-    // ficaria falso assim que existirem anúncios reais.
+    // realmente usam fotos de IA - nunca como um aviso geral da página.
     if (kitnet.origem === "ia") {
       midiaFilhos.push(el("span", { class: "selo selo--ia", title: "As fotos deste anúncio foram geradas por inteligência artificial, só para demonstração." }, [document.createTextNode("Imagem por IA")]));
     }
@@ -227,9 +344,9 @@
 
     // O botao de contato (WhatsApp) so aparece dentro da pagina exclusiva do
     // imovel (imovel.html). Aqui, no card da grade (Home ou Imoveis), a acao
-    // e sempre "Ver detalhes", levando para a aba/pagina propria da kitnet.
+    // e sempre "Ver detalhes".
     const acao = el("a", {
-      href: "imovel.html?id=" + kitnet.id,
+      href: "imovel.html?id=" + encodeURIComponent(kitnet.id),
       class: "botao botao--ver-detalhes botao--largura-total"
     }, [document.createTextNode("Ver detalhes")]);
 
@@ -244,58 +361,44 @@
     return el("article", { class: "cartao-kitnet", id: "cartao-" + kitnet.id }, [midia, corpo]);
   }
 
-  let avisoDemoTimer;
-  function mostrarAvisoDemo(botaoOrigem) {
-    let aviso = document.querySelector("[data-aviso-demo]");
-    if (!aviso) {
-      aviso = el("div", {
-        "data-aviso-demo": "",
-        role: "status",
-        class: "texto-pequeno",
-        style: "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--marinho-900);color:var(--branco);padding:10px 18px;border-radius:12px;box-shadow:var(--sombra-2);z-index:80;max-width:90vw;text-align:center"
-      });
-      document.body.appendChild(aviso);
-    }
-    aviso.textContent = "Este é um anúncio de demonstração — ainda não há um contato real cadastrado.";
-    aviso.hidden = false;
-    window.clearTimeout(avisoDemoTimer);
-    avisoDemoTimer = window.setTimeout(() => { aviso.hidden = true; }, 4000);
-  }
-
   /* ============================= SELETORES DE BAIRRO (dinamicos) ============================= */
 
-  // Preenche todo <select data-campo-bairro> da pagina com os bairros que
-  // realmente existem hoje (demonstracao + cadastrados pelo usuario), sem
-  // apagar a opcao "Todos os bairros" que ja vem fixa no HTML.
-  function popularSelectsBairro() {
-    if (typeof obterBairrosDisponiveis !== "function") return;
-    const bairros = obterBairrosDisponiveis();
+  // Preenche todo <select data-campo-bairro> com os bairros das kitnets da
+  // lista, sem apagar a opcao "Todos os bairros" que ja vem no HTML.
+  function popularSelectsBairro(lista) {
+    const bairros = obterBairros(lista);
     document.querySelectorAll("[data-campo-bairro]").forEach((select) => {
       const valorAtual = select.value;
       Array.from(select.querySelectorAll("option:not([value='todos'])")).forEach((op) => op.remove());
       bairros.forEach((bairro) => select.appendChild(el("option", { value: bairro, texto: bairro })));
       if ([...select.options].some((o) => o.value === valorAtual)) select.value = valorAtual;
     });
+    return bairros;
   }
 
-  /* ============================= RENDERIZACAO DA "KITNETS EM DESTAQUE" (HOME) ============================= */
+  /* ============================= "KITNETS EM DESTAQUE" (HOME) ============================= */
 
-  function iniciarDestaqueHome() {
+  async function iniciarDestaqueHome() {
     const grade = document.querySelector("[data-grade-destaque]");
-    if (!grade || typeof obterTodasKitnets !== "function") return;
-    popularSelectsBairro();
-    // Mostra no maximo 6: as 3 de demonstracao e, se houver, as mais
-    // recentes cadastradas pelo usuario (obterTodasKitnets ja traz as
-    // cadastradas mais novas primeiro).
-    obterTodasKitnets().slice(0, 6).forEach((kitnet) => grade.appendChild(montarCartaoKitnet(kitnet)));
+    if (!grade || typeof listarCatalogo !== "function") return;
+
+    // Mostra no maximo 6, com as disponiveis primeiro e as alugadas por
+    // ultimo. As de demonstracao aparecem na hora; as do banco, quando chegam.
+    function renderizar(lista) {
+      grade.innerHTML = "";
+      lista.slice(0, 6).forEach((kitnet) => grade.appendChild(montarCartaoKitnet(kitnet)));
+      popularSelectsBairro(lista);
+    }
+    renderizar(ordenarDisponiveisPrimeiro(kitnetsDemonstracao()));
+    const { kitnets } = await listarCatalogo();
+    renderizar(kitnets);
   }
 
-  /* ============================= PAGINA IMOVEIS: BUSCA, FILTROS E DETALHES ============================= */
+  /* ============================= PAGINA IMOVEIS: BUSCA E FILTROS ============================= */
 
-  function iniciarPaginaImoveis() {
+  async function iniciarPaginaImoveis() {
     const grade = document.querySelector("[data-grade-resultados]");
-    if (!grade || typeof obterTodasKitnets !== "function") return;
-    popularSelectsBairro();
+    if (!grade || typeof listarCatalogo !== "function") return;
 
     const campoBusca = document.querySelector("[data-campo-busca]");
     const seletoresBairro = document.querySelectorAll("[data-campo-bairro]");
@@ -305,7 +408,11 @@
     const estadoVazio = document.querySelector("[data-estado-vazio]");
     const gruposComodidade = document.querySelectorAll("[data-grupo-comodidades]");
 
-    const estado = { busca: "", bairro: "todos", precoMax: null, comodidades: [] };
+    const estado = {
+      lista: ordenarDisponiveisPrimeiro(kitnetsDemonstracao()),
+      carregando: true,
+      busca: "", bairro: "todos", precoMax: null, comodidades: []
+    };
 
     function comodidadesSelecionadas() {
       const marcadas = [];
@@ -346,7 +453,7 @@
 
     function aplicarFiltros() {
       const buscaNormalizada = estado.busca.trim().toLowerCase();
-      const filtrados = obterTodasKitnets().filter((k) => {
+      const filtrados = estado.lista.filter((k) => {
         if (buscaNormalizada && !k.bairro.toLowerCase().includes(buscaNormalizada) && !k.nome.toLowerCase().includes(buscaNormalizada)) return false;
         if (estado.bairro !== "todos" && k.bairro !== estado.bairro) return false;
         if (estado.precoMax && k.preco > estado.precoMax) return false;
@@ -358,9 +465,12 @@
       filtrados.forEach((k) => grade.appendChild(montarCartaoKitnet(k)));
 
       if (contagem) {
-        contagem.textContent = filtrados.length === 1 ? "1 kitnet encontrada" : filtrados.length + " kitnets encontradas";
+        contagem.textContent = estado.carregando && !filtrados.length
+          ? "Carregando anúncios…"
+          : filtrados.length === 1 ? "1 kitnet encontrada" : filtrados.length + " kitnets encontradas";
       }
-      if (estadoVazio) estadoVazio.hidden = filtrados.length !== 0;
+      // Enquanto os anuncios do banco nao chegam, "nenhuma encontrada" seria falso.
+      if (estadoVazio) estadoVazio.hidden = filtrados.length !== 0 || estado.carregando;
       grade.hidden = filtrados.length === 0;
       renderizarChips();
     }
@@ -373,8 +483,7 @@
       grupo.addEventListener("change", () => { estado.comodidades = comodidadesSelecionadas(); sincronizarControles(); aplicarFiltros(); });
     });
 
-    const botaoLimpar = document.querySelectorAll("[data-limpar-filtros]");
-    botaoLimpar.forEach((botao) => botao.addEventListener("click", () => {
+    document.querySelectorAll("[data-limpar-filtros]").forEach((botao) => botao.addEventListener("click", () => {
       estado.bairro = "todos"; estado.precoMax = null; estado.comodidades = []; estado.busca = "";
       sincronizarControles(); aplicarFiltros();
     }));
@@ -382,16 +491,13 @@
     // Le os parametros vindos da busca da Home (formulario GET).
     const parametros = new URLSearchParams(window.location.search);
     if (parametros.get("busca")) estado.busca = parametros.get("busca");
-    if (parametros.get("bairro") && obterBairrosDisponiveis().includes(parametros.get("bairro"))) estado.bairro = parametros.get("bairro");
+    if (parametros.get("bairro")) estado.bairro = parametros.get("bairro");
     if (parametros.get("precoMax")) estado.precoMax = Number(parametros.get("precoMax"));
     if (parametros.get("comodidade")) estado.comodidades = parametros.getAll("comodidade").filter((c) => COMODIDADES_DEMO.includes(c));
 
+    popularSelectsBairro(estado.lista);
     sincronizarControles();
     aplicarFiltros();
-
-    // Cada kitnet tem sua propria pagina (imovel.html?id=...) - os cards da
-    // grade levam para la (ver montarCartaoKitnet). Nao ha mais um painel de
-    // detalhes embutido nesta pagina.
 
     // Folha de filtros do celular.
     const botaoAbrirFiltros = document.querySelector("[data-abrir-filtros]");
@@ -412,6 +518,21 @@
       overlay.addEventListener("click", fecharFolha);
       folha.querySelectorAll("[data-fechar-filtros]").forEach((b) => b.addEventListener("click", fecharFolha));
     }
+
+    // Anuncios do banco.
+    const { kitnets, erro } = await listarCatalogo();
+    estado.lista = kitnets;
+    estado.carregando = false;
+    const bairros = popularSelectsBairro(kitnets);
+    if (estado.bairro !== "todos" && !bairros.includes(estado.bairro)) estado.bairro = "todos";
+    if (erro) {
+      grade.parentNode.insertBefore(el("div", { class: "aviso-caixa", role: "status", style: "margin-bottom:var(--esp-5)" }, [
+        icone("icon-alerta"),
+        el("p", { class: "texto-pequeno", texto: "Não foi possível carregar os anúncios cadastrados agora. Mostrando só os exemplos." })
+      ]), grade);
+    }
+    sincronizarControles();
+    aplicarFiltros();
   }
 
   /* ============================= FORMULARIO DE CONTATO ============================= */
@@ -424,14 +545,9 @@
     function validarCampo(campo) {
       const grupo = campo.closest(".campo");
       const erro = grupo.querySelector(".mensagem-erro");
-      let valido = campo.checkValidity();
-      if (valido) {
-        grupo.classList.remove("campo--erro");
-        if (erro) erro.hidden = true;
-      } else {
-        grupo.classList.add("campo--erro");
-        if (erro) erro.hidden = false;
-      }
+      const valido = campo.checkValidity();
+      grupo.classList.toggle("campo--erro", !valido);
+      if (erro) erro.hidden = valido;
       return valido;
     }
 
@@ -466,22 +582,202 @@
   // endereco externo vindo da URL (o parametro "redirecionar" e publico).
   function destinoAutenticadoSeguro(valor) {
     if (!valor) return null;
-    if (/^anunciar\.html(?:$|\?)/.test(valor)) return valor;
+    if (/^(index|imoveis|como-funciona|faq|contato|moderacao)\.html$/.test(valor)) return valor;
+    if (/^anunciar\.html(?:\?editar=[0-9a-f-]{36})?$/i.test(valor)) return valor;
     if (/^imovel\.html\?id=[^&]+$/.test(valor)) return valor;
     return null;
   }
 
-  function iniciarPaginaImovel() {
+  // Decisao de 2026-09-29: o botao segue o documento da disciplina
+  // ("Entrar em contato"); o complemento "pelo WhatsApp" fica so para
+  // leitores de tela, que nao veem o icone.
+  function rotuloBotaoContato() {
+    return [document.createTextNode("Entrar em contato"), el("span", { class: "apenas-leitor", texto: " pelo WhatsApp" })];
+  }
+
+  function paragrafoContato(texto) {
+    return el("p", { class: "texto-suave texto-pequeno", style: "margin-top:var(--esp-2)", texto: texto });
+  }
+
+  // Botao de contato. So existe aqui, nunca no card da grade.
+  //   - demonstracao: desabilitado (nao ha numero real por tras);
+  //   - sem conta: leva para entrar (specs/site.md exige login para o contato);
+  //   - conta suspensa: sem contato;
+  //   - conta ativa (locatario ou locador, decisao de 2026-09-25): WhatsApp real.
+  async function montarContato(acaoContato, kitnet, conta) {
+    acaoContato.innerHTML = "";
+    const urlDaPagina = "imovel.html?id=" + encodeURIComponent(kitnet.id);
+
+    if (kitnet.status !== "disponivel") {
+      acaoContato.appendChild(el("p", { class: "selo selo--aviso texto-pequeno", texto: "Este imóvel já foi alugado." }));
+      return;
+    }
+    if (kitnet.origem === "ia") {
+      const botao = el("button", {
+        type: "button",
+        class: "botao botao--whatsapp botao--largura-total",
+        "aria-disabled": "true",
+        title: "Anúncio de demonstração — ainda não há um número real para contato."
+      }, [icone("icon-whatsapp"), ...rotuloBotaoContato()]);
+      botao.addEventListener("click", (e) => {
+        e.preventDefault();
+        mostrarAvisoFlutuante("Este é um anúncio de demonstração — ainda não há um contato real cadastrado.");
+      });
+      acaoContato.appendChild(botao);
+      return;
+    }
+    if (!conta) {
+      acaoContato.appendChild(el("a", {
+        href: "entrar.html?papel=locatario&redirecionar=" + encodeURIComponent(urlDaPagina),
+        class: "botao botao--whatsapp botao--largura-total"
+      }, [icone("icon-whatsapp"), ...rotuloBotaoContato(), icone("icon-cadeado")]));
+      acaoContato.appendChild(paragrafoContato("É preciso entrar ou criar uma conta para falar com o locador."));
+      return;
+    }
+    if (conta.usuario.id === kitnet.locadorId) {
+      acaoContato.appendChild(el("p", { texto: "Este anúncio é seu." }));
+      acaoContato.appendChild(el("a", { class: "botao botao--secundario botao--largura-total", style: "margin-top:var(--esp-3)", href: "anunciar.html?editar=" + encodeURIComponent(kitnet.id), texto: "Editar anúncio" }));
+      return;
+    }
+    if (!conta.perfil || conta.perfil.situacao !== "ativa") {
+      acaoContato.appendChild(paragrafoContato(conta.perfil
+        ? "Sua conta está suspensa, então o contato com locadores está bloqueado."
+        : "Não foi possível carregar sua conta. Recarregue a página."));
+      return;
+    }
+    acaoContato.appendChild(paragrafoContato("Carregando o contato…"));
+    let whatsapp = null;
+    try {
+      whatsapp = await buscarWhatsappKitnet(kitnet.id);
+    } catch (erro) {
+      acaoContato.innerHTML = "";
+      acaoContato.appendChild(paragrafoContato(erro.message));
+      return;
+    }
+    acaoContato.innerHTML = "";
+    if (!whatsapp) {
+      acaoContato.appendChild(paragrafoContato("O contato deste anúncio não está disponível no momento."));
+      return;
+    }
+    acaoContato.appendChild(el("a", {
+      href: construirLinkWhatsapp(whatsapp, kitnet.mensagemWhatsapp),
+      target: "_blank",
+      rel: "noopener",
+      class: "botao botao--whatsapp botao--largura-total"
+    }, [icone("icon-whatsapp"), ...rotuloBotaoContato()]));
+  }
+
+  // Denuncia (documento da disciplina, UC-06 e HU-06): so em anuncios reais
+  // de outra pessoa. Sem conta, o link leva para entrar.
+  async function montarDenuncia(area, kitnet, conta) {
+    if (!area) return;
+    area.innerHTML = "";
+    if (kitnet.origem !== "usuario") return;
+    if (conta && conta.usuario.id === kitnet.locadorId) return;
+    if (conta && (!conta.perfil || conta.perfil.situacao !== "ativa")) return;
+
+    if (!conta) {
+      area.appendChild(el("a", {
+        class: "botao--link texto-pequeno link-denuncia",
+        href: "entrar.html?redirecionar=" + encodeURIComponent("imovel.html?id=" + kitnet.id)
+      }, [icone("icon-alerta"), document.createTextNode("Denunciar anúncio")]));
+      return;
+    }
+
+    if (await temDenunciaAberta(kitnet.id)) {
+      area.appendChild(paragrafoContato("Você já denunciou este anúncio. A moderação está analisando."));
+      return;
+    }
+
+    const botaoAbrir = el("button", { type: "button", class: "botao--link texto-pequeno link-denuncia", "aria-expanded": "false", "aria-controls": "form-denuncia" },
+      [icone("icon-alerta"), document.createTextNode("Denunciar anúncio")]);
+
+    const seletor = el("select", { id: "denuncia-motivo", required: "" }, [el("option", { value: "", texto: "Escolha o motivo" })]);
+    Object.keys(MOTIVOS_DENUNCIA).forEach((chave) => seletor.appendChild(el("option", { value: chave, texto: MOTIVOS_DENUNCIA[chave] })));
+    const detalhes = el("textarea", { id: "denuncia-detalhes", required: "", minlength: "10", maxlength: "1000", placeholder: "Conte o que aconteceu. Ex.: pediu depósito antes da visita." });
+    const erroEnvio = el("p", { class: "mensagem-erro", hidden: "" }, [icone("icon-alerta"), el("span")]);
+    const botaoEnviar = el("button", { type: "submit", class: "botao botao--secundario botao--compacto" }, [document.createTextNode("Enviar denúncia")]);
+    const botaoCancelar = el("button", { type: "button", class: "botao botao--link" }, [document.createTextNode("Cancelar")]);
+
+    const formulario = el("form", { class: "form-denuncia", id: "form-denuncia", novalidate: "", hidden: "" }, [
+      el("div", { class: "campo" }, [
+        el("label", { for: "denuncia-motivo", texto: "Motivo" }),
+        seletor,
+        el("p", { class: "mensagem-erro", hidden: "" }, [icone("icon-alerta"), document.createTextNode("Escolha um motivo.")])
+      ]),
+      el("div", { class: "campo" }, [
+        el("label", { for: "denuncia-detalhes", texto: "O que aconteceu" }),
+        detalhes,
+        el("p", { class: "mensagem-erro", hidden: "" }, [icone("icon-alerta"), document.createTextNode("Escreva pelo menos 10 caracteres.")])
+      ]),
+      erroEnvio,
+      el("div", { class: "linha-acoes" }, [botaoEnviar, botaoCancelar])
+    ]);
+
+    botaoAbrir.addEventListener("click", () => {
+      formulario.hidden = !formulario.hidden;
+      botaoAbrir.setAttribute("aria-expanded", String(!formulario.hidden));
+      if (!formulario.hidden) seletor.focus();
+    });
+    botaoCancelar.addEventListener("click", () => {
+      formulario.hidden = true;
+      botaoAbrir.setAttribute("aria-expanded", "false");
+      botaoAbrir.focus();
+    });
+    formulario.addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      mostrarErro(erroEnvio, "");
+      let valido = true;
+      [seletor, detalhes].forEach((campo) => {
+        const ok = campo.checkValidity() && (campo !== detalhes || campo.value.trim().length >= 10);
+        campo.closest(".campo").classList.toggle("campo--erro", !ok);
+        campo.closest(".campo").querySelector(".mensagem-erro").hidden = ok;
+        if (!ok) valido = false;
+      });
+      if (!valido) return;
+      botaoCarregando(botaoEnviar, true, "Enviando…");
+      try {
+        await enviarDenuncia(kitnet.id, seletor.value, detalhes.value.trim());
+        area.innerHTML = "";
+        const sucesso = el("div", { class: "mensagem-sucesso", tabindex: "-1" }, [
+          icone("icon-check"),
+          el("p", { class: "texto-pequeno", texto: "Denúncia enviada. A moderação do SGLK vai analisar este anúncio." })
+        ]);
+        area.appendChild(sucesso);
+        sucesso.focus();
+      } catch (erro) {
+        mostrarErro(erroEnvio, erro.message);
+        botaoCarregando(botaoEnviar, false);
+      }
+    });
+
+    area.appendChild(botaoAbrir);
+    area.appendChild(formulario);
+  }
+
+  async function iniciarPaginaImovel() {
     const raiz = document.querySelector("[data-pagina-imovel]");
-    if (!raiz || typeof obterKitnetPorId !== "function") return;
+    if (!raiz || typeof buscarKitnet !== "function") return;
 
     const parametros = new URLSearchParams(window.location.search);
-    const kitnet = obterKitnetPorId(parametros.get("id"));
-
     const conteudo = raiz.querySelector("[data-imovel-conteudo]");
     const naoEncontrado = raiz.querySelector("[data-imovel-nao-encontrado]");
+    const carregando = raiz.querySelector("[data-imovel-carregando]");
+
+    let kitnet = null;
+    let erroCarregamento = null;
+    try {
+      kitnet = await buscarKitnet(parametros.get("id"));
+    } catch (erro) {
+      erroCarregamento = erro;
+    }
+    if (carregando) carregando.hidden = true;
 
     if (!kitnet) {
+      if (erroCarregamento) {
+        const texto = naoEncontrado.querySelector("p");
+        if (texto) texto.textContent = erroCarregamento.message;
+      }
       conteudo.hidden = true;
       naoEncontrado.hidden = false;
       return;
@@ -505,6 +801,7 @@
 
     const galeria = conteudo.querySelector("[data-detalhes-galeria]");
     galeria.innerHTML = "";
+    if (!kitnet.galeria.length) galeria.appendChild(blocoSemFoto("sem-foto--galeria"));
     kitnet.galeria.forEach((foto, indice) => galeria.appendChild(el("img", {
       src: foto.src,
       alt: foto.alt,
@@ -517,136 +814,165 @@
     chips.innerHTML = "";
     kitnet.comodidades.forEach((c) => chips.appendChild(el("span", { class: "chip", texto: c })));
 
-    // O botao de contato (WhatsApp) so existe aqui, dentro da pagina exclusiva
-    // do imovel - nunca no card da grade (Home ou Imoveis). Em anuncios reais
-    // (cadastrados pelo usuario, com numero de WhatsApp informado) o botao
-    // abre uma conversa de verdade, mas so para quem "entrou" como locatario
-    // (specs/site.md exige login para o contato). Nas 3 kitnets de
-    // demonstracao (geradas por IA, sem numero real) o botao fica
-    // desabilitado, com aviso, independente de login.
-    const sessaoAtual = typeof obterSessao === "function" ? obterSessao() : null;
-    const locatarioLogado = !!sessaoAtual && sessaoAtual.tipo === "locatario";
-
-    const acaoContato = conteudo.querySelector("[data-detalhes-contato]");
-    acaoContato.innerHTML = "";
-    if (kitnet.status === "disponivel" && kitnet.origem === "usuario" && kitnet.whatsapp && locatarioLogado) {
-      const link = el("a", {
-        href: construirLinkWhatsapp(kitnet.whatsapp, kitnet.mensagemWhatsapp),
-        target: "_blank",
-        rel: "noopener",
-        class: "botao botao--whatsapp botao--largura-total"
-      }, [icone("icon-whatsapp"), document.createTextNode("Falar no WhatsApp")]);
-      acaoContato.appendChild(link);
-    } else if (kitnet.status === "disponivel" && kitnet.origem === "usuario" && kitnet.whatsapp) {
-      // Numero real existe, mas exige entrar como locatario primeiro.
-      const linkLogin = el("a", {
-        href: "entrar.html?papel=locatario&redirecionar=" + encodeURIComponent("imovel.html?id=" + kitnet.id),
-        class: "botao botao--whatsapp botao--largura-total"
-      }, [icone("icon-whatsapp"), document.createTextNode("Falar no WhatsApp"), icone("icon-cadeado")]);
-      acaoContato.appendChild(linkLogin);
-      acaoContato.appendChild(el("p", {
-        class: "texto-suave texto-pequeno",
-        style: "margin-top:var(--esp-2)",
-        texto: "É preciso entrar ou criar uma conta de locatário para falar com o locador."
-      }));
-    } else if (kitnet.status === "disponivel") {
-      const botao = el("button", {
-        type: "button",
-        class: "botao botao--whatsapp botao--largura-total",
-        "aria-disabled": "true",
-        title: "Anúncio de demonstração — ainda não há um número real para contato."
-      }, [icone("icon-whatsapp"), document.createTextNode("Falar no WhatsApp")]);
-      botao.addEventListener("click", (e) => { e.preventDefault(); mostrarAvisoDemo(botao); });
-      acaoContato.appendChild(botao);
-    } else {
-      acaoContato.appendChild(el("p", { class: "selo selo--aviso texto-pequeno", texto: "Este imóvel já foi alugado." }));
-    }
-
     conteudo.hidden = false;
     naoEncontrado.hidden = true;
+
+    const conta = await obterContaAtual();
+
+    // Dono ou moderacao vendo um anuncio que nao aparece para o publico.
+    const avisoVisibilidade = conteudo.querySelector("[data-aviso-visibilidade]");
+    if (avisoVisibilidade && kitnet.origem === "usuario" && !kitnet.publica) {
+      const ehDono = conta && conta.usuario.id === kitnet.locadorId;
+      let texto = "Este anúncio não aparece para o público: o cadastro do locador ainda não foi aprovado ou a conta dele está suspensa.";
+      if (kitnet.moderacao === "inativo") texto = "Este anúncio foi inativado pela moderação e não aparece para o público. Motivo: " + kitnet.motivoModeracao;
+      else if (ehDono && conta.perfil && conta.perfil.situacao !== "ativa") texto = "Sua conta está suspensa, então este anúncio não aparece para o público.";
+      else if (ehDono && conta.perfil && conta.perfil.aprovacao === "pendente") texto = "Este anúncio só aparece para o público depois que a moderação aprovar o seu cadastro de locador.";
+      avisoVisibilidade.querySelector("p").textContent = texto;
+      avisoVisibilidade.hidden = false;
+    }
+
+    await montarContato(conteudo.querySelector("[data-detalhes-contato]"), kitnet, conta);
+    await montarDenuncia(conteudo.querySelector("[data-detalhes-denuncia]"), kitnet, conta);
   }
 
-  /* ============================= PAGINA ANUNCIAR: CADASTRO DE VERDADE ============================= */
+  /* ============================= PAGINA ANUNCIAR: CADASTRO E EDICAO ============================= */
 
   // Le um arquivo de imagem, redesenha num <canvas> numa largura maxima e
-  // devolve um data URL JPEG comprimido - para nao lotar o localStorage
-  // com fotos em tamanho original.
+  // devolve um JPEG comprimido (Blob) e um endereco local para a previa.
   function comprimirImagem(arquivo, larguraMaxima) {
     return new Promise((resolve, reject) => {
       if (!arquivo.type || arquivo.type.indexOf("image/") !== 0) {
-        reject(new Error(arquivo.name + " não é uma imagem."));
+        reject(new Error(arquivo.name + " não é uma imagem. Envie fotos em JPG, PNG ou WebP."));
         return;
       }
-      const leitor = new FileReader();
-      leitor.onerror = () => reject(new Error("Não foi possível ler " + arquivo.name + "."));
-      leitor.onload = () => {
-        const imagem = new Image();
-        imagem.onerror = () => reject(new Error(arquivo.name + " não pôde ser aberta como imagem."));
-        imagem.onload = () => {
-          const escala = Math.min(1, larguraMaxima / imagem.width);
-          const largura = Math.max(1, Math.round(imagem.width * escala));
-          const altura = Math.max(1, Math.round(imagem.height * escala));
-          const tela = document.createElement("canvas");
-          tela.width = largura;
-          tela.height = altura;
-          const contexto = tela.getContext("2d");
-          contexto.drawImage(imagem, 0, 0, largura, altura);
-          resolve(tela.toDataURL("image/jpeg", 0.72));
-        };
-        imagem.src = leitor.result;
+      const endereco = URL.createObjectURL(arquivo);
+      const imagem = new Image();
+      imagem.onerror = () => { URL.revokeObjectURL(endereco); reject(new Error(arquivo.name + " não pôde ser aberta como imagem.")); };
+      imagem.onload = () => {
+        URL.revokeObjectURL(endereco);
+        const escala = Math.min(1, larguraMaxima / imagem.width);
+        const tela = document.createElement("canvas");
+        tela.width = Math.max(1, Math.round(imagem.width * escala));
+        tela.height = Math.max(1, Math.round(imagem.height * escala));
+        tela.getContext("2d").drawImage(imagem, 0, 0, tela.width, tela.height);
+        tela.toBlob((blob) => {
+          if (!blob) { reject(new Error("Não foi possível preparar " + arquivo.name + ".")); return; }
+          resolve({ blob: blob, src: URL.createObjectURL(blob) });
+        }, "image/jpeg", 0.72);
       };
-      leitor.readAsDataURL(arquivo);
+      imagem.src = endereco;
     });
   }
 
-  function iniciarPaginaAnunciar() {
+  function mostrarAvisoConta(alvo, texto, tipo) {
+    if (!alvo) return;
+    alvo.className = tipo === "info" ? "aviso-armazenamento-local" : "aviso-caixa";
+    alvo.querySelector("p").textContent = texto;
+    alvo.hidden = false;
+  }
+
+  async function iniciarPaginaAnunciar() {
     const formulario = document.querySelector("[data-form-cadastro]");
     if (!formulario) return;
 
+    const parametros = new URLSearchParams(window.location.search);
+    const idEdicao = parametros.get("editar");
+    const destinoAqui = "anunciar.html" + (idEdicao ? "?editar=" + encodeURIComponent(idEdicao) : "");
+
+    const carregandoConta = document.querySelector("[data-carregando-conta]");
+    const areaFormulario = document.querySelector("[data-area-formulario]");
+    const secaoMeusImoveis = document.querySelector("[data-secao-meus-imoveis]");
+    const avisoConta = document.querySelector("[data-aviso-conta]");
+
+    const conta = await obterContaAtual();
+    if (!conta) {
+      window.location.replace("entrar.html?papel=locador&redirecionar=" + encodeURIComponent(destinoAqui));
+      return;
+    }
+    if (carregandoConta) carregandoConta.hidden = true;
+
+    const perfil = conta.perfil;
+    const ehLocador = !!perfil && perfil.tipo === "locador";
+    const contaAtiva = !!perfil && perfil.situacao === "ativa";
+
+    if (!perfil) {
+      mostrarAvisoConta(avisoConta, "Não foi possível carregar sua conta. Recarregue a página.");
+      return;
+    }
+    if (!ehLocador && !(conta.ehAdmin && idEdicao)) {
+      mostrarAvisoConta(avisoConta, "Sua conta é de locatário, que busca kitnets e entra em contato com locadores. Anúncios são publicados por contas de locador; o tipo de conta é escolhido no cadastro e não muda depois.");
+      return;
+    }
+
+    if (ehLocador) secaoMeusImoveis.hidden = false;
+    if (!contaAtiva) {
+      mostrarAvisoConta(avisoConta, "Sua conta está suspensa pela moderação, então você não pode publicar nem editar anúncios. Motivo: " + perfil.motivo_suspensao + ". Você ainda pode excluir seus anúncios.");
+    } else if (ehLocador && perfil.aprovacao === "pendente") {
+      mostrarAvisoConta(avisoConta, "Seu cadastro de locador está em análise pela moderação. Você já pode cadastrar imóveis: eles aparecem no catálogo depois da aprovação.", "info");
+    } else {
+      mostrarAvisoConta(avisoConta, "Seus anúncios ficam guardados no banco do SGLK e aparecem para todo mundo no catálogo de Imóveis.", "info");
+    }
+
     const MAX_FOTOS = 4;
-    let fotos = []; // [{src, alt}]
+    let fotosExistentes = []; // [{ id, caminho, src }]
+    let fotosRemovidas = [];  // [{ id, caminho }]
+    let fotosNovas = [];      // [{ blob, src }]
+    let podeEnviarFotos = contaAtiva && ehLocador;
+    let kitnetEmEdicao = null;
 
     const campoFotos = document.querySelector("[data-campo-fotos]");
+    const entradaFotos = document.querySelector("[data-entrada-fotos]");
     const preview = document.querySelector("[data-preview-fotos]");
     const erroFotos = document.querySelector("[data-erro-fotos]");
     const gruposComodidade = formulario.querySelectorAll("[data-grupo-comodidades]");
     const mensagemSucesso = document.querySelector("[data-sucesso-cadastro]");
     const mensagemErroEnvio = document.querySelector("[data-erro-cadastro]");
+    const campoWhatsapp = formulario.querySelector("#anuncio-whatsapp");
+    const botaoSalvar = formulario.querySelector("[data-botao-salvar]");
+
+    function totalFotos() {
+      return fotosExistentes.length + fotosNovas.length;
+    }
 
     function renderizarPreview() {
       preview.innerHTML = "";
-      fotos.forEach((foto, indice) => {
+      const todas = fotosExistentes.map((f) => ({ src: f.src, remover: () => { fotosRemovidas.push(f); fotosExistentes = fotosExistentes.filter((x) => x !== f); } }))
+        .concat(fotosNovas.map((f) => ({ src: f.src, remover: () => { fotosNovas = fotosNovas.filter((x) => x !== f); } })));
+      todas.forEach((foto, indice) => {
         const item = el("div", { class: "preview-foto" }, [
           el("img", { src: foto.src, alt: "Pré-visualização da foto " + (indice + 1), width: "120", height: "90" })
         ]);
-        const remover = el("button", { type: "button", class: "preview-foto-remover", "aria-label": "Remover esta foto" }, [icone("icon-fechar")]);
-        remover.addEventListener("click", () => { fotos.splice(indice, 1); renderizarPreview(); });
+        const remover = el("button", { type: "button", class: "preview-foto-remover", "aria-label": "Remover a foto " + (indice + 1) }, [icone("icon-fechar")]);
+        remover.addEventListener("click", () => { foto.remover(); renderizarPreview(); });
         item.appendChild(remover);
         preview.appendChild(item);
       });
-      if (campoFotos) campoFotos.disabled = fotos.length >= MAX_FOTOS;
+      if (campoFotos) campoFotos.disabled = !podeEnviarFotos || totalFotos() >= MAX_FOTOS;
+      if (entradaFotos) entradaFotos.hidden = !podeEnviarFotos;
     }
 
     if (campoFotos) {
       campoFotos.addEventListener("change", async (evento) => {
         const arquivos = Array.from(evento.target.files || []);
         evento.target.value = ""; // permite selecionar o mesmo arquivo de novo depois
-        if (erroFotos) erroFotos.hidden = true;
-        const vagas = MAX_FOTOS - fotos.length;
-        if (arquivos.length > vagas && erroFotos) {
-          erroFotos.hidden = false;
-          erroFotos.textContent = "Você pode enviar no máximo " + MAX_FOTOS + " fotos. Foram adicionadas só as primeiras.";
+        mostrarErro(erroFotos, "");
+        const vagas = MAX_FOTOS - totalFotos();
+        if (arquivos.length > vagas) {
+          mostrarErro(erroFotos, "Você pode enviar no máximo " + MAX_FOTOS + " fotos. Foram adicionadas só as primeiras.");
         }
-        for (const arquivo of arquivos.slice(0, vagas)) {
+        for (const arquivo of arquivos.slice(0, Math.max(0, vagas))) {
           try {
-            const src = await comprimirImagem(arquivo, 900);
-            fotos.push({ src, alt: "Foto enviada pelo anunciante." });
+            fotosNovas.push(await comprimirImagem(arquivo, 900));
           } catch (e) {
-            if (erroFotos) { erroFotos.hidden = false; erroFotos.textContent = e.message; }
+            mostrarErro(erroFotos, e.message);
           }
         }
         renderizarPreview();
       });
+    }
+
+    if (campoWhatsapp) {
+      campoWhatsapp.addEventListener("input", () => { campoWhatsapp.value = mascararTelefone(campoWhatsapp.value); });
     }
 
     function comodidadesSelecionadas() {
@@ -661,132 +987,229 @@
       const grupo = campo.closest(".campo");
       if (!grupo) return campo.checkValidity();
       const erro = grupo.querySelector(".mensagem-erro");
-      const valido = campo.checkValidity();
+      let valido = campo.checkValidity();
+      if (valido && campo === campoWhatsapp) valido = whatsappValido(campo.value);
       grupo.classList.toggle("campo--erro", !valido);
       if (erro) erro.hidden = valido;
       return valido;
     }
 
     formulario.querySelectorAll("input, textarea").forEach((campo) => {
+      if (campo.type === "file" || campo.type === "checkbox" || campo.type === "radio") return;
       campo.addEventListener("blur", () => validarCampo(campo));
     });
 
-    formulario.addEventListener("submit", (evento) => {
+    function preencherPadrao() {
+      formulario.reset();
+      formulario.querySelectorAll(".campo--erro").forEach((c) => c.classList.remove("campo--erro"));
+      formulario.querySelectorAll(".campo .mensagem-erro").forEach((m) => { m.hidden = true; });
+      if (campoWhatsapp && perfil.telefone) campoWhatsapp.value = mascararTelefone(perfil.telefone);
+      fotosExistentes = []; fotosRemovidas = []; fotosNovas = [];
+      renderizarPreview();
+    }
+
+    function preencherComKitnet(kitnet) {
+      formulario.querySelector("#anuncio-titulo").value = kitnet.nome;
+      formulario.querySelector("#anuncio-descricao").value = kitnet.descricao;
+      formulario.querySelector("#anuncio-bairro").value = kitnet.bairro;
+      formulario.querySelector("#anuncio-preco").value = kitnet.preco;
+      formulario.querySelector("#anuncio-area").value = kitnet.area;
+      formulario.querySelector("#anuncio-quartos").value = kitnet.quartos;
+      formulario.querySelector("#anuncio-banheiros").value = kitnet.banheiros;
+      formulario.querySelectorAll("[data-grupo-comodidades] input[type=checkbox]").forEach((caixa) => {
+        caixa.checked = kitnet.comodidades.includes(caixa.value);
+      });
+      const radio = formulario.querySelector("input[name=anuncio-status][value='" + kitnet.status + "']");
+      if (radio) radio.checked = true;
+      if (campoWhatsapp) campoWhatsapp.value = whatsappParaCampo(kitnet.whatsapp);
+      fotosExistentes = kitnet.fotos.map((f) => ({ id: f.id, caminho: f.caminho, src: f.src }));
+      fotosRemovidas = []; fotosNovas = [];
+      renderizarPreview();
+    }
+
+    // Modo edicao (anunciar.html?editar=<id>): dono ou moderacao.
+    if (idEdicao) {
+      let kitnet = null;
+      try {
+        kitnet = await buscarKitnetParaEdicao(idEdicao);
+      } catch (erro) {
+        mostrarAvisoConta(avisoConta, erro.message);
+        return;
+      }
+      const ehDono = kitnet && kitnet.locadorId === conta.usuario.id;
+      if (!kitnet || (!ehDono && !conta.ehAdmin)) {
+        mostrarAvisoConta(avisoConta, "Anúncio não encontrado, ou você não tem permissão para editá-lo.");
+        return;
+      }
+      if (ehDono && !contaAtiva) {
+        // Aviso de conta suspensa ja esta na tela; sem formulario.
+      } else {
+        kitnetEmEdicao = kitnet;
+        podeEnviarFotos = ehDono && contaAtiva;
+        document.querySelector("[data-titulo-anunciar]").textContent = "Editar anúncio";
+        document.querySelector("[data-titulo-formulario]").textContent = kitnet.nome;
+        botaoSalvar.textContent = "Salvar alterações";
+        const cancelar = document.querySelector("[data-cancelar-edicao]");
+        if (cancelar) { cancelar.hidden = false; cancelar.href = ehDono ? "anunciar.html" : "moderacao.html"; }
+        if (!ehDono) {
+          mostrarAvisoConta(avisoConta, "Você está editando como moderação um anúncio de outra pessoa. Dá para remover fotos, mas não enviar novas.", "info");
+        }
+        preencherComKitnet(kitnet);
+        areaFormulario.hidden = false;
+      }
+    } else if (contaAtiva) {
+      preencherPadrao();
+      areaFormulario.hidden = false;
+    }
+
+    formulario.addEventListener("submit", async (evento) => {
       evento.preventDefault();
-      if (mensagemErroEnvio) mensagemErroEnvio.hidden = true;
+      mostrarErro(mensagemErroEnvio, "");
 
       const camposObrigatorios = formulario.querySelectorAll("input[required], textarea[required]");
       let tudoValido = true;
       camposObrigatorios.forEach((campo) => { if (!validarCampo(campo)) tudoValido = false; });
 
-      if (fotos.length === 0) {
+      if (totalFotos() === 0) {
         tudoValido = false;
-        if (erroFotos) { erroFotos.hidden = false; erroFotos.textContent = "Adicione pelo menos uma foto do imóvel."; }
+        mostrarErro(erroFotos, "Adicione pelo menos uma foto do imóvel.");
       }
 
       if (!tudoValido) {
-        const primeiroInvalido = formulario.querySelector(":invalid");
+        const primeiroInvalido = formulario.querySelector(".campo--erro input, .campo--erro textarea");
         if (primeiroInvalido) primeiroInvalido.focus();
         return;
       }
 
-      const nome = formulario.querySelector("#anuncio-titulo").value.trim();
-      const bairro = formulario.querySelector("#anuncio-bairro").value.trim();
-      const status = formulario.querySelector("input[name=anuncio-status]:checked").value;
-
-      const kitnet = {
-        id: gerarIdKitnet(),
-        origem: "usuario",
-        nome: nome,
-        bairro: bairro,
+      const dados = {
+        nome: formulario.querySelector("#anuncio-titulo").value.trim(),
+        descricao: formulario.querySelector("#anuncio-descricao").value.trim(),
+        bairro: formulario.querySelector("#anuncio-bairro").value.trim(),
         preco: Number(formulario.querySelector("#anuncio-preco").value),
         area: Number(formulario.querySelector("#anuncio-area").value),
         quartos: Number(formulario.querySelector("#anuncio-quartos").value),
         banheiros: Number(formulario.querySelector("#anuncio-banheiros").value),
-        status: status,
-        statusTexto: status === "disponivel" ? "Disponível" : "Alugado",
         comodidades: comodidadesSelecionadas(),
-        descricao: formulario.querySelector("#anuncio-descricao").value.trim(),
-        whatsapp: formulario.querySelector("#anuncio-whatsapp").value.trim(),
-        capa: fotos[0].src,
-        capaAlt: "Foto do anúncio " + nome + ".",
-        galeria: fotos.map((f) => ({ src: f.src, alt: f.alt })),
-        mensagemWhatsapp: "Olá! Vi a " + nome + " no " + bairro + " pelo SGLK e gostaria de mais informações."
+        status: formulario.querySelector("input[name=anuncio-status]:checked").value
       };
 
-      const resultado = salvarKitnetUsuario(kitnet);
-      if (!resultado.ok) {
-        if (mensagemErroEnvio) { mensagemErroEnvio.hidden = false; mensagemErroEnvio.textContent = resultado.motivo; }
-        return;
-      }
+      botaoCarregando(botaoSalvar, true, kitnetEmEdicao ? "Salvando…" : "Cadastrando…");
+      try {
+        const idSalvo = await salvarKitnet({
+          id: kitnetEmEdicao ? kitnetEmEdicao.id : null,
+          idUsuario: conta.usuario.id,
+          dados: dados,
+          whatsapp: normalizarWhatsapp(campoWhatsapp.value),
+          fotosNovas: fotosNovas.map((f) => f.blob),
+          fotosRemovidas: fotosRemovidas.map((f) => ({ id: f.id, caminho: f.caminho })),
+          idsFotosMantidas: fotosExistentes.map((f) => f.id)
+        });
 
-      formulario.reset();
-      fotos = [];
-      renderizarPreview();
-      formulario.querySelectorAll(".campo--erro").forEach((c) => c.classList.remove("campo--erro"));
-      renderizarMeusImoveis();
-      if (mensagemSucesso) {
-        mensagemSucesso.hidden = false;
-        mensagemSucesso.scrollIntoView({ behavior: "smooth", block: "center" });
-        window.setTimeout(() => { mensagemSucesso.hidden = true; }, 6000);
+        if (kitnetEmEdicao) {
+          window.location.href = "imovel.html?id=" + encodeURIComponent(idSalvo);
+          return;
+        }
+        preencherPadrao();
+        await renderizarMeusImoveis();
+        if (mensagemSucesso) {
+          mensagemSucesso.querySelector("p").textContent = perfil.aprovacao === "aprovado"
+            ? "Imóvel cadastrado com sucesso! Ele já aparece no catálogo de Imóveis e na lista Meus imóveis, abaixo."
+            : "Imóvel cadastrado com sucesso! Ele aparece no catálogo depois que a moderação aprovar o seu cadastro de locador. Enquanto isso, fica na lista Meus imóveis, abaixo.";
+          mensagemSucesso.hidden = false;
+          mensagemSucesso.focus();
+        }
+      } catch (erro) {
+        mostrarErro(mensagemErroEnvio, erro.message);
+      } finally {
+        botaoCarregando(botaoSalvar, false);
       }
     });
 
-    // "Meus imoveis cadastrados": lista, com opcao de mudar o status ou excluir.
+    // "Meus imoveis": ver, editar, mudar o status e excluir.
     const listaMeusImoveis = document.querySelector("[data-lista-meus-imoveis]");
     const semImoveis = document.querySelector("[data-sem-imoveis]");
 
-    function renderizarMeusImoveis() {
-      if (!listaMeusImoveis) return;
-      const meusImoveis = obterKitnetsUsuario();
+    function situacaoNoCatalogo(kitnet) {
+      if (kitnet.moderacao === "inativo") return { texto: "Inativado pela moderação. Motivo: " + kitnet.motivoModeracao, alerta: true };
+      if (!contaAtiva) return { texto: "Fora do catálogo: sua conta está suspensa.", alerta: true };
+      if (perfil.aprovacao !== "aprovado") return { texto: "Aguardando a aprovação do seu cadastro para aparecer no catálogo.", alerta: false };
+      return { texto: "Visível no catálogo.", alerta: false };
+    }
+
+    async function renderizarMeusImoveis() {
+      if (!listaMeusImoveis || !ehLocador) return;
+      let meusImoveis = [];
+      try {
+        meusImoveis = await listarMinhasKitnets(conta.usuario.id);
+      } catch (erro) {
+        if (semImoveis) { semImoveis.textContent = erro.message; semImoveis.hidden = false; }
+        listaMeusImoveis.hidden = true;
+        return;
+      }
       listaMeusImoveis.innerHTML = "";
-      if (semImoveis) semImoveis.hidden = meusImoveis.length !== 0;
+      if (semImoveis) { semImoveis.textContent = "Você ainda não cadastrou nenhum imóvel."; semImoveis.hidden = meusImoveis.length !== 0; }
       listaMeusImoveis.hidden = meusImoveis.length === 0;
 
       meusImoveis.forEach((kitnet) => {
-        const outroStatus = kitnet.status === "disponivel" ? "alugado" : "disponivel";
-        const rotuloAlternar = kitnet.status === "disponivel" ? "Marcar como alugado" : "Marcar como disponível";
+        const acoes = [el("a", { class: "botao--link", href: "imovel.html?id=" + encodeURIComponent(kitnet.id), texto: "Ver anúncio" })];
 
-        const botaoAlternar = el("button", { type: "button", class: "botao botao--secundario botao--compacto" }, [document.createTextNode(rotuloAlternar)]);
-        botaoAlternar.addEventListener("click", () => {
-          atualizarStatusKitnetUsuario(kitnet.id, outroStatus);
-          renderizarMeusImoveis();
-        });
+        if (contaAtiva) {
+          acoes.push(el("a", { class: "botao--link", href: "anunciar.html?editar=" + encodeURIComponent(kitnet.id), texto: "Editar" }));
+          const outroStatus = kitnet.status === "disponivel" ? "alugado" : "disponivel";
+          const rotuloAlternar = kitnet.status === "disponivel" ? "Marcar como alugado" : "Marcar como disponível";
+          const botaoAlternar = el("button", { type: "button", class: "botao botao--secundario botao--compacto" }, [document.createTextNode(rotuloAlternar)]);
+          botaoAlternar.addEventListener("click", async () => {
+            // UC-04 do documento: confirmar antes de mudar o status.
+            const pergunta = outroStatus === "alugado" ? "Deseja marcar este imóvel como alugado?" : "Deseja marcar este imóvel como disponível?";
+            if (!window.confirm(pergunta)) return;
+            botaoCarregando(botaoAlternar, true, "Salvando…");
+            try {
+              await alterarStatusKitnet(kitnet.id, outroStatus);
+              await renderizarMeusImoveis();
+            } catch (erro) {
+              botaoCarregando(botaoAlternar, false);
+              mostrarAvisoFlutuante(erro.message);
+            }
+          });
+          acoes.push(botaoAlternar);
+        }
 
         const botaoExcluir = el("button", { type: "button", class: "botao botao--link", style: "color:var(--erro)" }, [document.createTextNode("Excluir")]);
-        botaoExcluir.addEventListener("click", () => {
-          if (window.confirm('Excluir o anúncio "' + kitnet.nome + '"? Essa ação não pode ser desfeita.')) {
-            removerKitnetUsuario(kitnet.id);
-            renderizarMeusImoveis();
+        botaoExcluir.addEventListener("click", async () => {
+          if (!window.confirm('Excluir o anúncio "' + kitnet.nome + '"? Essa ação não pode ser desfeita.')) return;
+          botaoCarregando(botaoExcluir, true, "Excluindo…");
+          try {
+            await excluirKitnet(kitnet);
+            await renderizarMeusImoveis();
+          } catch (erro) {
+            botaoCarregando(botaoExcluir, false);
+            mostrarAvisoFlutuante(erro.message);
           }
         });
+        acoes.push(botaoExcluir);
 
+        const situacao = situacaoNoCatalogo(kitnet);
         const linha = el("li", { class: "linha-imovel-usuario" }, [
-          el("img", { src: kitnet.capa, alt: "", width: "72", height: "72" }),
+          kitnet.capa ? el("img", { src: kitnet.capa, alt: "", width: "72", height: "72" }) : blocoSemFoto("sem-foto--miniatura"),
           el("div", { class: "linha-imovel-usuario-info" }, [
             el("p", { style: "font-weight:600", texto: kitnet.nome }),
-            el("p", { class: "texto-suave texto-pequeno", texto: kitnet.bairro + " · " + formatarPreco(kitnet.preco) + "/mês" })
+            el("p", { class: "texto-suave texto-pequeno", texto: kitnet.bairro + " · " + formatarPreco(kitnet.preco) + "/mês" }),
+            el("p", { class: "texto-pequeno", style: situacao.alerta ? "color:var(--erro)" : "color:var(--texto-suave)", texto: situacao.texto })
           ]),
           el("span", { class: "selo selo--" + kitnet.status, texto: kitnet.statusTexto }),
-          el("div", { class: "linha-imovel-usuario-acoes" }, [
-            el("a", { class: "botao--link", href: "imovel.html?id=" + kitnet.id, texto: "Ver anúncio" }),
-            botaoAlternar,
-            botaoExcluir
-          ])
+          el("div", { class: "linha-imovel-usuario-acoes" }, acoes)
         ]);
         listaMeusImoveis.appendChild(linha);
       });
     }
 
-    renderizarPreview();
-    renderizarMeusImoveis();
+    await renderizarMeusImoveis();
   }
 
   /* ============================= PAGINA ENTRAR (CADASTRO / LOGIN) ============================= */
 
   // Valida um campo generico do padrao .campo + .mensagem-erro. Aceita um
-  // validador extra opcional (usado para o CPF) alem da validacao nativa
-  // do HTML (required, type=email etc.).
+  // validador extra opcional alem da validacao nativa do HTML.
   function validarCampoAuth(campo, validadorExtra) {
     const grupo = campo.closest(".campo");
     if (!grupo) return campo.checkValidity();
@@ -798,36 +1221,47 @@
     return valido;
   }
 
-  function iniciarPaginaEntrar() {
+  async function iniciarPaginaEntrar() {
     const raiz = document.querySelector("[data-pagina-entrar]");
     if (!raiz) return;
 
-    // "papel" e "redirecionar" chegam de uma trava de login (ver
-    // iniciarPaginaImovel e o script embutido em anunciar.html): dizem qual
-    // tipo de conta e necessario e para onde voltar depois.
+    // "papel" e "redirecionar" chegam de uma trava de login (anunciar, contato
+    // ou denuncia): dizem qual tipo de conta sugerir e para onde voltar depois.
     const parametrosUrl = new URLSearchParams(window.location.search);
     const papelParam = parametrosUrl.get("papel");
     const papelSolicitado = papelParam === "locador" || papelParam === "locatario" ? papelParam : null;
-    const destinoPosLogin = destinoAutenticadoSeguro(parametrosUrl.get("redirecionar"));
+    const destinoPosLogin = destinoAutenticadoSeguro(parametrosUrl.get("redirecionar")) || "index.html";
+    const vemDaConfirmacao = parametrosUrl.get("confirmado") === "1";
+
+    const blocos = {
+      cadastro: document.querySelector("[data-bloco-cadastro]"),
+      entrar: document.querySelector("[data-bloco-entrar]"),
+      conectado: document.querySelector("[data-bloco-conectado]")
+    };
+    function mostrarBloco(nome) {
+      Object.keys(blocos).forEach((chave) => { if (blocos[chave]) blocos[chave].hidden = chave !== nome; });
+    }
 
     const avisoRedirecionamento = document.querySelector("[data-aviso-redirecionamento]");
     const avisoRedirecionamentoTexto = document.querySelector("[data-aviso-redirecionamento-texto]");
     if (papelSolicitado && avisoRedirecionamento && avisoRedirecionamentoTexto) {
       avisoRedirecionamentoTexto.textContent = papelSolicitado === "locador"
         ? "Para anunciar uma kitnet, entre ou crie uma conta de locador."
-        : "Para falar com o locador pelo WhatsApp, entre ou crie uma conta de locatário.";
+        : "Para entrar em contato com o locador, entre ou crie uma conta.";
       avisoRedirecionamento.hidden = false;
     }
 
-    // Mascara do CPF enquanto a pessoa digita.
+    // Mascaras do CPF e do telefone enquanto a pessoa digita.
     const campoCpf = document.querySelector("#conta-cpf");
-    if (campoCpf) {
-      campoCpf.addEventListener("input", () => { campoCpf.value = mascararCpf(campoCpf.value); });
-    }
+    if (campoCpf) campoCpf.addEventListener("input", () => { campoCpf.value = mascararCpf(campoCpf.value); });
+    const campoTelefone = document.querySelector("#conta-telefone");
+    if (campoTelefone) campoTelefone.addEventListener("input", () => { campoTelefone.value = mascararTelefone(campoTelefone.value); });
+
+    // Validadores alem do HTML nativo, por id do campo.
+    const validadoresCadastro = { "conta-cpf": cpfValido, "conta-telefone": telefoneValido };
 
     // Abas "Quero alugar" / "Quero anunciar": mostram ou escondem o campo
-    // Ocupacao (so do locatario), trocam os textos do formulario e definem
-    // qual papel a sessao simulada recebe ao entrar/cadastrar.
+    // Ocupacao (so do locatario), trocam os textos e definem o tipo da conta.
     const abas = Array.from(document.querySelectorAll("[data-aba-conta]"));
     const campoOcupacao = document.querySelector("[data-campo-ocupacao]");
     const entradaOcupacao = document.querySelector("#conta-ocupacao");
@@ -845,13 +1279,12 @@
         if (ativo && moverFoco) botao.focus();
       });
       const ehLocador = tipo === "locador";
-      const ehLocatario = tipo === "locatario";
-      if (campoOcupacao) campoOcupacao.hidden = !ehLocatario;
-      if (entradaOcupacao) entradaOcupacao.required = ehLocatario;
+      if (campoOcupacao) campoOcupacao.hidden = ehLocador;
+      if (entradaOcupacao) entradaOcupacao.required = !ehLocador;
       if (tituloForm) tituloForm.textContent = ehLocador ? "Cadastro de locador" : "Cadastro de locatário";
       if (subtituloForm) {
         subtituloForm.textContent = ehLocador
-          ? "Crie sua conta para anunciar e gerenciar suas kitnets no SGLK."
+          ? "Crie sua conta para anunciar e gerenciar suas kitnets no SGLK. O cadastro de locador passa pela aprovação da moderação antes de os anúncios aparecerem."
           : "Crie sua conta para entrar em contato com locadores no SGLK.";
       }
       if (botaoEnviar) botaoEnviar.textContent = ehLocador ? "Criar conta de locador" : "Criar conta de locatário";
@@ -869,72 +1302,93 @@
     });
     if (abas.length) selecionarTipoConta(papelSolicitado || "locatario", false);
 
-    // Mostra, na mensagem de sucesso, um botao "Continuar" para o destino
-    // pedido pela trava de login - se nao houver destino, nao mexe em nada.
-    function prepararAcaoPosLogin(containerAcao) {
-      if (!containerAcao) return;
-      containerAcao.innerHTML = "";
-      if (!destinoPosLogin) return;
-      containerAcao.appendChild(el("a", { class: "botao botao--primario", href: destinoPosLogin }, [document.createTextNode("Continuar")]));
+    const campoEmailEntrar = document.querySelector("#conta-email-entrar");
+    function irParaEntrar(email) {
+      if (email && campoEmailEntrar) campoEmailEntrar.value = email;
+      mostrarBloco("entrar");
+      const alvo = email ? document.querySelector("#conta-senha-entrar") : campoEmailEntrar;
+      if (alvo) alvo.focus();
     }
+    document.querySelectorAll("[data-mostrar-entrar]").forEach((botao) => botao.addEventListener("click", () => irParaEntrar()));
+    document.querySelectorAll("[data-mostrar-cadastro]").forEach((botao) => botao.addEventListener("click", () => mostrarBloco("cadastro")));
+    // Link "Entrar" do cabecalho (entrar.html?modo=entrar): abre direto no login.
+    if (parametrosUrl.get("modo") === "entrar") mostrarBloco("entrar");
 
-    // Formulario de cadastro. Nao guarda nome, e-mail, CPF, ocupacao nem
-    // senha em lugar nenhum (nem localStorage): sem um backend seguro de
-    // verdade, guardar CPF/senha no navegador seria um risco real. So
-    // valida, guarda o TIPO de conta escolhido (locador/locatario, sem mais
-    // nada) como sessao simulada, e mostra uma confirmacao honesta.
+    // Formulario de cadastro: cria a conta no Supabase. Com a confirmacao de
+    // e-mail ligada, a pessoa so entra depois de clicar no link do e-mail.
     const formCadastro = document.querySelector("[data-form-cadastro-conta]");
+    const erroCadastro = document.querySelector("[data-erro-cadastro-conta]");
+    const botaoErroEntrar = document.querySelector("[data-erro-cadastro-entrar]");
     if (formCadastro) {
       formCadastro.querySelectorAll("input").forEach((campo) => {
         campo.addEventListener("blur", () => {
-          if (!campo.closest("[hidden]")) validarCampoAuth(campo, campo.id === "conta-cpf" ? cpfValido : null);
+          if (!campo.closest("[hidden]")) validarCampoAuth(campo, validadoresCadastro[campo.id] || null);
         });
       });
-      formCadastro.addEventListener("submit", (evento) => {
+      formCadastro.addEventListener("submit", async (evento) => {
         evento.preventDefault();
+        mostrarErro(erroCadastro, "");
+        if (botaoErroEntrar) botaoErroEntrar.hidden = true;
         const campos = Array.from(formCadastro.querySelectorAll("input[required]")).filter((c) => !c.closest("[hidden]"));
         let tudoValido = true;
         campos.forEach((campo) => {
-          if (!validarCampoAuth(campo, campo.id === "conta-cpf" ? cpfValido : null)) tudoValido = false;
+          if (!validarCampoAuth(campo, validadoresCadastro[campo.id] || null)) tudoValido = false;
         });
         if (!tudoValido) {
           const primeiroInvalido = campos.find((c) => c.closest(".campo--erro"));
           if (primeiroInvalido) primeiroInvalido.focus();
           return;
         }
+
+        const email = document.querySelector("#conta-email-cadastro").value.trim();
+        botaoCarregando(botaoEnviar, true, "Criando conta…");
+        const resultado = await cadastrarConta({
+          tipo: tipoContaAtual,
+          nome: document.querySelector("#conta-nome").value.trim(),
+          email: email,
+          cpf: campoCpf.value.replace(/\D/g, ""),
+          telefone: campoTelefone.value.replace(/\D/g, ""),
+          ocupacao: tipoContaAtual === "locatario" ? entradaOcupacao.value.trim() : "",
+          senha: document.querySelector("#conta-senha").value
+        });
+        botaoCarregando(botaoEnviar, false);
+
+        if (!resultado.ok) {
+          mostrarErro(erroCadastro, resultado.mensagem);
+          if (resultado.emailJaCadastrado && botaoErroEntrar) {
+            botaoErroEntrar.hidden = false;
+            botaoErroEntrar.onclick = () => irParaEntrar(email);
+          }
+          return;
+        }
+        if (!resultado.precisaConfirmar) {
+          window.location.href = destinoPosLogin;
+          return;
+        }
         formCadastro.hidden = true;
-        if (typeof definirSessao === "function") definirSessao(tipoContaAtual);
-        prepararAcaoPosLogin(document.querySelector("[data-sucesso-cadastro-acao]"));
         const sucesso = document.querySelector("[data-sucesso-cadastro-conta]");
-        if (sucesso) { sucesso.hidden = false; sucesso.focus(); }
+        if (sucesso) {
+          sucesso.querySelector("[data-sucesso-cadastro-email]").textContent = email;
+          sucesso.querySelector("[data-sucesso-cadastro-locador]").hidden = tipoContaAtual !== "locador";
+          const botaoIr = sucesso.querySelector("[data-sucesso-cadastro-ir]");
+          if (botaoIr) botaoIr.onclick = () => irParaEntrar(email);
+          sucesso.hidden = false;
+          sucesso.focus();
+        }
       });
     }
 
-    // Alternar entre o bloco de cadastro e o bloco de entrar.
-    document.querySelectorAll("[data-mostrar-entrar]").forEach((botao) => botao.addEventListener("click", () => {
-      const cadastro = document.querySelector("[data-bloco-cadastro]");
-      const entrar = document.querySelector("[data-bloco-entrar]");
-      if (cadastro) cadastro.hidden = true;
-      if (entrar) entrar.hidden = false;
-    }));
-    document.querySelectorAll("[data-mostrar-cadastro]").forEach((botao) => botao.addEventListener("click", () => {
-      const cadastro = document.querySelector("[data-bloco-cadastro]");
-      const entrar = document.querySelector("[data-bloco-entrar]");
-      if (entrar) entrar.hidden = true;
-      if (cadastro) cadastro.hidden = false;
-    }));
-
-    // Formulario de entrar. Mesma logica: nao guarda nada de sensivel, so
-    // valida, guarda o mesmo TIPO de conta usado na aba de cadastro (ou o
-    // pedido pela trava de login) como sessao simulada, e mostra uma
-    // confirmacao honesta de que o acesso ainda nao existe de verdade.
+    // Formulario de entrar.
     const formEntrar = document.querySelector("[data-form-entrar]");
+    const erroEntrar = document.querySelector("[data-erro-entrar]");
     if (formEntrar) {
+      const botaoEntrar = formEntrar.querySelector("button[type=submit]");
       formEntrar.querySelectorAll("input").forEach((campo) => {
         campo.addEventListener("blur", () => validarCampoAuth(campo));
       });
-      formEntrar.addEventListener("submit", (evento) => {
+      formEntrar.addEventListener("submit", async (evento) => {
         evento.preventDefault();
+        mostrarErro(erroEntrar, "");
         const campos = Array.from(formEntrar.querySelectorAll("input[required]"));
         let tudoValido = true;
         campos.forEach((campo) => { if (!validarCampoAuth(campo)) tudoValido = false; });
@@ -943,20 +1397,64 @@
           if (primeiroInvalido) primeiroInvalido.focus();
           return;
         }
-        formEntrar.hidden = true;
-        if (typeof definirSessao === "function") definirSessao(papelSolicitado || tipoContaAtual);
-        prepararAcaoPosLogin(document.querySelector("[data-sucesso-entrar-acao]"));
-        const sucesso = document.querySelector("[data-sucesso-entrar]");
-        if (sucesso) { sucesso.hidden = false; sucesso.focus(); }
+        botaoCarregando(botaoEntrar, true, "Entrando…");
+        const resultado = await entrarNaConta(campoEmailEntrar.value.trim(), document.querySelector("#conta-senha-entrar").value);
+        if (!resultado.ok) {
+          botaoCarregando(botaoEntrar, false);
+          mostrarErro(erroEntrar, resultado.mensagem);
+          return;
+        }
+        // Documento da disciplina (HU-01): depois de entrar, volta logado
+        // para a pagina inicial (ou para onde a trava de login mandou).
+        window.location.href = destinoPosLogin;
       });
     }
+
+    // Quem ja esta conectado ve a propria conta em vez dos formularios.
+    const conta = await obterContaAtual();
+    if (!conta) return;
+    const tipoTexto = conta.perfil ? (conta.perfil.tipo === "locador" ? "locador" : "locatário") : "";
+    const nome = conta.perfil ? conta.perfil.nome : conta.usuario.email;
+    const bloco = blocos.conectado;
+    bloco.querySelector("[data-conectado-titulo]").textContent = vemDaConfirmacao ? "E-mail confirmado!" : "Você já entrou";
+    bloco.querySelector("[data-conectado-texto]").textContent = "Conectado como " + nome + (tipoTexto ? ", com uma conta de " + tipoTexto + "." : ".");
+    const avisoTipo = bloco.querySelector("[data-conectado-aviso]");
+    if (avisoTipo && papelSolicitado === "locador" && conta.perfil && conta.perfil.tipo !== "locador" && !conta.ehAdmin) {
+      avisoTipo.querySelector("p").textContent = "Esta conta é de locatário e não pode publicar anúncios.";
+      avisoTipo.hidden = false;
+    }
+    bloco.querySelector("[data-conectado-continuar]").href = destinoPosLogin;
+    const botaoSair = bloco.querySelector("[data-conectado-sair]");
+    botaoSair.addEventListener("click", async () => {
+      botaoCarregando(botaoSair, true, "Saindo…");
+      await sairDaConta();
+      window.location.reload();
+    });
+    if (avisoRedirecionamento) avisoRedirecionamento.hidden = true;
+    mostrarBloco("conectado");
   }
+
+  /* ============================= PARA OUTROS SCRIPTS DO SITE ============================= */
+
+  // moderacao.js reaproveita estas funcoes em vez de duplica-las.
+  window.SGLK = {
+    el: el,
+    icone: icone,
+    formatarPreco: formatarPreco,
+    formatarData: formatarData,
+    mascararCpf: mascararCpf,
+    mascararTelefone: mascararTelefone,
+    botaoCarregando: botaoCarregando,
+    mostrarErro: mostrarErro,
+    mostrarAvisoFlutuante: mostrarAvisoFlutuante,
+    blocoSemFoto: blocoSemFoto
+  };
 
   /* ============================= INICIALIZACAO ============================= */
 
   document.addEventListener("DOMContentLoaded", () => {
     iniciarMenuMovel();
-    iniciarControleSessao();
+    iniciarControleConta();
     iniciarAcordeao();
     iniciarAbas();
     iniciarPaginaImovel();

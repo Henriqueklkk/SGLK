@@ -385,3 +385,110 @@
   padding: var(--esp-2) var(--margem-lateral);
   font-size: var(--tam-pequeno);
 }
+
+/* ============================= ANUNCIO SEM FOTO (variacoes) ============================= */
+
+.detalhes-galeria .sem-foto--galeria { grid-column: 1 / -1; aspect-ratio: 3 / 2; border-radius: var(--raio-xg); }
+.sem-foto--miniatura { width: 64px; height: 64px; aspect-ratio: auto; flex-shrink: 0; }
+.sem-foto--miniatura svg { width: 24px; height: 24px; }
+.sem-foto--miniatura span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ============================= DENUNCIA (imovel.html) ============================= */
+
+.detalhes-denuncia { margin-top: var(--esp-6); max-width: 640px; }
+.link-denuncia {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  min-height: 44px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+.link-denuncia svg { width: 16px; height: 16px; flex-shrink: 0; }
+.form-denuncia:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  margin-top: var(--esp-2);
+  padding: var(--esp-5);
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: var(--raio-g);
+}
+.linha-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-3); }
+
+/* ============================= PAGINA: MODERACAO ============================= */
+
+.layout-moderacao { display: flex; flex-direction: column; gap: var(--esp-6); }
+.abas-moderacao .abas-cabecalho { display: flex; flex-wrap: wrap; border-radius: var(--raio-g); margin-bottom: var(--esp-5); }
+.abas-moderacao .aba-botao { flex: 1 1 auto; }
+.contador-aba { font-weight: 800; }
+
+.lista-moderacao:not([hidden]) { display: flex; flex-direction: column; gap: var(--esp-4); }
+.cartao-moderacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: var(--raio-g);
+  box-shadow: var(--sombra-1);
+}
+@media (min-width: 768px) {
+  .cartao-moderacao { padding: var(--esp-5); }
+}
+.cartao-moderacao-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--esp-2) var(--esp-4); }
+.cartao-moderacao-titulo { font-size: var(--tam-titulo-card); font-weight: 600; overflow-wrap: anywhere; }
+.selos-linha { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.selo--neutro { background: var(--marinho-50); color: var(--marinho-700); }
+.selo--erro { background: var(--erro-fundo); color: var(--erro); }
+.selo--ok { background: var(--sucesso-fundo); color: var(--salvia-700); }
+
+.cartao-moderacao-dados { display: grid; grid-template-columns: 1fr; gap: 0 var(--esp-5); font-size: var(--tam-pequeno); }
+@media (min-width: 768px) {
+  .cartao-moderacao-dados { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.cartao-moderacao-dados div { display: flex; flex-direction: column; padding-block: var(--esp-1); }
+.cartao-moderacao-dados dt { font-weight: 600; }
+.cartao-moderacao-dados dd { margin: 0; color: var(--texto-suave); overflow-wrap: anywhere; }
+.cartao-moderacao-texto { color: var(--texto-suave); max-width: 65ch; overflow-wrap: anywhere; }
+.cartao-moderacao-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) var(--esp-4); }
+
+/* Janela de confirmacao com motivo: recria o componente de Dialog de
+   referencia (entrada com fade e zoom de 95% para 100%) com <dialog>. */
+.dialogo {
+  width: min(440px, calc(100% - 2 * var(--esp-4)));
+  max-height: calc(100dvh - 2 * var(--esp-4));
+  padding: var(--esp-5);
+  border: 1px solid var(--cinza-claro);
+  border-radius: var(--raio-xg);
+  background: var(--branco);
+  color: var(--texto);
+  box-shadow: var(--sombra-3);
+}
+@media (min-width: 1024px) {
+  .dialogo { padding: var(--esp-6); }
+}
+.dialogo::backdrop { background: rgba(11, 40, 65, 0.6); }
+.dialogo[open] { animation: entrada-dialogo var(--tempo-lento) var(--curva-entrada) both; }
+.dialogo[open]::backdrop { animation: entrada-fundo-dialogo var(--tempo-lento) var(--curva-entrada) both; }
+@keyframes entrada-dialogo {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes entrada-fundo-dialogo {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialogo[open], .dialogo[open]::backdrop { animation: entrada-fundo-dialogo var(--tempo-rapido) linear both; }
+}
+.dialogo-conteudo { display: flex; flex-direction: column; gap: var(--esp-4); }
+
+/* Acao que tira algo do ar (inativar, suspender): link na cor de erro. */
+.botao--link.texto-erro { color: var(--erro); }
+.botao--link.texto-erro:hover, .botao--link.texto-erro:focus-visible { color: var(--marinho-900); }

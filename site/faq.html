@@ -44,6 +44,7 @@
       </ul>
     </nav>
     <div class="cabecalho-acoes">
+      <a class="botao botao--link link-entrar" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
       <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
       <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
         <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
@@ -69,6 +70,7 @@
   </nav>
   <div class="menu-movel-acao">
     <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+    <a class="botao botao--secundario botao--largura-total link-entrar-menu" href="entrar.html?modo=entrar" data-link-entrar>Entrar</a>
   </div>
 </div>
 
@@ -107,7 +109,7 @@
             <svg width="20" height="20" aria-hidden="true"><use href="#icon-chevron"></use></svg>
           </button>
           <div class="item-acordeao-resposta" id="resposta-3" role="region" aria-labelledby="pergunta-3">
-            <p class="item-acordeao-resposta-interna">Cada anúncio disponível tem um botão que leva direto a uma conversa no WhatsApp, com uma mensagem já pronta. O SGLK não tem chat interno.</p>
+            <p class="item-acordeao-resposta-interna">Cada anúncio disponível tem o botão Entrar em contato, que abre uma conversa no WhatsApp do locador com uma mensagem já pronta. Para usar, é preciso entrar ou criar uma conta no SGLK. O SGLK não tem chat interno.</p>
           </div>
         </div>
 
@@ -117,7 +119,7 @@
             <svg width="20" height="20" aria-hidden="true"><use href="#icon-chevron"></use></svg>
           </button>
           <div class="item-acordeao-resposta" id="resposta-4" role="region" aria-labelledby="pergunta-4">
-            <p class="item-acordeao-resposta-interna">Você cadastra fotos, descrição, preço e comodidades do imóvel na página <a href="anunciar.html" style="color:var(--marinho-700)">Anunciar minha kitnet</a>, e pode atualizar o status para Disponível ou Alugado sempre que quiser.</p>
+            <p class="item-acordeao-resposta-interna">Você cria uma conta de locador e cadastra fotos, descrição, preço e comodidades do imóvel na página <a href="anunciar.html" style="color:var(--marinho-700)">Anunciar minha kitnet</a>. Os anúncios aparecem no catálogo depois que a moderação do SGLK aprova o seu cadastro, e você pode atualizar o status para Disponível ou Alugado sempre que quiser.</p>
           </div>
         </div>
 
@@ -127,7 +129,7 @@
             <svg width="20" height="20" aria-hidden="true"><use href="#icon-chevron"></use></svg>
           </button>
           <div class="item-acordeao-resposta" id="resposta-5" role="region" aria-labelledby="pergunta-5">
-            <p class="item-acordeao-resposta-interna">O SGLK reduz o risco de golpes ao exigir informações claras em cada anúncio, como fotos, preço e localização. Ainda assim, a negociação acontece diretamente entre locador e locatário pelo WhatsApp, então vale sempre visitar o imóvel antes de fechar negócio.</p>
+            <p class="item-acordeao-resposta-interna">O SGLK reduz o risco de golpes ao exigir informações claras em cada anúncio, como fotos, preço e localização. Ainda assim, a negociação acontece diretamente entre locador e locatário pelo WhatsApp, então vale sempre visitar o imóvel antes de fechar negócio. Se algo parecer golpe, use o link Denunciar anúncio na página do imóvel: a moderação do SGLK analisa e pode tirar o anúncio do ar.</p>
           </div>
         </div>
 
@@ -170,6 +172,8 @@
   </div>
 </footer>
 
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
 <script src="js/dados-demo.js" defer></script>
 <script src="js/armazenamento.js" defer></script>
 <script src="js/site.js" defer></script>

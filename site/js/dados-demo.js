@@ -9,8 +9,8 @@
   "origem: 'ia'" - o site usa esse campo para mostrar o aviso "Imagem
   ilustrativa (gerada por IA)" so nelas, e para manter o botao de WhatsApp
   desabilitado so nelas (nao ha numero real por tras). Imoveis cadastrados
-  de verdade pelo formulario de Anunciar (js/armazenamento.js) tem
-  "origem: 'usuario'" e nao levam esse aviso.
+  de verdade pelo formulario de Anunciar ficam no Supabase, chegam por
+  js/armazenamento.js com "origem: 'usuario'" e nao levam esse aviso.
 */
 
 const KITNETS_DEMO = [
@@ -91,6 +91,6 @@ const KITNETS_DEMO = [
 // imovel cadastrado ainda usa uma delas.
 const COMODIDADES_DEMO = ["Mobiliada", "Wi-Fi", "Ar-condicionado", "Cozinha equipada", "Área de estudo"];
 
-// A lista de bairros NAO e mais fixa aqui: ela e calculada a partir de todos
-// os imoveis existentes (demonstracao + cadastrados pelo usuario), pela
-// funcao obterBairrosDisponiveis() em armazenamento.js.
+// A lista de bairros NAO e fixa aqui: ela e calculada a partir das kitnets
+// do catalogo (demonstracao + anuncios publicos do banco), pela funcao
+// obterBairros() em armazenamento.js.

@@ -46,6 +46,7 @@
       </ul>
     </nav>
     <div class="cabecalho-acoes">
+      <a class="botao botao--link link-entrar" href="entrar.html?modo=entrar" data-link-entrar aria-current="page">Entrar</a>
       <a class="botao botao--secundario" href="anunciar.html">Anunciar minha kitnet</a>
       <button type="button" class="botao-menu" data-abrir-menu aria-expanded="false" aria-controls="menu-movel">
         <svg width="22" height="22" aria-hidden="true"><use href="#icon-menu"></use></svg>
@@ -71,6 +72,7 @@
   </nav>
   <div class="menu-movel-acao">
     <a class="botao botao--primario botao--largura-total" href="anunciar.html">Anunciar minha kitnet</a>
+    <a class="botao botao--secundario botao--largura-total link-entrar-menu" href="entrar.html?modo=entrar" data-link-entrar aria-current="page">Entrar</a>
   </div>
 </div>
 
@@ -121,6 +123,12 @@
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um CPF válido.</p>
           </div>
 
+          <div class="campo">
+            <label for="conta-telefone">Telefone com DDD</label>
+            <input type="tel" id="conta-telefone" inputmode="numeric" placeholder="(00) 00000-0000" required maxlength="15" autocomplete="tel-national">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um telefone válido com DDD.</p>
+          </div>
+
           <div class="campo" data-campo-ocupacao>
             <label for="conta-ocupacao">Ocupação</label>
             <input type="text" id="conta-ocupacao" placeholder="Ex.: Autônomo, funcionário público, aposentado">
@@ -135,8 +143,11 @@
 
           <div class="aviso-caixa">
             <svg aria-hidden="true"><use href="#icon-info"></use></svg>
-            <p class="texto-pequeno">O CPF ajuda a identificar quem usa o SGLK e a reduzir anúncios falsos. Conferimos só o formato do número — isso ainda não é uma verificação de identidade completa.</p>
+            <p class="texto-pequeno">O CPF ajuda a reduzir anúncios falsos: cada CPF só abre uma conta. Ele fica numa área protegida do banco do SGLK, que ninguém acessa pelo site; só a moderação vê, para validar cadastros. Conferimos o formato do número, mas isso ainda não é uma verificação de identidade completa.</p>
           </div>
+
+          <p class="mensagem-erro" data-erro-cadastro-conta hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
+          <button type="button" class="botao botao--secundario botao--largura-total" data-erro-cadastro-entrar hidden>Entrar com este e-mail</button>
 
           <button type="submit" class="botao botao--primario botao--largura-total" data-botao-cadastro>Criar conta de locatário</button>
         </form>
@@ -144,8 +155,9 @@
         <div class="mensagem-sucesso" data-sucesso-cadastro-conta hidden tabindex="-1">
           <svg aria-hidden="true"><use href="#icon-check"></use></svg>
           <div>
-            <p class="texto-pequeno">Cadastro validado! Este site ainda não tem um backend seguro para criar contas de verdade — por isso, nome, CPF e senha não foram guardados em nenhum lugar. Essa etapa é um passo futuro do projeto.</p>
-            <div data-sucesso-cadastro-acao style="margin-top:var(--esp-3)"></div>
+            <p class="texto-pequeno">Conta criada! Enviamos um link de confirmação para <strong data-sucesso-cadastro-email></strong>. Abra o e-mail, confirme e depois entre com seu e-mail e senha.</p>
+            <p class="texto-pequeno" data-sucesso-cadastro-locador hidden style="margin-top:var(--esp-2)">Depois disso, a moderação analisa o seu cadastro de locador. Você já pode cadastrar imóveis, e eles aparecem no catálogo depois da aprovação.</p>
+            <button type="button" class="botao botao--primario" data-sucesso-cadastro-ir style="margin-top:var(--esp-3)">Ir para Entrar</button>
           </div>
         </div>
 
@@ -175,18 +187,30 @@
             <input type="password" id="conta-senha-entrar" required autocomplete="current-password">
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe sua senha.</p>
           </div>
+          <p class="mensagem-erro" data-erro-entrar hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
           <button type="submit" class="botao botao--primario botao--largura-total">Entrar</button>
         </form>
 
-        <div class="mensagem-sucesso" data-sucesso-entrar hidden tabindex="-1">
-          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+        <p class="rodape-auth texto-pequeno">Ainda não tem conta? <button type="button" data-mostrar-cadastro>Cadastre-se</button></p>
+      </div>
+
+      <!-- BLOCO: JA CONECTADO -->
+      <div class="cartao-auth" data-bloco-conectado hidden>
+        <div class="cartao-auth-topo">
+          <span class="cartao-auth-icone" aria-hidden="true">
+            <svg><use href="#icon-porta"></use></svg>
+          </span>
           <div>
-            <p class="texto-pequeno">Formulário validado! O SGLK ainda não tem um sistema real de contas — por isso ninguém entra de verdade ainda. Nada do que você digitou foi guardado.</p>
-            <div data-sucesso-entrar-acao style="margin-top:var(--esp-3)"></div>
+            <h1 class="titulo-2" data-conectado-titulo>Você já entrou</h1>
+            <p class="texto-suave texto-pequeno" data-conectado-texto style="margin-top:var(--esp-1)"></p>
           </div>
         </div>
-
-        <p class="rodape-auth texto-pequeno">Ainda não tem conta? <button type="button" data-mostrar-cadastro>Cadastre-se</button></p>
+        <div class="aviso-caixa" data-conectado-aviso hidden>
+          <svg aria-hidden="true"><use href="#icon-info"></use></svg>
+          <p class="texto-pequeno"></p>
+        </div>
+        <a class="botao botao--primario botao--largura-total" href="index.html" data-conectado-continuar>Continuar</a>
+        <button type="button" class="botao botao--link" data-conectado-sair>Sair desta conta</button>
       </div>
 
     </div>
@@ -218,6 +242,8 @@
   </div>
 </footer>
 
+<script src="js/vendor/supabase.js" defer></script>
+<script src="js/supabase-config.js" defer></script>
 <script src="js/dados-demo.js" defer></script>
 <script src="js/armazenamento.js" defer></script>
 <script src="js/site.js" defer></script>

@@ -8,3 +8,10 @@ desktop.ini
 
 # Vínculo local da CLI da Vercel com o projeto
 .vercel
+
+# Dependências do npm (reinstaláveis com "npm install")
+node_modules/
+
+# Variáveis de ambiente locais
+.env
+.env.*
