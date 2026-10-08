@@ -20,6 +20,12 @@ const BUCKET_FOTOS = "fotos-kitnets";
 // quem nao entrou antes de a pagina aparecer.
 const CHAVE_SESSAO_SUPABASE = "sb-vqqgbbnxomqkqytgcbsb-auth-token";
 
+// Os links dos e-mails (confirmar cadastro, recuperar senha) voltam para o
+// site com o resultado depois do "#". A biblioteca le e apaga esse trecho
+// ao iniciar; guardamos antes, para entrar.html avisar quando o link
+// expirou ou ja foi usado (o erro vem como "#error=...&error_code=...").
+const LINK_DO_EMAIL_COM_ERRO = /(^#|[?&])error(_code)?=/.test(window.location.hash) || /[?&]error_code=/.test(window.location.search);
+
 const clienteSupabase = (window.supabase && typeof window.supabase.createClient === "function")
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_CHAVE_PUBLICAVEL, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }

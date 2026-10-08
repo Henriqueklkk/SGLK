@@ -63,6 +63,10 @@ function traduzirErroConta(erro) {
     return "O envio de e-mails do SGLK ainda está em configuração e este endereço ainda não recebe a confirmação. Tente de novo mais tarde.";
   }
   if (codigo === "email_address_invalid" || /invalid.*email|email.*invalid/i.test(texto)) return "Confira o e-mail digitado.";
+  if (codigo === "same_password" || /different from the old/i.test(texto)) return "A senha nova precisa ser diferente da senha atual.";
+  if (codigo === "session_not_found" || erro.name === "AuthSessionMissingError") {
+    return "O link de recuperação expirou ou já foi usado. Peça um novo.";
+  }
   if (/Database error saving new user/i.test(texto) || codigo === "unexpected_failure") {
     return "Não foi possível criar a conta. Confira os dados. Se este CPF já foi usado em outra conta, entre com ela.";
   }
@@ -246,6 +250,25 @@ async function cadastrarConta(dados) {
 
 async function entrarNaConta(email, senha) {
   const { error } = await exigirCliente().auth.signInWithPassword({ email: email, password: senha });
+  if (error) return { ok: false, mensagem: traduzirErroConta(error) };
+  promessaConta = null;
+  return { ok: true };
+}
+
+// "Esqueci minha senha": o Supabase manda o e-mail de recuperação. Por
+// seguranca ele responde do mesmo jeito exista ou nao uma conta com esse
+// e-mail, entao a pagina tambem nao diz se a conta existe.
+async function pedirLinkRecuperacao(email) {
+  const { error } = await exigirCliente().auth.resetPasswordForEmail(email, {
+    redirectTo: new URL("entrar.html?modo=nova-senha", window.location.href).href
+  });
+  if (error) return { ok: false, mensagem: traduzirErroConta(error) };
+  return { ok: true };
+}
+
+// Grava a senha nova. Funciona na sessao aberta pelo link de recuperacao.
+async function definirNovaSenha(senha) {
+  const { error } = await exigirCliente().auth.updateUser({ password: senha });
   if (error) return { ok: false, mensagem: traduzirErroConta(error) };
   promessaConta = null;
   return { ok: true };

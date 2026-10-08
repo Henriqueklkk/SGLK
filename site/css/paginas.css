@@ -492,3 +492,42 @@
 /* Acao que tira algo do ar (inativar, suspender): link na cor de erro. */
 .botao--link.texto-erro { color: var(--erro); }
 .botao--link.texto-erro:hover, .botao--link.texto-erro:focus-visible { color: var(--marinho-900); }
+
+/* ============================= SENHA: MOSTRAR E RECUPERAR (entrar.html) ============================= */
+
+/* "Mostrar senha" (decisao de 2026-10-06): caixa de selecao com texto logo
+   abaixo do campo, como no exemplo enviado pelo usuario. Desfaz o estilo de
+   campo de texto que .campo input daria ao checkbox. */
+.mostrar-senha {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  align-self: flex-start;
+  min-height: 44px;
+  font-size: var(--tam-pequeno);
+  font-weight: 600;
+  color: var(--texto);
+  cursor: pointer;
+}
+.campo .mostrar-senha input,
+.campo--erro .mostrar-senha input {
+  appearance: auto;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--borda-campo);
+  border-radius: var(--raio-p);
+  accent-color: var(--marinho-700);
+  cursor: pointer;
+}
+.opcoes-senha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--esp-4);
+}
+.opcoes-senha .botao--link { min-height: 44px; font-size: var(--tam-pequeno); }
+.bloco-link-invalido { display: flex; flex-direction: column; gap: var(--esp-4); }

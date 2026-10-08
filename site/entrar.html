@@ -139,6 +139,7 @@
             <label for="conta-senha">Senha</label>
             <input type="password" id="conta-senha" required minlength="8" autocomplete="new-password">
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>A senha precisa de pelo menos 8 caracteres.</p>
+            <label class="mostrar-senha"><input type="checkbox" data-mostrar-senha="conta-senha">Mostrar senha</label>
           </div>
 
           <div class="aviso-caixa">
@@ -186,12 +187,93 @@
             <label for="conta-senha-entrar">Senha</label>
             <input type="password" id="conta-senha-entrar" required autocomplete="current-password">
             <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe sua senha.</p>
+            <div class="opcoes-senha">
+              <label class="mostrar-senha"><input type="checkbox" data-mostrar-senha="conta-senha-entrar">Mostrar senha</label>
+              <button type="button" class="botao botao--link texto-pequeno" data-mostrar-recuperar>Esqueci minha senha</button>
+            </div>
           </div>
           <p class="mensagem-erro" data-erro-entrar hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
           <button type="submit" class="botao botao--primario botao--largura-total">Entrar</button>
         </form>
 
         <p class="rodape-auth texto-pequeno">Ainda não tem conta? <button type="button" data-mostrar-cadastro>Cadastre-se</button></p>
+      </div>
+
+      <!-- BLOCO: RECUPERAR SENHA -->
+      <div class="cartao-auth" data-bloco-recuperar hidden>
+        <div class="cartao-auth-topo">
+          <span class="cartao-auth-icone" aria-hidden="true">
+            <svg><use href="#icon-porta"></use></svg>
+          </span>
+          <div>
+            <h1 class="titulo-2">Recuperar senha</h1>
+            <p class="texto-suave texto-pequeno" style="margin-top:var(--esp-1)">Digite o e-mail da sua conta. Enviamos um link para você escolher uma senha nova.</p>
+          </div>
+        </div>
+
+        <form class="form-auth" data-form-recuperar novalidate>
+          <div class="campo">
+            <label for="conta-email-recuperar">E-mail</label>
+            <input type="email" id="conta-email-recuperar" required autocomplete="email">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um e-mail válido.</p>
+          </div>
+          <p class="mensagem-erro" data-erro-recuperar hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
+          <button type="submit" class="botao botao--primario botao--largura-total">Enviar link</button>
+        </form>
+
+        <div class="mensagem-sucesso" data-sucesso-recuperar hidden tabindex="-1">
+          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+          <p class="texto-pequeno">Se existir uma conta com o e-mail <strong data-sucesso-recuperar-email></strong>, o link chega em alguns minutos. Confira também a caixa de spam. O link só pode ser usado uma vez.</p>
+        </div>
+
+        <p class="rodape-auth texto-pequeno">Lembrou a senha? <button type="button" data-mostrar-entrar>Entrar</button></p>
+      </div>
+
+      <!-- BLOCO: SENHA NOVA (aberto pelo link do e-mail de recuperacao) -->
+      <div class="cartao-auth" data-bloco-nova-senha hidden>
+        <div class="cartao-auth-topo">
+          <span class="cartao-auth-icone" aria-hidden="true">
+            <svg><use href="#icon-porta"></use></svg>
+          </span>
+          <div>
+            <h1 class="titulo-2">Escolha uma senha nova</h1>
+            <p class="texto-suave texto-pequeno" style="margin-top:var(--esp-1)">Use pelo menos 8 caracteres.</p>
+          </div>
+        </div>
+
+        <p class="texto-suave" data-nova-senha-carregando role="status">Conferindo o link…</p>
+
+        <form class="form-auth" data-form-nova-senha novalidate hidden>
+          <div class="campo">
+            <label for="conta-nova-senha">Senha nova</label>
+            <input type="password" id="conta-nova-senha" required minlength="8" autocomplete="new-password">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>A senha precisa de pelo menos 8 caracteres.</p>
+          </div>
+          <div class="campo">
+            <label for="conta-nova-senha-repetir">Repita a senha nova</label>
+            <input type="password" id="conta-nova-senha-repetir" required minlength="8" autocomplete="new-password">
+            <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>As duas senhas precisam ser iguais.</p>
+            <label class="mostrar-senha"><input type="checkbox" data-mostrar-senha="conta-nova-senha conta-nova-senha-repetir">Mostrar senhas</label>
+          </div>
+          <p class="mensagem-erro" data-erro-nova-senha hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
+          <button type="submit" class="botao botao--primario botao--largura-total">Salvar senha nova</button>
+        </form>
+
+        <div class="mensagem-sucesso" data-sucesso-nova-senha hidden tabindex="-1">
+          <svg aria-hidden="true"><use href="#icon-check"></use></svg>
+          <div>
+            <p class="texto-pequeno">Senha alterada! Você já está conectado com a senha nova.</p>
+            <a class="botao botao--primario" href="index.html" style="margin-top:var(--esp-3)">Ir para a Home</a>
+          </div>
+        </div>
+
+        <div class="bloco-link-invalido" data-nova-senha-invalido hidden>
+          <div class="aviso-caixa" role="alert">
+            <svg aria-hidden="true"><use href="#icon-alerta"></use></svg>
+            <p class="texto-pequeno">Este link de recuperação expirou ou já foi usado. Peça um novo: cada link vale uma vez só.</p>
+          </div>
+          <button type="button" class="botao botao--primario botao--largura-total" data-mostrar-recuperar>Pedir um link novo</button>
+        </div>
       </div>
 
       <!-- BLOCO: JA CONECTADO -->

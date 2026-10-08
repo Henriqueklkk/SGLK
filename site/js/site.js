@@ -160,6 +160,20 @@
     return mascararTelefone(digitos.length > 11 && digitos.indexOf("55") === 0 ? digitos.slice(2) : digitos);
   }
 
+  /* ============================= MOSTRAR SENHA ============================= */
+
+  // <input type="checkbox" data-mostrar-senha="id1 id2"> mostra ou esconde as
+  // senhas dos campos indicados (decisao de 2026-10-06).
+  function iniciarMostrarSenha() {
+    document.querySelectorAll("[data-mostrar-senha]").forEach((caixa) => {
+      const campos = caixa.dataset.mostrarSenha.split(/\s+/).map((id) => document.getElementById(id)).filter(Boolean);
+      caixa.setAttribute("aria-controls", campos.map((c) => c.id).join(" "));
+      caixa.addEventListener("change", () => {
+        campos.forEach((campo) => { campo.type = caixa.checked ? "text" : "password"; });
+      });
+    });
+  }
+
   /* ============================= MENU DO CELULAR ============================= */
 
   function iniciarMenuMovel() {
@@ -1214,7 +1228,9 @@
     const grupo = campo.closest(".campo");
     if (!grupo) return campo.checkValidity();
     const erro = grupo.querySelector(".mensagem-erro");
-    let valido = campo.checkValidity();
+    // O navegador so aplica minlength ao que a pessoa digitou; valores
+    // preenchidos por script ou por alguns gerenciadores de senha passariam.
+    let valido = campo.checkValidity() && !(campo.minLength > 0 && campo.value.length < campo.minLength);
     if (valido && validadorExtra) valido = validadorExtra(campo.value);
     grupo.classList.toggle("campo--erro", !valido);
     if (erro) erro.hidden = valido;
@@ -1236,6 +1252,8 @@
     const blocos = {
       cadastro: document.querySelector("[data-bloco-cadastro]"),
       entrar: document.querySelector("[data-bloco-entrar]"),
+      recuperar: document.querySelector("[data-bloco-recuperar]"),
+      novaSenha: document.querySelector("[data-bloco-nova-senha]"),
       conectado: document.querySelector("[data-bloco-conectado]")
     };
     function mostrarBloco(nome) {
@@ -1313,6 +1331,43 @@
     document.querySelectorAll("[data-mostrar-cadastro]").forEach((botao) => botao.addEventListener("click", () => mostrarBloco("cadastro")));
     // Link "Entrar" do cabecalho (entrar.html?modo=entrar): abre direto no login.
     if (parametrosUrl.get("modo") === "entrar") mostrarBloco("entrar");
+    // Link do e-mail de recuperacao: mostra "Conferindo o link…" enquanto a sessao carrega.
+    if (parametrosUrl.get("modo") === "nova-senha") mostrarBloco("novaSenha");
+
+    // "Esqueci minha senha": pede o e-mail e manda o link de recuperacao.
+    const campoEmailRecuperar = document.querySelector("#conta-email-recuperar");
+    const formRecuperar = document.querySelector("[data-form-recuperar]");
+    const erroRecuperar = document.querySelector("[data-erro-recuperar]");
+    const sucessoRecuperar = document.querySelector("[data-sucesso-recuperar]");
+    function irParaRecuperar() {
+      if (campoEmailRecuperar && campoEmailEntrar && campoEmailEntrar.value.trim()) campoEmailRecuperar.value = campoEmailEntrar.value.trim();
+      if (formRecuperar) formRecuperar.hidden = false;
+      if (sucessoRecuperar) sucessoRecuperar.hidden = true;
+      mostrarErro(erroRecuperar, "");
+      mostrarBloco("recuperar");
+      if (campoEmailRecuperar) campoEmailRecuperar.focus();
+    }
+    document.querySelectorAll("[data-mostrar-recuperar]").forEach((botao) => botao.addEventListener("click", irParaRecuperar));
+    // entrar.html?modo=recuperar (usado no e-mail de "senha alterada").
+    if (parametrosUrl.get("modo") === "recuperar") irParaRecuperar();
+    if (formRecuperar) {
+      const botaoRecuperar = formRecuperar.querySelector("button[type=submit]");
+      campoEmailRecuperar.addEventListener("blur", () => validarCampoAuth(campoEmailRecuperar));
+      formRecuperar.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        mostrarErro(erroRecuperar, "");
+        if (!validarCampoAuth(campoEmailRecuperar)) { campoEmailRecuperar.focus(); return; }
+        const email = campoEmailRecuperar.value.trim();
+        botaoCarregando(botaoRecuperar, true, "Enviando…");
+        const resultado = await pedirLinkRecuperacao(email);
+        botaoCarregando(botaoRecuperar, false);
+        if (!resultado.ok) { mostrarErro(erroRecuperar, resultado.mensagem); return; }
+        formRecuperar.hidden = true;
+        sucessoRecuperar.querySelector("[data-sucesso-recuperar-email]").textContent = email;
+        sucessoRecuperar.hidden = false;
+        sucessoRecuperar.focus();
+      });
+    }
 
     // Formulario de cadastro: cria a conta no Supabase. Com a confirmacao de
     // e-mail ligada, a pessoa so entra depois de clicar no link do e-mail.
@@ -1320,7 +1375,7 @@
     const erroCadastro = document.querySelector("[data-erro-cadastro-conta]");
     const botaoErroEntrar = document.querySelector("[data-erro-cadastro-entrar]");
     if (formCadastro) {
-      formCadastro.querySelectorAll("input").forEach((campo) => {
+      formCadastro.querySelectorAll("input:not([type=checkbox])").forEach((campo) => {
         campo.addEventListener("blur", () => {
           if (!campo.closest("[hidden]")) validarCampoAuth(campo, validadoresCadastro[campo.id] || null);
         });
@@ -1383,7 +1438,7 @@
     const erroEntrar = document.querySelector("[data-erro-entrar]");
     if (formEntrar) {
       const botaoEntrar = formEntrar.querySelector("button[type=submit]");
-      formEntrar.querySelectorAll("input").forEach((campo) => {
+      formEntrar.querySelectorAll("input:not([type=checkbox])").forEach((campo) => {
         campo.addEventListener("blur", () => validarCampoAuth(campo));
       });
       formEntrar.addEventListener("submit", async (evento) => {
@@ -1410,8 +1465,58 @@
       });
     }
 
-    // Quem ja esta conectado ve a propria conta em vez dos formularios.
     const conta = await obterContaAtual();
+    const linkComErro = typeof LINK_DO_EMAIL_COM_ERRO !== "undefined" && LINK_DO_EMAIL_COM_ERRO;
+
+    // Senha nova: o link do e-mail de recuperacao abre
+    // entrar.html?modo=nova-senha ja com uma sessao. Sem sessao, ou com erro
+    // no link, ele expirou ou ja foi usado.
+    if (parametrosUrl.get("modo") === "nova-senha") {
+      if (avisoRedirecionamento) avisoRedirecionamento.hidden = true;
+      mostrarBloco("novaSenha");
+      const carregandoNovaSenha = document.querySelector("[data-nova-senha-carregando]");
+      const formNovaSenha = document.querySelector("[data-form-nova-senha]");
+      if (carregandoNovaSenha) carregandoNovaSenha.hidden = true;
+      if (!conta || linkComErro) {
+        document.querySelector("[data-nova-senha-invalido]").hidden = false;
+        return;
+      }
+      const campoNova = document.querySelector("#conta-nova-senha");
+      const campoRepetir = document.querySelector("#conta-nova-senha-repetir");
+      const erroNovaSenha = document.querySelector("[data-erro-nova-senha]");
+      const botaoNovaSenha = formNovaSenha.querySelector("button[type=submit]");
+      const senhasIguais = () => campoRepetir.value === campoNova.value;
+      formNovaSenha.hidden = false;
+      campoNova.focus();
+      campoNova.addEventListener("blur", () => validarCampoAuth(campoNova));
+      campoRepetir.addEventListener("blur", () => validarCampoAuth(campoRepetir, senhasIguais));
+      formNovaSenha.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        mostrarErro(erroNovaSenha, "");
+        const novaOk = validarCampoAuth(campoNova);
+        const repetirOk = validarCampoAuth(campoRepetir, senhasIguais);
+        if (!novaOk || !repetirOk) { (novaOk ? campoRepetir : campoNova).focus(); return; }
+        botaoCarregando(botaoNovaSenha, true, "Salvando…");
+        const resultado = await definirNovaSenha(campoNova.value);
+        botaoCarregando(botaoNovaSenha, false);
+        if (!resultado.ok) { mostrarErro(erroNovaSenha, resultado.mensagem); return; }
+        formNovaSenha.hidden = true;
+        window.history.replaceState(null, "", "entrar.html");
+        const sucesso = document.querySelector("[data-sucesso-nova-senha]");
+        sucesso.hidden = false;
+        sucesso.focus();
+      });
+      return;
+    }
+
+    // Link de confirmacao de cadastro expirado ou ja usado.
+    if (linkComErro && avisoRedirecionamento && avisoRedirecionamentoTexto) {
+      avisoRedirecionamentoTexto.textContent = "O link do e-mail expirou ou já foi usado. Se você já confirmou o cadastro, é só entrar com seu e-mail e senha.";
+      avisoRedirecionamento.hidden = false;
+      if (!conta) mostrarBloco("entrar");
+    }
+
+    // Quem ja esta conectado ve a propria conta em vez dos formularios.
     if (!conta) return;
     const tipoTexto = conta.perfil ? (conta.perfil.tipo === "locador" ? "locador" : "locatário") : "";
     const nome = conta.perfil ? conta.perfil.nome : conta.usuario.email;
@@ -1454,6 +1559,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     iniciarMenuMovel();
+    iniciarMostrarSenha();
     iniciarControleConta();
     iniciarAcordeao();
     iniciarAbas();

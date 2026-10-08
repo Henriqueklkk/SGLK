@@ -2,7 +2,7 @@
 
 Fonte de verdade visual do projeto. Qualquer mudança aqui precisa de aprovação e deve ser registrada no `memoria.md`.
 
-- **Versão:** 1.4, de 2026-10-03: link "Entrar" no cabeçalho e no menu do celular (§1.1, §13). A 1.3, de 2026-09-29, trouxe login real, conta no cabeçalho, moderação, denúncia e janela de confirmação (§8, §9.6, §13). A 1.2, do mesmo dia, trouxe o botão "Entrar em contato" (§8) e as kitnets alugadas depois das disponíveis (§11). A versão 1.1, de 2026-09-21, trouxe a identidade de `meus - produtos/`; a 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar.
+- **Versão:** 1.5, de 2026-10-06: caixa "Mostrar senha" nos campos de senha (§9.4), recuperação de senha e e-mails do sistema (§9.7). A 1.4, de 2026-10-03, trouxe o link "Entrar" no cabeçalho e no menu do celular (§1.1, §13). A 1.3, de 2026-09-29, trouxe login real, conta no cabeçalho, moderação, denúncia e janela de confirmação (§8, §9.6, §13). A 1.2, do mesmo dia, trouxe o botão "Entrar em contato" (§8) e as kitnets alugadas depois das disponíveis (§11). A versão 1.1, de 2026-09-21, trouxe a identidade de `meus - produtos/`; a 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar.
 - **Base:** identidade visual em `meus - produtos/`, `specs/site.md` e análise das referências em `referencias - site/`.
 - **Situação:** identidade (logo e paleta de `meus - produtos/`) e tipografia aprovadas. O restante é proposta à espera de revisão (ver Pendências no `memoria.md`).
 - **Imagens do site:** plano completo de produção em `imagens.md`.
@@ -367,6 +367,7 @@ Os status foram definidos em 2026-09-21: "Disponível" e "Alugado". O preço é 
 - Campos com 48px de altura, raio de 12px e borda em `--borda-campo`.
 - Rótulo sempre visível acima do campo, em texto pequeno peso 600. Nunca só um texto de exemplo dentro do campo.
 - Mensagem de erro abaixo do campo, em `--erro` e com ícone.
+- **Mostrar senha** (desde 2026-10-06): abaixo de todo campo de senha, uma caixa de seleção de 20px (borda `--borda-campo`, marcada em `--marinho-700`) com o texto "Mostrar senha" em texto pequeno peso 600 e área de toque de 44px. Marcada, a senha aparece em texto comum. Com dois campos de senha (senha nova e repetição), uma só caixa "Mostrar senhas" vale para os dois. No login, "Esqueci minha senha" (botão link em texto pequeno) fica na mesma linha, à direita, e desce para a linha de baixo quando não cabe.
 
 ### 9.5 Perguntas frequentes
 
@@ -383,6 +384,12 @@ Os status foram definidos em 2026-09-21: "Disponível" e "Alugado". O preço é 
 - **Denúncia:** link "Denunciar anúncio" com ícone de alerta abaixo dos detalhes do imóvel (nunca dentro do cartão de contato, que fica fixo no desktop). Abre um formulário no próprio lugar, com motivo e texto.
 
 ---
+
+### 9.7 Recuperação de senha e e-mails do sistema
+
+- **Fluxo (desde 2026-10-06), todo em `entrar.html`, no mesmo cartão das outras telas de conta:** "Esqueci minha senha" → "Recuperar senha" (e-mail já preenchido com o que estava no login, botão primário "Enviar link") → mensagem de envio que não diz se a conta existe → link do e-mail → "Escolha uma senha nova" (senha nova, repetição e "Mostrar senhas", botão "Salvar senha nova") → "Senha alterada!" com "Ir para a Home".
+- **Link expirado ou já usado:** aviso no lugar do formulário e o botão primário "Pedir um link novo". Um link de confirmação de cadastro expirado mostra o aviso amarelo do topo e abre o login.
+- **E-mails** (confirmação de cadastro, redefinição de senha e aviso de senha alterada): em português, com o mesmo visual do site. Fundo `--painel`, cartão `--branco` com borda `--cinza-claro`, raio de 24px e faixa de 4px em `--salvia-500` no topo, logo horizontal oficial acima do cartão, título 24px peso 800 em `--marinho-900`, um botão primário (`--marinho-700`, raio de 12px), textos de apoio de 14px em `--texto-suave` e rodapé com o nome do sistema e "não responda". Abaixo de 480px o botão ocupa a largura toda. Fonte e instruções em `supabase/emails/`.
 
 ## 10. Direção das fotografias
 

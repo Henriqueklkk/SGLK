@@ -402,11 +402,76 @@ Histórico vivo das decisões e aprendizados do projeto. Registrar só o que aju
 - **Conta de administrador:** o usuário cria a conta pelo site (com o e-mail da conta dele no Supabase, que é o único que recebe a confirmação enquanto não houver SMTP próprio), confirma o e-mail e avisa; uma migração define `app_metadata.papel = "admin"`. O e-mail dele não deve ir para nenhum arquivo do repositório, que é público.
 - As pendências de 29/09 continuam, menos "link Entrar" (feito), "locatário que quer anunciar" (decidido: fica limitado) e "commit" (feito).
 
+## Alterações realizadas (06/10)
+
+- **2026-10-06 · Envio ao GitHub autorizado e feito:** `git push` de `dae20e4` para `main` (`d35a9a6..dae20e4`). A Vercel publica a partir daí.
+- **Passos 1 a 4 do Supabase feitos pelo usuário:** os registros de autenticação mostram as mudanças de configuração entre 22h54 e 23h01 UTC de 06/10.
+
+## Problemas encontrados (06/10)
+
+- **A conta do usuário não chegou ao banco:** `auth.users` vazio e nenhuma tentativa de cadastro nos registros do Supabase. Causa provável: o cadastro foi feito em www.sglk.site, que até o envio de 06/10 ainda rodava a versão antiga, com cadastro simulado que não guarda nada.
+- **Pedido de "criar a conta no banco":** criar a conta exige definir a senha da pessoa, então o usuário cria a conta pelo site; a promoção para moderação (`app_metadata.papel = "admin"`) é feita no banco logo depois. O e-mail dele não vai para nenhum arquivo do repositório.
+
+## Alterações realizadas (06/10, continuação — conta de moderação e e-mails)
+
+- **Conta do usuário criada pelo site atualizado:** uma conta de locador, com e-mail confirmado e primeiro login feito. Primeira verificação com dados reais do gatilho de cadastro: perfil criado, CPF guardado em `privado.documentos` e CPF e telefone fora dos metadados da conta. O cadastro de locador está "pendente", para o próprio usuário aprovar pela página Moderação (primeiro teste real da moderação).
+- **Conta promovida a moderação:** migração `promover_moderador_inicial` (só no histórico do Supabase, não no repositório), que define `app_metadata.papel = "admin"`; conferido no banco. O usuário precisa sair e entrar de novo para o papel valer no site.
+- **Decisão do usuário: e-mails pela Brevo** (SMTP próprio), para quem não é membro do projeto receber a confirmação de cadastro.
+- **DNS do `sglk.site` fica na Hostinger** (servidores `dns-parking.com`); os registros de autenticação da Brevo vão lá. O domínio não tem registro MX, então não recebe e-mails; o remetente `nao-responda@sglk.site` só envia.
+- **Domínio `sglk.site` autenticado na Brevo (06/10):** conferido por consulta DNS pública: TXT `brevo-code` na raiz, DKIM `brevo1._domainkey` e `brevo2._domainkey` (CNAME para `b1`/`b2.sglk-site.dkim.brevo.com`) e DMARC `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com`. No caminho, o assistente de configuração automática da Brevo (Entri) abriu uma tela da IONOS oferecendo comprar um domínio; não era necessário, e o usuário seguiu sem comprar.
+- **Brevo, ajustes de 06/10:** bloqueio de IPs não autorizados desativado só para as chaves SMTP (o Supabase não tem IP fixo de envio; as chaves de API continuam como estavam). Chave SMTP "Supabase SGLK" (variante padrão, 64 caracteres) com validade de 1 ano, até 06/10/2027; a Brevo também a expira depois de **90 dias sem uso**. Se a chave expirar, os e-mails de confirmação param de chegar: gerar outra na Brevo e trocar a senha em Supabase → Authentication → SMTP Settings.
+- **Dados da Brevo conferidos na documentação oficial:** servidor `smtp-relay.brevo.com`, porta 587; usuário e senha em "SMTP and API settings" (aba SMTP), usando uma **chave SMTP**, não uma chave de API.
+
+- **SMTP próprio funcionando (06/10, 21h03 em Brasília):** Supabase ligado à Brevo (`smtp-relay.brevo.com`, porta 587, remetente `SGLK <nao-responda@sglk.site>`, intervalo mínimo de 60 s por usuário; o Supabase subiu o limite de envio de 2 para 30 e-mails por hora ao ligar o SMTP próprio). Teste pelo painel com "Send password recovery": o pedido voltou 200 nos registros e o e-mail chegou ao Gmail do usuário com o remetente certo.
+- **Os e-mails ainda saem em inglês** ("Reset your password", e a confirmação de cadastro também): são os modelos padrão do Supabase, em Authentication → Emails.
+
+## Decisões aprovadas (06/10 — senha e e-mails)
+
+- **2026-10-06 · E-mails em português e com o visual do site** ("deixe bonito os emails mandados"): confirmação de cadastro, redefinição de senha e aviso de senha alterada.
+- **2026-10-06 · "Esqueci minha senha"** no site, com a tela para escolher a senha nova.
+- **2026-10-06 · "Mostrar senha":** caixa de seleção abaixo do campo de senha no cadastro e no login, a partir de uma imagem de exemplo do usuário (campo "Digite sua senha" com a caixa "Mostrar senha" embaixo). Também entrou na tela de senha nova.
+
+## Alterações realizadas (06/10 — senha e e-mails)
+
+- **`entrar.html`:** "Mostrar senha" no cadastro e no login, e "Mostrar senhas" (uma caixa para os dois campos) na senha nova; "Esqueci minha senha" na linha do "Mostrar senha" do login; novos blocos "Recuperar senha" (e-mail e "Enviar link", com mensagem que não revela se a conta existe) e "Escolha uma senha nova" (senha, repetição, sucesso e aviso de link expirado com "Pedir um link novo").
+- **`js/armazenamento.js`:** `pedirLinkRecuperacao` (o Supabase manda o e-mail com volta para `entrar.html?modo=nova-senha`) e `definirNovaSenha`; mensagens em português para "senha igual à atual" e "link expirado".
+- **`js/supabase-config.js`:** `LINK_DO_EMAIL_COM_ERRO`, lido antes de a biblioteca limpar o endereço, para reconhecer link de e-mail expirado ou já usado (recuperação e confirmação de cadastro).
+- **`js/site.js`:** `iniciarMostrarSenha()` em todas as páginas; modos `?modo=recuperar` (usado pelo e-mail de senha alterada) e `?modo=nova-senha`; link de confirmação de cadastro expirado mostra "O link do e-mail expirou ou já foi usado…" e abre o login.
+- **`supabase/emails/`:** os 3 modelos em HTML (tabelas e estilos embutidos, como os programas de e-mail exigem) e um `LEIA-ME.md` com onde colar cada um e os assuntos: "Confirme seu e-mail no SGLK", "Redefina sua senha do SGLK" e "Sua senha do SGLK foi alterada". O logo dos e-mails vem de `https://www.sglk.site/img/sglk-logo-horizontal.png`.
+- **`specs/design.md` v1.5:** "Mostrar senha" (§9.4) e recuperação de senha e e-mails (§9.7).
+
+## Problemas encontrados (06/10 — senha e e-mails)
+
+- **Senha curta aceita em alguns casos, no ar desde 29/09:** a validação usava `checkValidity()`, e o navegador só aplica o `minlength` ao que a pessoa digita; uma senha preenchida por script ou por alguns gerenciadores de senha passava com menos de 8 caracteres (o Supabase aceita a partir de 6). `validarCampoAuth` agora confere o tamanho de forma explícita, o que vale para cadastro e senha nova.
+- "Esqueci minha senha" saía com 16px mesmo com `texto-pequeno`, porque `.botao` define o tamanho; corrigido para 14px.
+- O Supabase não avisa quando o endereço de volta não está nas Redirect URLs: manda para a Site URL sem erro. Conferido nos registros que `entrar.html?confirmado=1` foi aceito na confirmação do cadastro do usuário, então `entrar.html?modo=nova-senha` também casa com `https://www.sglk.site/**`.
+- As anotações "07/10" desta seção vinham do horário UTC dos registros; no horário de Brasília tudo foi em 06/10, e as datas foram padronizadas.
+
+## Verificação (06/10 — senha e e-mails)
+
+- **E-mails:** prévias dos 3 modelos no navegador em 375px e 640px (páginas temporárias, apagadas): botão de 293 × 48px no celular, sem rolagem lateral e com o logo carregado.
+- **`entrar.html` no servidor local:** "Mostrar senha" alterna o campo entre senha e texto nas 3 telas (também clicando no texto); "Esqueci minha senha" copia o e-mail do login, recusa e-mail inválido e, com um endereço sem conta (`.invalid`), chega ao Supabase (`POST /recover` 200 nos registros, nenhum e-mail enviado) e mostra a mensagem neutra; `?modo=recuperar` abre a tela de recuperação; `?modo=nova-senha` sem sessão e um link com `#error=…&error_code=otp_expired` mostram os avisos certos; o formulário de senha nova, com uma sessão simulada (página temporária, apagada), recusa senha curta e senhas diferentes, mostra a mensagem traduzida para senha igual à atual e, no sucesso, limpa o endereço. Nenhum elemento `hidden` visível, sem rolagem lateral em 375px e console sem erros numa aba limpa.
+- **Não testado de ponta a ponta:** receber o e-mail de recuperação e trocar a senha de verdade, que exige uma conta real e digitar a senha. Fica para o usuário, depois do envio ao GitHub.
+
+## Modelos de e-mail no painel do Supabase (06/10)
+
+- **Colados pelo usuário e conferidos pelo Claude in Chrome:** o corpo dos 3 modelos no painel é idêntico aos arquivos de `supabase/emails/` (SHA-256 do texto, sem diferença de quebra de linha). Assuntos: "Confirme seu e-mail no SGLK", "Redefina sua senha do SGLK" e "Sua senha do SGLK foi alterada"; os dois últimos estavam com dois-pontos no fim, vindos da cópia, e foram corrigidos.
+- **"Password changed" ligado:** a chave "Enable notification" fica num quadro "Configuration" da página do modelo e tem um botão **Save changes** próprio, separado do botão que salva assunto e corpo; sem ele, a chave volta a ficar desligada (foi o que aconteceu na primeira tentativa do usuário).
+- **Problemas no caminho:** (1) da primeira vez, o corpo do "Reset password" foi salvo com o texto do comando `powershell … | Set-Clipboard` que eu tinha sugerido para copiar o arquivo, e os e-mails de teste das 22h39, 22h42 e 22h46 saíram com esse texto (o das 22h39 caiu no spam). Para colar modelos, copiar direto do arquivo (Bloco de Notas ou área de transferência preenchida pelo Claude), não por comando. (2) O Claude in Chrome não funciona no Opera (falha ao criar o grupo de abas, "No group with id"); funcionou no Google Chrome.
+- **E-mail de recuperação conferido pelo usuário** depois da correção: chegou em português, com o visual do site. Pedidos de teste feitos pela versão local (`POST /recover` 200 às 22h39, 22h42, 22h46 e 22h50), para o link voltar a `localhost:8000/entrar.html?modo=nova-senha`, que já tem a tela nova.
+
+## Pendências (06/10 — senha e e-mails)
+
+- **Testar o aviso de senha alterada:** só sai quando a senha muda de verdade. O usuário precisa abrir o último e-mail de recuperação neste computador (o link volta para `localhost:8000`), escolher a senha nova e conferir se chega "Sua senha do SGLK foi alterada".
+- **Commit e envio ao GitHub:** só com autorização. O link de recuperação leva a `entrar.html?modo=nova-senha`, que só existe em www.sglk.site depois do envio; até lá, quem pedir recuperação cai no `entrar.html` publicado, que só faz a pessoa entrar, sem trocar a senha.
+- `.agents/` (outra cópia das skills do Supabase, criada em 29/09) continua fora do Git, como no commit anterior.
+
 ## Próximos passos
 
-1. Commit feito em 03/10 (tudo desde `d35a9a6`). Falta o `git push`, com autorização do usuário, para a Vercel publicar a versão com Supabase em www.sglk.site.
+1. "Mostrar senha", "Esqueci minha senha" e os e-mails em português feitos em 06/10, ainda só no computador. Falta: commit e envio (com autorização), o usuário colar os modelos no Supabase e testar a recuperação com a própria conta.
 2. Com o endereço final em mãos, ajustar `og:image`, `og:url` e `canonical` nas 8 páginas.
 3. Corrigir os 2 defeitos de texto nas imagens e revisar as demais 29 com a lista de aprovação do `imagens.md`.
 4. Decidir o canal real do formulário de Contato.
-5. Integração com o Supabase e moderação: feitas em 29/09. Falta o usuário testar cadastro e login reais com a própria conta, avisar para ela virar moderadora e conferir a URL Configuration do Supabase (ver Pendências de 29/09).
+5. Integração com o Supabase e moderação: feitas em 29/09 e testadas com a conta do usuário. Em 2026-10-07 ele aprovou o próprio cadastro de locador pela página Moderação (primeiro uso real; conferido no banco: locador, aprovado, ativa). Banco nesse dia: 1 conta, 0 anúncios reais, 0 fotos, 0 denúncias; o catálogo público só mostra as 3 kitnets de demonstração.
+7. **Para apresentar o MVP** (lista passada ao usuário em 2026-10-07): envio ao GitHub; pelo menos um anúncio real com fotos reais; ensaio completo em www.sglk.site com uma segunda conta (locatário, outro e-mail e outro CPF); cuidado com a pausa automática do plano gratuito do Supabase (7 dias com pouca atividade); metadados de compartilhamento com `https://www.sglk.site`; canal do formulário de Contato; política de privacidade (LGPD); tamanho mínimo de senha 8 também no Supabase; imagens com texto errado. A proteção contra senhas vazadas (aviso do painel de segurança) só existe no plano Pro.
 6. Produzir a versão do logo para fundo escuro, quando aprovada.
