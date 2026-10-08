@@ -463,15 +463,51 @@ Histórico vivo das decisões e aprendizados do projeto. Registrar só o que aju
 ## Pendências (06/10 — senha e e-mails)
 
 - **Testar o aviso de senha alterada:** só sai quando a senha muda de verdade. O usuário precisa abrir o último e-mail de recuperação neste computador (o link volta para `localhost:8000`), escolher a senha nova e conferir se chega "Sua senha do SGLK foi alterada".
-- **Commit e envio ao GitHub:** só com autorização. O link de recuperação leva a `entrar.html?modo=nova-senha`, que só existe em www.sglk.site depois do envio; até lá, quem pedir recuperação cai no `entrar.html` publicado, que só faz a pessoa entrar, sem trocar a senha.
+- ~~Commit e envio ao GitHub~~: feito em 2026-10-08 (`aedb907`).
 - `.agents/` (outra cópia das skills do Supabase, criada em 29/09) continua fora do Git, como no commit anterior.
+
+## Decisões aprovadas (08/10)
+
+- **2026-10-08 · Envio ao GitHub** autorizado ("faça o push"), para o que estava pronto e para o que fosse feito no mesmo pedido.
+- **2026-10-08 · Formulário de Contato:** o usuário mandou fazer o formulário depois da sugestão de guardar as mensagens no Supabase e mostrá-las na Moderação; feito assim (a alternativa era um e-mail ou WhatsApp institucional, que não existe).
+- **2026-10-08 · Prévia de compartilhamento** com o endereço `https://www.sglk.site`.
+- **2026-10-08 · Senha mínima de 8 caracteres também no Supabase:** ajustada pelo usuário no painel, igual à do site.
+- **2026-10-08 · Imagens:** o usuário pediu a lista das imagens com erro para avaliar o que muda; nada foi alterado nas imagens.
+
+## Alterações realizadas (08/10)
+
+- **Envio ao GitHub:** commit `aedb907` (recuperação de senha, "Mostrar senha", modelos de e-mail) enviado para `main`.
+- **Banco:** migração `20261008131752 mensagens_contato` (cópia em `supabase/contato.sql`): tabela `public.mensagens_contato` (nome, e-mail, mensagem, conta de quem enviou quando estava conectado, situação nova/respondida/arquivada); qualquer pessoa só insere; só a moderação lê, muda a situação e apaga; gatilho que limpa os campos e barra mais de 3 mensagens por e-mail ou 60 no total por hora (mensagem "Muitas mensagens em pouco tempo…", com `hint = limite_contato`).
+- **`contato.html` e `js/site.js`:** o formulário grava no banco, com validação (nome com 2 a 120, mensagem com 10 a 2000 caracteres, e-mail no mesmo formato do banco), botão "Enviando…", erro do servidor no próprio formulário, campo armadilha escondido contra robôs, nome e e-mail já preenchidos para quem está conectado e a frase "Usamos seu nome e e-mail só para responder a esta mensagem."; a caixa de sucesso diz para qual e-mail vai a resposta. O texto antigo que dizia que o canal não estava conectado saiu.
+- **`moderacao.html` e `js/moderacao.js`:** aba "Mensagens" com contador das novas; cada mensagem tem "Responder por e-mail" (abre o programa de e-mail de quem modera, porque `sglk.site` não recebe e-mails), "Marcar como respondida", "Arquivar" e "Apagar", todas com a janela de confirmação.
+- **`js/armazenamento.js`:** `enviarMensagemContato`, `moderacaoListarMensagens`, `moderacaoMarcarMensagem` e `moderacaoExcluirMensagem`.
+- **Prévia de compartilhamento:** nas 8 páginas públicas, `og:image` com endereço completo, tamanho (1200 × 630), texto alternativo, `og:site_name` e `twitter:card`; `og:url` e `canonical` em todas, menos `imovel.html`, cujo endereço muda com o anúncio. `moderacao.html` continua sem prévia e com `noindex`.
+- **`specs/design.md` v1.6:** aba "Mensagens" (§9.6) e envio do formulário de Contato (§13).
+
+## Verificação (08/10)
+
+- **Banco (transação desfeita no fim, nada gravado):** 17 verificações passaram: visitante envia e não lê; não escolhe a situação nem o autor; mensagem curta e e-mail inválido barrados; campos limpos e e-mail em minúsculas; 3 mensagens por e-mail aceitas e a 4ª barrada; limite geral de 60 por hora; conta comum não vê, não altera e não apaga (0 linhas); autor gravado para quem está conectado; moderação vê tudo, marca como respondida (com data e autor da análise), não muda outros campos e apaga. Painel de segurança sem aviso novo.
+- **Site (servidor local):** validação com campos vazios e só com espaços; erro do servidor exibido com o formulário mantido e o botão de volta; campo armadilha não chama o banco; envio real gravado no banco (mensagem de teste "Teste do formulário (Claude)", `teste-formulario@sglk.invalid`, deixada para o usuário ver e apagar na aba Mensagens); aba Mensagens com dados simulados (página temporária, apagada): ordem nova, respondida e arquivada, contador, janelas de confirmação, marcar e apagar. Sem rolagem lateral em 375px, nenhum `hidden` visível e console sem erros.
+
+## Conferência das imagens (08/10)
+
+Feita com a lista de aprovação do `imagens.md` (seção 10), nas 37 imagens de `site/img` mais a versão 1120 da 12, com recortes ampliados dos originais de `imagens - site/` para ler os textos. Resultado entregue ao usuário para avaliação; nenhuma imagem foi alterada.
+
+- **Texto errado:** só `01-hero-sglk-desktop` ("Kitnet mobierna" no cartão de trás, no topo da Home no computador).
+- **Correção de uma anotação antiga:** `17-compartilhamento-og` tem "Disponível" com acento no original; na versão de 1200 × 630 publicada, o acento fica quase invisível, e daí veio o registro de "sem acento".
+- **Texto antigo "Falar no WhatsApp"** (o site diz "Entrar em contato" desde 2026-09-29), em uso no site: 01 (computador e celular), 02 (computador e celular), 09, 10, 12, 14-mobile-detalhes, 14-mobile-telas-desktop e 17. Fora do site: 03 e 04.
+- **Logo diferente do oficial** (a IA trocou a porta e o balão de conversa por um "L" verde e tirou "LOCAÇÃO DE KITNETS"; o `design.md` proíbe logo recriado por IA): 02 (computador e celular), 06 (computador e celular), 07-cadastro-imovel-desktop e 14-mobile-telas-desktop. Fora do site: 07-cadastro-imovel-mobile e 14-mobile-filtros. Correção prevista no `imagens.md`: colar o arquivo oficial por cima na edição.
+- **Kitnet trocada:** `14-mobile-detalhes` mostra a "Kitnet mobiliada" (Centro) num ambiente com porta de varanda e cozinha verde-sálvia, que é a kitnet de estilo de vida (04), não a 01.
+- **Para avaliar:** `10-seguranca-confianca` liga ícones de "marcado" ao selo, ao bairro, ao preço e ao botão, o que pode sugerir que o SGLK confere essas informações; o `design.md` proíbe selo de verificação sem processo real. Pequena diferença na cozinha da kitnet 02 nos cartões das telas (cadeiras pretas e porta) em relação à foto `05-kitnet-02-cozinha` (cadeiras de madeira e janela).
+- **Sem problema:** as 12 fotos das kitnets de demonstração (05), 08, 11 (computador e celular), 13 (computador e celular), 15-estudante-celular, 15-jovem-estudando e 16-locador-gestao (pessoas e mãos naturais, sem texto, sem elemento proibido).
+- **Fora do site** (não aparecem em nenhuma página): 03, 04, 07-cadastro-imovel-mobile, 08, 13-cta-final-mobile, 14-mobile-filtros e 15-jovem-estudando.
 
 ## Próximos passos
 
-1. "Mostrar senha", "Esqueci minha senha" e os e-mails em português feitos em 06/10, ainda só no computador. Falta: commit e envio (com autorização), o usuário colar os modelos no Supabase e testar a recuperação com a própria conta.
-2. Com o endereço final em mãos, ajustar `og:image`, `og:url` e `canonical` nas 8 páginas.
-3. Corrigir os 2 defeitos de texto nas imagens e revisar as demais 29 com a lista de aprovação do `imagens.md`.
-4. Decidir o canal real do formulário de Contato.
+1. "Mostrar senha", "Esqueci minha senha" e os e-mails em português: no ar desde 2026-10-08, com os modelos colados no Supabase. Falta o usuário testar a troca de senha com a própria conta (e o aviso "senha alterada").
+2. ~~Prévia de compartilhamento~~: feita em 2026-10-08.
+3. Imagens: conferência completa feita em 2026-10-08 (ver "Conferência das imagens (08/10)"); o usuário decide o que regenerar ou editar.
+4. ~~Canal do formulário de Contato~~: mensagens no Supabase e aba "Mensagens" na Moderação (2026-10-08). Apagar a mensagem de teste "Teste do formulário (Claude)".
 5. Integração com o Supabase e moderação: feitas em 29/09 e testadas com a conta do usuário. Em 2026-10-07 ele aprovou o próprio cadastro de locador pela página Moderação (primeiro uso real; conferido no banco: locador, aprovado, ativa). Banco nesse dia: 1 conta, 0 anúncios reais, 0 fotos, 0 denúncias; o catálogo público só mostra as 3 kitnets de demonstração.
 7. **Para apresentar o MVP** (lista passada ao usuário em 2026-10-07): envio ao GitHub; pelo menos um anúncio real com fotos reais; ensaio completo em www.sglk.site com uma segunda conta (locatário, outro e-mail e outro CPF); cuidado com a pausa automática do plano gratuito do Supabase (7 dias com pouca atividade); metadados de compartilhamento com `https://www.sglk.site`; canal do formulário de Contato; política de privacidade (LGPD); tamanho mínimo de senha 8 também no Supabase; imagens com texto errado. A proteção contra senhas vazadas (aviso do painel de segurança) só existe no plano Pro.
 6. Produzir a versão do logo para fundo escuro, quando aprovada.

@@ -551,38 +551,52 @@
 
   /* ============================= FORMULARIO DE CONTATO ============================= */
 
-  function iniciarFormularioContato() {
+  // As mensagens vao para o banco (supabase/contato.sql) e aparecem na aba
+  // "Mensagens" da pagina Moderacao.
+  async function iniciarFormularioContato() {
     const formulario = document.querySelector("[data-form-contato]");
     if (!formulario) return;
     const mensagemSucesso = document.querySelector("[data-sucesso-contato]");
+    const erroEnvio = formulario.querySelector("[data-erro-contato]");
+    const armadilha = formulario.querySelector("[data-armadilha-contato]");
+    const botaoEnviar = formulario.querySelector("button[type=submit]");
+    const campos = Array.from(formulario.querySelectorAll("[data-campo-contato]"));
+    const [campoNome, campoEmail, campoMensagem] = campos;
+    const emailValido = (valor) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(valor.trim());
+    const validar = (campo) => validarCampoAuth(campo, campo === campoEmail ? emailValido : (valor) => valor.trim().length >= (campo.minLength > 0 ? campo.minLength : 1));
 
-    function validarCampo(campo) {
-      const grupo = campo.closest(".campo");
-      const erro = grupo.querySelector(".mensagem-erro");
-      const valido = campo.checkValidity();
-      grupo.classList.toggle("campo--erro", !valido);
-      if (erro) erro.hidden = valido;
-      return valido;
-    }
+    campos.forEach((campo) => campo.addEventListener("blur", () => validar(campo)));
 
-    formulario.querySelectorAll("input, textarea").forEach((campo) => {
-      campo.addEventListener("blur", () => validarCampo(campo));
-    });
-
-    formulario.addEventListener("submit", (evento) => {
+    formulario.addEventListener("submit", async (evento) => {
       evento.preventDefault();
-      const campos = formulario.querySelectorAll("input, textarea");
-      let tudoValido = true;
-      campos.forEach((campo) => { if (!validarCampo(campo)) tudoValido = false; });
-      if (!tudoValido) {
-        const primeiroInvalido = formulario.querySelector(":invalid");
-        if (primeiroInvalido) primeiroInvalido.focus();
-        return;
+      mostrarErro(erroEnvio, "");
+      const invalidos = campos.filter((campo) => !validar(campo));
+      if (invalidos.length) { invalidos[0].focus(); return; }
+      const email = campoEmail.value.trim();
+      // Robo preencheu o campo escondido: finge que enviou e nao grava nada.
+      if (!armadilha || !armadilha.value) {
+        botaoCarregando(botaoEnviar, true, "Enviando…");
+        try {
+          await enviarMensagemContato(campoNome.value.trim(), email, campoMensagem.value.trim());
+        } catch (erro) {
+          mostrarErro(erroEnvio, erro.message);
+          return;
+        } finally {
+          botaoCarregando(botaoEnviar, false);
+        }
       }
       formulario.hidden = true;
-      if (mensagemSucesso) mensagemSucesso.hidden = false;
-      if (mensagemSucesso) mensagemSucesso.focus();
+      mensagemSucesso.querySelector("[data-sucesso-contato-email]").textContent = email;
+      mensagemSucesso.hidden = false;
+      mensagemSucesso.focus();
     });
+
+    // Quem esta conectado ja encontra nome e e-mail preenchidos.
+    const conta = await obterContaAtual();
+    if (conta && conta.perfil) {
+      if (!campoNome.value) campoNome.value = conta.perfil.nome || "";
+      if (!campoEmail.value) campoEmail.value = conta.usuario.email || "";
+    }
   }
 
   /* ============================= PAGINA EXCLUSIVA DE CADA KITNET (imovel.html) ============================= */

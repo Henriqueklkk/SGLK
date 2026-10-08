@@ -75,7 +75,7 @@
     <div class="contentor layout-moderacao">
       <div class="cabecalho-secao">
         <h1 class="titulo-1">Moderação</h1>
-        <p class="texto-abertura">Aprove cadastros de locador, analise denúncias e cuide dos anúncios e das contas do SGLK.</p>
+        <p class="texto-abertura">Aprove cadastros de locador, analise denúncias, responda as mensagens do formulário de contato e cuide dos anúncios e das contas do SGLK.</p>
       </div>
 
       <p class="texto-suave" data-moderacao-carregando role="status">Carregando…</p>
@@ -96,6 +96,7 @@
         <div class="abas-cabecalho" role="tablist" aria-label="Áreas da moderação">
           <button type="button" role="tab" class="aba-botao" id="aba-cadastros" aria-controls="painel-cadastros" aria-selected="true" data-aba-moderacao="cadastros">Cadastros <span class="contador-aba" data-contador="cadastros"></span></button>
           <button type="button" role="tab" class="aba-botao" id="aba-denuncias" aria-controls="painel-denuncias" aria-selected="false" tabindex="-1" data-aba-moderacao="denuncias">Denúncias <span class="contador-aba" data-contador="denuncias"></span></button>
+          <button type="button" role="tab" class="aba-botao" id="aba-mensagens" aria-controls="painel-mensagens" aria-selected="false" tabindex="-1" data-aba-moderacao="mensagens">Mensagens <span class="contador-aba" data-contador="mensagens"></span></button>
           <button type="button" role="tab" class="aba-botao" id="aba-anuncios" aria-controls="painel-anuncios" aria-selected="false" tabindex="-1" data-aba-moderacao="anuncios">Anúncios</button>
           <button type="button" role="tab" class="aba-botao" id="aba-contas" aria-controls="painel-contas" aria-selected="false" tabindex="-1" data-aba-moderacao="contas">Contas</button>
         </div>
@@ -110,6 +111,12 @@
           <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Denúncias feitas por quem tem conta. As abertas aparecem primeiro.</p>
           <p class="texto-suave" data-vazio="denuncias" hidden>Nenhuma denúncia até agora.</p>
           <ul class="lista-moderacao" data-lista="denuncias"></ul>
+        </div>
+
+        <div class="aba-painel" id="painel-mensagens" role="tabpanel" aria-labelledby="aba-mensagens" tabindex="0" hidden>
+          <p class="texto-suave texto-pequeno" style="margin-bottom:var(--esp-4)">Mensagens do formulário da página Contato. As novas aparecem primeiro. A resposta sai do seu e-mail, pelo botão "Responder por e-mail".</p>
+          <p class="texto-suave" data-vazio="mensagens" hidden>Nenhuma mensagem até agora.</p>
+          <ul class="lista-moderacao" data-lista="mensagens"></ul>
         </div>
 
         <div class="aba-painel" id="painel-anuncios" role="tabpanel" aria-labelledby="aba-anuncios" tabindex="0" hidden>

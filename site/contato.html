@@ -11,7 +11,14 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon-180.png">
 <meta property="og:title" content="Contato - SGLK">
 <meta property="og:description" content="Fale com o SGLK.">
-<meta property="og:image" content="img/17-compartilhamento-og.jpg">
+<meta property="og:image" content="https://www.sglk.site/img/17-compartilhamento-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cartão de anúncio do SGLK com uma kitnet mobiliada no Centro, na frente de um prédio residencial.">
+<meta property="og:site_name" content="SGLK">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="https://www.sglk.site/contato.html">
+<link rel="canonical" href="https://www.sglk.site/contato.html">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <link rel="preload" href="fonts/plus-jakarta-sans-variable.woff2" as="font" type="font/woff2" crossorigin>
@@ -81,7 +88,7 @@
     <div class="contentor">
       <div class="cabecalho-secao">
         <h1 class="titulo-1">Contato</h1>
-        <p class="texto-abertura">Dúvidas, sugestões ou problemas com o site? Preencha o formulário abaixo. Para falar sobre uma kitnet específica, use o botão de WhatsApp no próprio anúncio.</p>
+        <p class="texto-abertura">Dúvidas, sugestões ou problemas com o site? Escreva para a equipe do SGLK pelo formulário abaixo. Para falar sobre uma kitnet específica, use o botão "Entrar em contato" no próprio anúncio.</p>
       </div>
 
       <div class="grade-contato">
@@ -89,19 +96,26 @@
           <form class="form-contato" data-form-contato novalidate>
             <div class="campo">
               <label for="nome">Nome</label>
-              <input type="text" id="nome" name="nome" required autocomplete="name">
+              <input type="text" id="nome" name="nome" required minlength="2" maxlength="120" autocomplete="name" data-campo-contato>
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe seu nome.</p>
             </div>
             <div class="campo">
               <label for="email">E-mail</label>
-              <input type="email" id="email" name="email" required autocomplete="email">
+              <input type="email" id="email" name="email" required maxlength="254" autocomplete="email" data-campo-contato>
               <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Informe um e-mail válido.</p>
             </div>
             <div class="campo">
               <label for="mensagem">Mensagem</label>
-              <textarea id="mensagem" name="mensagem" required></textarea>
-              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Escreva sua mensagem.</p>
+              <textarea id="mensagem" name="mensagem" required minlength="10" maxlength="2000" data-campo-contato></textarea>
+              <p class="mensagem-erro" hidden><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg>Escreva sua mensagem, com pelo menos 10 caracteres.</p>
             </div>
+            <!-- Armadilha para robôs: fica fora da tela e quem usa o site não preenche. -->
+            <div class="campo-armadilha" aria-hidden="true">
+              <label for="site-contato">Deixe este campo em branco</label>
+              <input type="text" id="site-contato" name="site" tabindex="-1" autocomplete="off" data-armadilha-contato>
+            </div>
+            <p class="texto-suave texto-pequeno">Usamos seu nome e e-mail só para responder a esta mensagem.</p>
+            <p class="mensagem-erro" data-erro-contato hidden role="alert"><svg width="16" height="16" aria-hidden="true"><use href="#icon-alerta"></use></svg><span></span></p>
             <div class="grupo-botoes">
               <button type="submit" class="botao botao--primario">Enviar mensagem</button>
             </div>
@@ -110,8 +124,8 @@
           <div class="mensagem-sucesso" data-sucesso-contato hidden tabindex="-1">
             <svg aria-hidden="true"><use href="#icon-check"></use></svg>
             <div>
-              <p style="font-weight:600;margin-bottom:var(--esp-1)">Formulário preenchido corretamente.</p>
-              <p class="texto-pequeno">Este site ainda está em construção: o canal para receber esta mensagem de verdade ainda não foi conectado. Enquanto isso, para assuntos sobre um imóvel específico, use o WhatsApp do anúncio.</p>
+              <p style="font-weight:600;margin-bottom:var(--esp-1)">Mensagem enviada!</p>
+              <p class="texto-pequeno">A equipe do SGLK vai responder no e-mail <strong data-sucesso-contato-email></strong>. Confira também a caixa de spam.</p>
             </div>
           </div>
         </div>

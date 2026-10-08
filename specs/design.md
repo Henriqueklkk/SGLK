@@ -2,7 +2,7 @@
 
 Fonte de verdade visual do projeto. Qualquer mudança aqui precisa de aprovação e deve ser registrada no `memoria.md`.
 
-- **Versão:** 1.5, de 2026-10-06: caixa "Mostrar senha" nos campos de senha (§9.4), recuperação de senha e e-mails do sistema (§9.7). A 1.4, de 2026-10-03, trouxe o link "Entrar" no cabeçalho e no menu do celular (§1.1, §13). A 1.3, de 2026-09-29, trouxe login real, conta no cabeçalho, moderação, denúncia e janela de confirmação (§8, §9.6, §13). A 1.2, do mesmo dia, trouxe o botão "Entrar em contato" (§8) e as kitnets alugadas depois das disponíveis (§11). A versão 1.1, de 2026-09-21, trouxe a identidade de `meus - produtos/`; a 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar.
+- **Versão:** 1.6, de 2026-10-08: formulário de Contato ligado à aba "Mensagens" da Moderação (§9.6, §13). A 1.5, de 2026-10-06, trouxe a caixa "Mostrar senha" nos campos de senha (§9.4), a recuperação de senha e os e-mails do sistema (§9.7). A 1.4, de 2026-10-03, trouxe o link "Entrar" no cabeçalho e no menu do celular (§1.1, §13). A 1.3, de 2026-09-29, trouxe login real, conta no cabeçalho, moderação, denúncia e janela de confirmação (§8, §9.6, §13). A 1.2, do mesmo dia, trouxe o botão "Entrar em contato" (§8) e as kitnets alugadas depois das disponíveis (§11). A versão 1.1, de 2026-09-21, trouxe a identidade de `meus - produtos/`; a 1.0, de 2026-09-15, usava a paleta azul-petróleo + âmbar.
 - **Base:** identidade visual em `meus - produtos/`, `specs/site.md` e análise das referências em `referencias - site/`.
 - **Situação:** identidade (logo e paleta de `meus - produtos/`) e tipografia aprovadas. O restante é proposta à espera de revisão (ver Pendências no `memoria.md`).
 - **Imagens do site:** plano completo de produção em `imagens.md`.
@@ -377,7 +377,7 @@ Os status foram definidos em 2026-09-21: "Disponível" e "Alugado". O preço é 
 
 ### 9.6 Moderação, denúncia e janela de confirmação
 
-- **Página Moderação (`moderacao.html`):** só para a moderação, fora do menu e dos buscadores. Abas "Cadastros", "Denúncias", "Anúncios" e "Contas", com o contador de pendências no rótulo. Cada item é um cartão branco (borda `--cinza-claro`, raio de 16px, `--sombra-1`) com título, selos, dados em lista de rótulo e valor e as ações no rodapé.
+- **Página Moderação (`moderacao.html`):** só para a moderação, fora do menu e dos buscadores. Abas "Cadastros", "Denúncias", "Mensagens" (desde 2026-10-08), "Anúncios" e "Contas", com o contador de pendências no rótulo. Cada item é um cartão branco (borda `--cinza-claro`, raio de 16px, `--sombra-1`) com título, selos, dados em lista de rótulo e valor e as ações no rodapé.
 - **Selos extras:** `--marinho-50` com texto `--marinho-700` (neutro, 9,84:1), `--erro-fundo` com `--erro` (5,72:1), `--sucesso-fundo` com `--salvia-700` (5,11:1) e `--aviso-fundo` com `--aviso` (5,62:1).
 - **Ações que tiram algo do ar** (inativar anúncio, suspender conta): botão link na cor `--erro`. As demais usam o botão secundário compacto.
 - **Janela de confirmação:** `<dialog>` com fundo `--marinho-900` a 60%, painel branco com raio de 24px e `--sombra-3`; entra com fade e zoom de 95% para 100% em `--tempo-lento` (só fade com movimento reduzido). Pede motivo quando a ação tira algo do ar; o dono vê esse motivo.
@@ -533,6 +533,7 @@ Mobile-first: o layout base é o do celular, e as faixas maiores só acrescentam
 **FAQ:** uma coluna com até 760px de largura em todas as telas.
 
 **Contato**
+- **Envio (desde 2026-10-08):** a mensagem vai para a aba "Mensagens" da Moderação, que responde pelo próprio e-mail (botão link "Responder por e-mail"), marca como respondida, arquiva ou apaga. Abaixo dos campos, a frase "Usamos seu nome e e-mail só para responder a esta mensagem." em texto pequeno `--texto-suave`; depois do envio, a caixa de sucesso diz para qual e-mail vai a resposta.
 - **Celular:** formulário primeiro e informações de contato depois.
 - **Desktop:** duas colunas, com o formulário ocupando cerca de 60% da largura.
 

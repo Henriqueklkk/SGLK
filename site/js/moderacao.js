@@ -1,6 +1,6 @@
 /*
   moderacao.js - Pagina de moderacao (moderacao.html): cadastros de locador
-  para aprovar, denuncias, anuncios e contas (documento da disciplina:
+  para aprovar, denuncias, mensagens do formulario de contato, anuncios e contas (documento da disciplina:
   UC-06, HU-06 e RN-02).
 
   So abre para contas com app_metadata.papel = "admin". Esconder a pagina
@@ -231,6 +231,28 @@
       });
     }
 
+    function marcarMensagem(mensagem, situacao) {
+      const textos = {
+        respondida: ["Marcar a mensagem de " + mensagem.nome + " como respondida?", "Use depois de responder pelo seu e-mail.", "Marcar como respondida", "Mensagem marcada como respondida."],
+        arquivada: ["Arquivar a mensagem de " + mensagem.nome + "?", "Ela sai das novas e fica guardada no fim da lista.", "Arquivar", "Mensagem arquivada."]
+      }[situacao];
+      abrirDialogo({
+        titulo: textos[0],
+        texto: textos[1],
+        rotuloConfirmar: textos[2],
+        acao: () => executar(() => moderacaoMarcarMensagem(mensagem.id, situacao), textos[3])
+      });
+    }
+
+    function excluirMensagem(mensagem) {
+      abrirDialogo({
+        titulo: "Apagar a mensagem de " + mensagem.nome + "?",
+        texto: "Ela some de vez, junto com o nome e o e-mail de quem escreveu. Não dá para desfazer.",
+        rotuloConfirmar: "Apagar mensagem",
+        acao: () => executar(() => moderacaoExcluirMensagem(mensagem.id), "Mensagem apagada.")
+      });
+    }
+
     /* ---------- Renderizacao ---------- */
 
     function selosConta(c) {
@@ -337,16 +359,41 @@
       }));
     }
 
+    function renderizarMensagens(mensagens) {
+      const ordem = { nova: 0, respondida: 1, arquivada: 2 };
+      const lista = mensagens.slice().sort((a, b) => ordem[a.situacao] - ordem[b.situacao]);
+      contador("mensagens", mensagens.filter((m) => m.situacao === "nova").length);
+      preencherLista("mensagens", lista.map((m) => {
+        const selos = [
+          m.situacao === "nova" ? selo("Nova", "aviso") : m.situacao === "respondida" ? selo("Respondida", "ok") : selo("Arquivada", "neutro")
+        ];
+        const acoes = [link("Responder por e-mail", "mailto:" + encodeURIComponent(m.email).replace("%40", "@") + "?subject=" + encodeURIComponent("Sua mensagem para o SGLK"))];
+        if (m.situacao === "nova") acoes.push(botao("Marcar como respondida", "secundario", () => marcarMensagem(m, "respondida")));
+        if (m.situacao !== "arquivada") acoes.push(botao("Arquivar", "link", () => marcarMensagem(m, "arquivada")));
+        acoes.push(botao("Apagar", "perigo", () => excluirMensagem(m)));
+        return cartao(m.nome, selos, [
+          dados([
+            ["E-mail", m.email],
+            ["Conta no SGLK", m.autor ? m.autor.nome + (m.autor.tipo === "locador" ? " (locador)" : " (locatário)") : "Enviada sem entrar"],
+            ["Recebida em", formatarData(m.criado_em)]
+          ]),
+          el("p", { class: "cartao-moderacao-texto", texto: m.mensagem })
+        ], acoes);
+      }));
+    }
+
     async function carregarTudo() {
       avisoErro.hidden = true;
       try {
-        const [contas, kitnets, denuncias] = await Promise.all([
+        const [contas, kitnets, denuncias, mensagens] = await Promise.all([
           moderacaoListarContas(),
           moderacaoListarKitnets(),
-          moderacaoListarDenuncias()
+          moderacaoListarDenuncias(),
+          moderacaoListarMensagens()
         ]);
         renderizarCadastros(contas, kitnets);
         renderizarDenuncias(denuncias);
+        renderizarMensagens(mensagens);
         renderizarAnuncios(kitnets);
         renderizarContas(contas, kitnets);
       } catch (erro) {

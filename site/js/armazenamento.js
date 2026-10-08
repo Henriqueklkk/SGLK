@@ -424,6 +424,16 @@ async function enviarDenuncia(idKitnet, motivo, detalhes) {
   if (error) throw traduzirErroDados(error, "Não foi possível enviar a denúncia agora.");
 }
 
+/* ============================= FORMULARIO DE CONTATO ============================= */
+
+// Qualquer pessoa envia; so a moderacao le (supabase/contato.sql). Sem
+// .select(), porque quem envia nao tem permissao para ler a mensagem.
+async function enviarMensagemContato(nome, email, mensagem) {
+  const { error } = await exigirCliente().from("mensagens_contato").insert({ nome: nome, email: email, mensagem: mensagem });
+  if (error && error.hint === "limite_contato") throw erroComMensagem(error.message, error);
+  if (error) throw traduzirErroDados(error, "Não foi possível enviar sua mensagem agora. Tente de novo em alguns minutos.");
+}
+
 /* ============================= MODERACAO (so administradores) ============================= */
 
 async function moderacaoListarContas() {
@@ -468,4 +478,26 @@ async function moderacaoAnalisarDenuncia(id, situacao) {
   const { data, error } = await exigirCliente().from("denuncias").update({ situacao: situacao }).eq("id", id).select("id");
   if (error) throw traduzirErroDados(error, "Não foi possível atualizar a denúncia.");
   if (!data.length) throw erroComMensagem("Você não tem permissão para analisar denúncias.");
+}
+
+async function moderacaoListarMensagens() {
+  const { data, error } = await exigirCliente()
+    .from("mensagens_contato")
+    .select("id, nome, email, mensagem, situacao, criado_em, analisada_em, autor:perfis!mensagens_contato_autor_id_fkey(nome, tipo)")
+    .order("criado_em", { ascending: false });
+  if (error) throw traduzirErroDados(error, "Não foi possível carregar as mensagens de contato.");
+  return data;
+}
+
+// situacao: "nova", "respondida" ou "arquivada"
+async function moderacaoMarcarMensagem(id, situacao) {
+  const { data, error } = await exigirCliente().from("mensagens_contato").update({ situacao: situacao }).eq("id", id).select("id");
+  if (error) throw traduzirErroDados(error, "Não foi possível atualizar a mensagem.");
+  if (!data.length) throw erroComMensagem("Você não tem permissão para atualizar mensagens.");
+}
+
+async function moderacaoExcluirMensagem(id) {
+  const { data, error } = await exigirCliente().from("mensagens_contato").delete().eq("id", id).select("id");
+  if (error) throw traduzirErroDados(error, "Não foi possível apagar a mensagem.");
+  if (!data.length) throw erroComMensagem("Você não tem permissão para apagar mensagens.");
 }
