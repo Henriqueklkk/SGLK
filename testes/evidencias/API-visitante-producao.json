@@ -1,0 +1,18 @@
+{
+  "descricao": "Acesso ao banco como visitante (sem conta), feito pelo próprio site publicado em https://www.sglk.site com a chave pública do Supabase.",
+  "data": "2026-10-18",
+  "ambiente": "Produção (www.sglk.site + Supabase vqqgbbnxomqkqytgcbsb)",
+  "resultados": {
+    "catalogoPublico (kitnets_publicas)": { "status": 200, "linhas": 0, "erro": null, "esperado": "permitido" },
+    "lerKitnetsDireto (kitnets)": { "status": 200, "linhas": 0, "erro": null, "esperado": "só anúncios públicos (nenhum publicado)" },
+    "lerPerfis": { "status": 401, "erro": "42501 permission denied for table perfis", "esperado": "recusado" },
+    "lerWhatsapp (kitnets_contato)": { "status": 401, "erro": "42501 permission denied for table kitnets_contato", "esperado": "recusado" },
+    "lerCpf (privado.documentos)": { "status": 406, "erro": "PGRST106 Invalid schema: privado", "esperado": "esquema fora da API" },
+    "lerDenuncias": { "status": 401, "erro": "42501 permission denied for table denuncias", "esperado": "recusado" },
+    "lerMensagensContato": { "status": 401, "erro": "42501 permission denied for table mensagens_contato", "esperado": "recusado" },
+    "inserirKitnet": { "status": 401, "erro": "42501 permission denied for table kitnets", "esperado": "recusado" },
+    "listarContas (rpc moderacao_listar_contas)": { "status": 401, "erro": "42501 permission denied for function moderacao_listar_contas", "esperado": "recusado" },
+    "enviarFoto (Storage fotos-kitnets)": { "erro": "new row violates row-level security policy", "esperado": "recusado" },
+    "sessao": "sem sessão (visitante)"
+  }
+}

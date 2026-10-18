@@ -1,0 +1,64 @@
+﻿largura_px;pagina;rolagem_lateral;elementos_fora_da_tela;menu_celular;links_no_cabecalho;colunas_grade_kitnets;imagens_distorcidas;texto_abaixo_14px;areas_de_toque_abaixo_44px
+360;index.html;não;0;sim;não;1;0;0;Saiba como funciona (26px)
+360;imoveis.html;não;0;sim;não;1;0;0;chips de comodidade (36px)
+360;imovel.html?id=kitnet-01;não;0;sim;não;;0;0;chips de comodidade (36px)
+360;como-funciona.html;não;0;sim;não;;0;0;nenhuma
+360;faq.html;não;0;sim;não;;0;0;nenhuma
+360;contato.html;não;0;sim;não;;0;0;nenhuma
+360;entrar.html;não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+360;anunciar.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+360;moderacao.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+375;index.html;não;0;sim;não;1;0;0;Saiba como funciona (26px)
+375;imoveis.html;não;0;sim;não;1;0;0;chips de comodidade (36px)
+375;imovel.html?id=kitnet-01;não;0;sim;não;;0;0;chips de comodidade (36px)
+375;como-funciona.html;não;0;sim;não;;0;0;nenhuma
+375;faq.html;não;0;sim;não;;0;0;nenhuma
+375;contato.html;não;0;sim;não;;0;0;nenhuma
+375;entrar.html;não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+375;anunciar.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+375;moderacao.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+480;index.html;não;0;sim;não;1;0;0;Saiba como funciona (26px)
+480;imoveis.html;não;0;sim;não;1;0;0;chips de comodidade (36px)
+480;imovel.html?id=kitnet-01;não;0;sim;não;;0;0;chips de comodidade (36px)
+480;como-funciona.html;não;0;sim;não;;0;0;nenhuma
+480;faq.html;não;0;sim;não;;0;0;nenhuma
+480;contato.html;não;0;sim;não;;0;0;nenhuma
+480;entrar.html;não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+480;anunciar.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+480;moderacao.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+768;index.html;não;0;sim;não;2;0;0;Saiba como funciona (26px)
+768;imoveis.html;não;0;sim;não;2;0;0;chips de comodidade (36px)
+768;imovel.html?id=kitnet-01;não;0;sim;não;;0;0;chips de comodidade (36px)
+768;como-funciona.html;não;0;sim;não;;0;0;nenhuma
+768;faq.html;não;0;sim;não;;0;0;nenhuma
+768;contato.html;não;0;sim;não;;0;0;nenhuma
+768;entrar.html;não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+768;anunciar.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+768;moderacao.html (sem conta -> entrar.html);não;0;sim;não;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1024;index.html;não;0;não;sim;3;0;0;Saiba como funciona (26px)
+1024;imoveis.html;não;0;não;sim;3;0;0;chips de comodidade (36px)
+1024;imovel.html?id=kitnet-01;não;0;não;sim;;0;0;chips de comodidade (36px)
+1024;como-funciona.html;não;0;não;sim;;0;0;nenhuma
+1024;faq.html;não;0;não;sim;;0;0;nenhuma
+1024;contato.html;não;0;não;sim;;0;0;nenhuma
+1024;entrar.html;não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1024;anunciar.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1024;moderacao.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1280;index.html;não;0;não;sim;3;0;0;Saiba como funciona (26px)
+1280;imoveis.html;não;0;não;sim;3;0;0;chips de comodidade (36px)
+1280;imovel.html?id=kitnet-01;não;0;não;sim;;0;0;chips de comodidade (36px)
+1280;como-funciona.html;não;0;não;sim;;0;0;nenhuma
+1280;faq.html;não;0;não;sim;;0;0;nenhuma
+1280;contato.html;não;0;não;sim;;0;0;nenhuma
+1280;entrar.html;não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1280;anunciar.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1280;moderacao.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1440;index.html;não;0;não;sim;3;0;0;Saiba como funciona (26px)
+1440;imoveis.html;não;0;não;sim;3;0;0;chips de comodidade (36px)
+1440;imovel.html?id=kitnet-01;não;0;não;sim;;0;0;chips de comodidade (36px)
+1440;como-funciona.html;não;0;não;sim;;0;0;nenhuma
+1440;faq.html;não;0;não;sim;;0;0;nenhuma
+1440;contato.html;não;0;não;sim;;0;0;nenhuma
+1440;entrar.html;não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1440;anunciar.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"
+1440;moderacao.html (sem conta -> entrar.html);não;0;não;sim;;0;0;"abas Quero alugar/Quero anunciar (43px); link Entrar (21px)"

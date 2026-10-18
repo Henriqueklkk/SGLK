@@ -455,6 +455,10 @@
       if (estado.precoMax) itens.push({ rotulo: "Até " + formatarPreco(estado.precoMax), limpar: () => { estado.precoMax = null; } });
       estado.comodidades.forEach((c) => itens.push({ rotulo: c, limpar: () => { estado.comodidades = estado.comodidades.filter((x) => x !== c); } }));
 
+      // Botao "Filtros" do celular mostra quantos filtros estao ativos (design.md, secao 13).
+      const contagemFiltros = document.querySelector("[data-contagem-filtros]");
+      if (contagemFiltros) contagemFiltros.textContent = itens.length ? " (" + itens.length + ")" : "";
+
       itens.forEach((item) => {
         const chip = el("button", { type: "button", class: "chip chip--remover" }, [
           document.createTextNode(item.rotulo + " "),

@@ -67,8 +67,9 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 /* O atributo hidden sempre esconde. Sem isto, qualquer classe que fixa
    "display" (.botao, .aviso-caixa...) vence o [hidden] do navegador, e o
    elemento continua na tela: o site teve 13 casos desse defeito ate
-   2026-09-29 (ver memoria.md). As regras .classe:not([hidden]) antigas
-   continuam funcionando. */
+   2026-09-29 (ver memoria.md). Nao use mais .classe:not([hidden]): o seletor
+   fica mais forte que as regras da mesma classe dentro de @media, que deixam
+   de valer (a grade de kitnets ficou com 1 coluna de 2026-09-22 a 2026-10-18). */
 [hidden] { display: none !important; }
 
 .apenas-leitor {
@@ -187,8 +188,12 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 }
 .botao--whatsapp[aria-disabled="true"]:hover { background: var(--desabilitado-fundo); }
 
+/* Link com cara de texto, mas area de toque de 44px (design.md, secao 6). */
 .botao--link {
+  display: inline-flex;
+  align-items: center;
   height: auto;
+  min-height: 44px;
   padding: 0;
   background: none;
   color: var(--marinho-700);
@@ -266,6 +271,10 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 .chip:has(input:focus-visible) { outline: 3px solid var(--marinho-900); outline-offset: 2px; }
 .chip--remover { background: var(--marinho-700); color: var(--branco); border-color: var(--marinho-700); }
 .chip--remover:hover, .chip--remover:focus-visible { background: var(--marinho-900); }
+
+/* Chips que a pessoa toca (filtros, comodidades do formulario, remover
+   filtro) tem 44px de altura; os que so informam continuam com 36px. */
+label.chip, button.chip { min-height: 44px; }
 
 .lista-chips { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
 
@@ -352,7 +361,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
 
 .cartao-kitnet-acao { margin-top: var(--esp-2); }
 
-.grade-kitnets:not([hidden]) {
+.grade-kitnets {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--esp-4);
@@ -665,7 +674,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-weight: 800; }
   transform: translateX(100%);
   transition: transform var(--tempo-lento) var(--curva-entrada);
 }
-.menu-movel:not([hidden]) {
+.menu-movel {
   display: flex;
   flex-direction: column;
 }

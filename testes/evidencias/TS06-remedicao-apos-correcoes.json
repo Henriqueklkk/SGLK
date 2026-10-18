@@ -1,0 +1,16 @@
+{
+  "descricao": "Nova medição do TS-06 depois das correções de BUG-01 (grade), BUG-02 (contador do botão Filtros) e BUG-03 (áreas de toque).",
+  "data": "2026-10-18",
+  "ambiente": "Local (http://localhost:8000), código com as correções",
+  "medicoes": 70,
+  "paginas": ["index.html", "imoveis.html", "imovel.html?id=kitnet-01", "como-funciona.html", "faq.html", "contato.html", "entrar.html", "entrar.html?modo=entrar", "anunciar.html (sem conta -> entrar.html)", "moderacao.html (sem conta -> entrar.html)"],
+  "larguras_px": [360, 375, 480, 768, 1024, 1280, 1440],
+  "colunas_da_grade": { "360": 1, "375": 1, "480": 1, "768": 2, "1024": 3, "1280": 3, "1440": 3 },
+  "rolagem_lateral": 0,
+  "elementos_fora_da_tela": 0,
+  "imagens_distorcidas": 0,
+  "textos_abaixo_de_14px": 0,
+  "areas_de_toque_abaixo_de_44px": 0,
+  "observacao": "Nas páginas de entrar, as abas e o link 'Esqueci minha senha' aparecem com 43 px na medição por iframe porque a animação de entrada do cartão (escala 0,98) não termina com o painel do navegador escondido. A altura real, sem a escala, é 44 px; o link 'Cadastre-se' do rodapé do cartão tem 45 px.",
+  "botao_filtros_celular": { "bairro + comodidade": "Filtros (2)", "mais preço": "Filtros (3)", "depois de Limpar": "Filtros" }
+}

@@ -502,11 +502,43 @@ Feita com a lista de aprovação do `imagens.md` (seção 10), nas 37 imagens de
 - **Sem problema:** as 12 fotos das kitnets de demonstração (05), 08, 11 (computador e celular), 13 (computador e celular), 15-estudante-celular, 15-jovem-estudando e 16-locador-gestao (pessoas e mãos naturais, sem texto, sem elemento proibido).
 - **Fora do site** (não aparecem em nenhuma página): 03, 04, 07-cadastro-imovel-mobile, 08, 13-cta-final-mobile, 14-mobile-filtros e 15-jovem-estudando.
 
+## Plano e evidências de testes (18/10)
+
+- **Pedido do usuário:** plano de evidências e testes no formato da seção 16 da documentação da disciplina (TS-01 a TS-06, RF-01 a RF-05 e RNF-01, registro de defeitos BUG/MEL), executar e entregar um arquivo com os resultados. Entregue como documento no Claude Docs ("SGLK — Plano e evidências de testes"), com as capturas embutidas; os arquivos das evidências ficam em `testes/evidencias/` (17 capturas, `TS06-medicoes-responsividade.csv` e `API-visitante-producao.json`).
+- **Resultado:** 6 de 6 casos executados; TS-03 aprovado; TS-01, TS-02, TS-04 e TS-05 aprovados com ressalva (os fluxos com login foram testados com conta simulada, porque o assistente não usa senhas; falta o usuário repetir com conta real, roteiro no documento); TS-06 aprovado com ressalva até a correção do BUG-01 ser publicada.
+- **Como foi testado:** filtros, validações, trava de Anunciar e kitnet de demonstração no site publicado e no local; telas de quem está conectado em cópias temporárias das páginas que trocavam só as funções de dados (cenários visitante, locatário, locador, suspenso e dono; apagadas depois); 11 acessos como visitante pela API pública em produção (só o catálogo responde; perfis, WhatsApp, CPF, denúncias, mensagens, criar anúncio, enviar foto e lista de contas recusados); 63 medições de layout (9 páginas × 7 larguras, de 360 a 1440 px) por uma página temporária com iframes (apagada).
+- **Limite:** o conector do Supabase passou a mostrar só outro projeto ("editafy.site", de outra organização) e recusou o projeto do SGLK; os testes de regras por perfil não foram repetidos em 18/10 e o documento cita os de 25/09, 29/09 e 08/10. Para voltar a usar o conector, o usuário precisa reconectá-lo com a conta dona do SGLK.
+
+## Problemas encontrados (18/10)
+
+- **BUG-01, no ar desde 22/09:** a grade de kitnets da Home e de Imóveis tinha 1 coluna em qualquer largura (em 1280px, cartões de 1136 × 1080px). Causa: a correção do `hidden` de 22/09 trocou a regra base por `.grade-kitnets:not([hidden])`, mais específica que as regras `.grade-kitnets` dos `@media` de 768px e 1024px, que deixaram de valer. As medições de 24/09 e de 29/09 não pegaram porque olhavam proporção de imagem e `hidden`, não o número de colunas. Corrigido em `css/estilo.css` (regra base volta a ser `.grade-kitnets`; a regra global `[hidden]` já esconde); o mesmo conflito existia em `.menu-movel` (sem efeito visível, porque o menu fechado tem `hidden`) e foi corrigido junto. Medido depois: 1, 2 e 3 colunas em 360–480, 768 e 1024–1440px. O comentário do CSS agora proíbe novos `.classe:not([hidden])`. Ainda não publicado.
+- **BUG-02 (aberto):** o botão "Filtros" do celular não mostra a quantidade de filtros ativos, como pede o `design.md` §13.
+- **BUG-03 (aberto):** áreas de toque abaixo dos 44px do `design.md` §6: chips de comodidade (36px), "Saiba como funciona" (26px), link "Entrar" na página de cadastro (21px) e abas de tipo de conta (43px).
+- **Inconsistência de documentação:** o `design.md` §9.1 diz que o card de kitnet disponível mostra "Entrar em contato", mas desde 22/09 os cards mostram sempre "Ver detalhes" e o contato fica na página do anúncio (decisão registrada em "Soluções aplicadas (continuação)"). Não alterado; avisado ao usuário.
+- **Rascunho da seção 16 do usuário** ainda descrevia armazenamento local e autenticação simulada; o documento de testes traz a tabela com o que mudou.
+
+## Correções da tabela 16.3 (18/10)
+
+- **Pedido do usuário:** "corrija a última tabela, atualizando o site inteiro, e fazendo push" (a tabela 16.3 de defeitos e melhorias).
+- **BUG-01 (grade com 1 coluna):** a correção de `css/estilo.css` foi publicada.
+- **BUG-02 (botão Filtros sem contador):** `imoveis.html` ganhou `<span data-contagem-filtros>` no botão e `js/site.js` (`renderizarChips`) escreve " (n)" com o número de filtros ativos (bairro, preço e comodidades; a busca por texto não conta). Testado: "Filtros (2)", "Filtros (3)" e "Filtros" depois de Limpar.
+- **BUG-03 (áreas de toque):** `.botao--link` passou a `inline-flex` com `min-height: 44px` (vale para todos os links com cara de texto: "Saiba como funciona", "Entrar" do cabeçalho, "Limpar", "Ver anúncio", "Editar", "Sair"…); `label.chip` e `button.chip` (chips que a pessoa toca) com `min-height: 44px`, e os chips só informativos continuam com 36px; o botão "Cadastre-se"/"Entrar" no rodapé do cartão de login ganhou `padding: 12px 4px` com `margin: -12px -4px`, para a área de toque crescer sem mudar a linha do texto; o "Voltar para Imóveis" de `imovel.html` perdeu o `display:inline-block` embutido. Nova medição (70: 10 páginas × 7 larguras): 0 áreas de toque abaixo de 44px, cabeçalho continua com 72px. As abas e o "Esqueci minha senha" aparecem com 43px numa medição por iframe só porque a animação de entrada do cartão (escala 0,98) não termina com o painel do navegador escondido; a altura real é 44px.
+- **BUG-04 ("Kitnet mobierna"):** corrigido na própria imagem, sem gerar outra: a palavra foi endireitada (inclinação de 6,25°), o "b" espelhado virou "d" (mesmo desenho nessa família de fonte), o "i" saiu, "erna" andou 4px e a área voltou à inclinação, colada só onde mudou. Gravado em `imagens - site/01-hero-sglk-desktop.png` (o original continua no Git) e exportado para `site/img/01-hero-sglk-desktop.jpg` (1600 × 900, JPG qualidade 80, 183 KB). Conferido em ampliação de 10 vezes: lê-se "Kitnet moderna", sem emenda.
+- **MEL-03 (política de privacidade):** não feita. Depende de dados do responsável que o usuário precisa dar e de uma decisão sobre o link no rodapé, que o `design.md` §13 limita às 5 páginas (ver Pendências de 18/10).
+- **Evidências:** `testes/evidencias/` foi para o GitHub junto, com `TS06-remedicao-apos-correcoes.json`.
+
+## Pendências (18/10)
+
+- **MEL-03:** para escrever a política de privacidade, o usuário precisa dizer quem aparece como responsável pelos dados (nome ou "projeto acadêmico do IFPA Tucuruí") e se o link pode ir para o rodapé (hoje o `design.md` §13 só permite as 5 páginas no rodapé; alternativa: link só no cadastro e no formulário de Contato).
+- **BUG-05 (aberto):** imagens com "Falar no WhatsApp" (10 em uso), logo recriado pela IA (6 em uso) e kitnet trocada em `14-mobile-detalhes`.
+- **Confirmação com conta real** dos casos TS-01, TS-02, TS-04 e TS-05 (roteiro no documento de testes).
+- **Divergência do `design.md` §9.1** ("Entrar em contato" no card disponível × "Ver detalhes" desde 22/09): aguardando o usuário.
+
 ## Próximos passos
 
 1. "Mostrar senha", "Esqueci minha senha" e os e-mails em português: no ar desde 2026-10-08, com os modelos colados no Supabase. Falta o usuário testar a troca de senha com a própria conta (e o aviso "senha alterada").
 2. ~~Prévia de compartilhamento~~: feita em 2026-10-08.
-3. Imagens: conferência completa feita em 2026-10-08 (ver "Conferência das imagens (08/10)"); o usuário decide o que regenerar ou editar.
+3. Imagens: conferência completa feita em 2026-10-08 (ver "Conferência das imagens (08/10)"); "Kitnet mobierna" corrigido em 2026-10-18; o resto (BUG-05) o usuário decide o que regenerar ou editar.
 4. ~~Canal do formulário de Contato~~: mensagens no Supabase e aba "Mensagens" na Moderação (2026-10-08). Apagar a mensagem de teste "Teste do formulário (Claude)".
 5. Integração com o Supabase e moderação: feitas em 29/09 e testadas com a conta do usuário. Em 2026-10-07 ele aprovou o próprio cadastro de locador pela página Moderação (primeiro uso real; conferido no banco: locador, aprovado, ativa). Banco nesse dia: 1 conta, 0 anúncios reais, 0 fotos, 0 denúncias; o catálogo público só mostra as 3 kitnets de demonstração.
 7. **Para apresentar o MVP** (lista passada ao usuário em 2026-10-07): envio ao GitHub; pelo menos um anúncio real com fotos reais; ensaio completo em www.sglk.site com uma segunda conta (locatário, outro e-mail e outro CPF); cuidado com a pausa automática do plano gratuito do Supabase (7 dias com pouca atividade); metadados de compartilhamento com `https://www.sglk.site`; canal do formulário de Contato; política de privacidade (LGPD); tamanho mínimo de senha 8 também no Supabase; imagens com texto errado. A proteção contra senhas vazadas (aviso do painel de segurança) só existe no plano Pro.
